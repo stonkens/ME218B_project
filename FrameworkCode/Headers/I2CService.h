@@ -27,6 +27,9 @@ bool PostI2CService(ES_Event_t ThisEvent);
 ES_Event_t RunI2CService(ES_Event_t ThisEvent);
 I2CState_t QueryI2CService(void);
 bool IsI2C0Finished(void);
-
+uint16_t I2C_GetClearValue(void);
+uint16_t I2C_GetRedValue(void);
+uint16_t I2C_GetGreenValue(void);
+uint16_t I2C_GetBlueValue(void);
 #endif /* I2CService_H */
 

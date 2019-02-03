@@ -65,7 +65,7 @@
 
 
 // Integration Time, in ms for TCS3472x
-#define INT_TIME 50
+#define INT_TIME 700
 
 /*----------------------------- Module Types ----------------------------*/
 typedef enum    /* definitions for the possible steps in command sequence */
@@ -88,7 +88,7 @@ typedef struct  /* definition of each step */
 {
   CMD_t Command;
   uint8_t Value;
-  uint8_t WaitTime;
+  uint16_t WaitTime;
   bool BusyWait;
   void * Result;
 }StepDefinition_t;
@@ -124,7 +124,7 @@ static uint8_t StepIndex;
 // Content of the current step in the sequence
 StepDefinition_t CurrentStep;
 
-StepDefinition_t SequenceLists[5][9] = {
+StepDefinition_t SequenceLists[5][8] = {
   /* First up is the power-up initialization sequence */
   { {CMD_WriteMult, (TCS3472x_ENABLE_REG | TCS3472x_COMMAND_BIT), 0, BUSY_WAIT, NULL}, /* select the Enable register */
     {CMD_Write8NS, TCS3472x_ENABLE_PON, 0, BUSY_WAIT, NULL}, /* set the PON bit to power up */
@@ -142,7 +142,6 @@ StepDefinition_t SequenceLists[5][9] = {
     {CMD_Read8, 0, 0, BUSY_WAIT, NULL}, /* read the hi byte value */
     {CMD_GetResult, 0, 0, TIME_WAIT, &readTwo}, /* fetch result and move to next step */
     {CMD_Form16, 0, 0, TIME_WAIT, &ClearValue}, /* combine the 2 8-bit resutls */
-    {CMD_NOP, 0, (INT_TIME+1), TIME_WAIT, NULL}, /* time wait for min. INT_TIME with timer uncertainty */
     {CMD_EOS, 0, 0, TIME_WAIT, NULL} /* mark the end of this sequence */
   },
 };
@@ -339,10 +338,7 @@ ES_Event_t RunI2CService(ES_Event_t ThisEvent)
         {   
           CurrentState = Idle;
           // recall any events that were deferred while processing
-          if (true != ES_RecallEvents(MyPriority, DeferralQueue))
-          {
-            puts("Recall failed in I2C Service\r");
-          }
+          ES_RecallEvents(MyPriority, DeferralQueue);
         }
         break;
 
@@ -444,6 +440,27 @@ bool IsI2C0Finished(void)
     return false;
   }
 }
+
+uint16_t I2C_GetClearValue( void )
+{
+  return(ClearValue);
+}
+  
+uint16_t I2C_GetRedValue( void )
+{
+  return(RedValue);
+}
+  
+uint16_t I2C_GetGreenValue( void )
+{
+  return(GreenValue);
+}
+  
+uint16_t I2C_GetBlueValue( void )
+{
+  return(BlueValue);
+}
+  
 /***************************************************************************
  private functions
  ***************************************************************************/

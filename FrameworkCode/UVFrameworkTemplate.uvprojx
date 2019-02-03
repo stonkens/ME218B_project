@@ -423,19 +423,19 @@
               <FilePath>.\Source\EventCheckers.c</FilePath>
             </File>
             <File>
-              <FileName>TestHarnessService0.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\TestHarnessService0.c</FilePath>
-            </File>
-            <File>
-              <FileName>TemplateFSM.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\TemplateFSM.c</FilePath>
-            </File>
-            <File>
               <FileName>I2CService.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\I2CService.c</FilePath>
+            </File>
+            <File>
+              <FileName>KeyMapperService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\KeyMapperService.c</FilePath>
+            </File>
+            <File>
+              <FileName>TestHarnessI2C.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\TestHarnessI2C.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -538,11 +538,6 @@
               <FilePath>.\Headers\termio.h</FilePath>
             </File>
             <File>
-              <FileName>TestHarnessService0.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TestHarnessService0.h</FilePath>
-            </File>
-            <File>
               <FileName>ES_ShortTimer.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\ES_ShortTimer.h</FilePath>
@@ -556,6 +551,21 @@
               <FileName>TCS3472x.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\TCS3472x.h</FilePath>
+            </File>
+            <File>
+              <FileName>KeyMapperService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\KeyMapperService.h</FilePath>
+            </File>
+            <File>
+              <FileName>ES_EventCheckWrapper.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\ES_EventCheckWrapper.h</FilePath>
+            </File>
+            <File>
+              <FileName>TestHarnessI2C.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TestHarnessI2C.h</FilePath>
             </File>
           </Files>
         </Group>
