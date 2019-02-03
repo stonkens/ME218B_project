@@ -432,6 +432,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\TemplateFSM.c</FilePath>
             </File>
+            <File>
+              <FileName>I2CService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\I2CService.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -541,6 +546,16 @@
               <FileName>ES_ShortTimer.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\ES_ShortTimer.h</FilePath>
+            </File>
+            <File>
+              <FileName>I2CService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\I2CService.h</FilePath>
+            </File>
+            <File>
+              <FileName>TCS3472x.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TCS3472x.h</FilePath>
             </File>
           </Files>
         </Group>
