@@ -260,9 +260,13 @@ typedef enum
   ES_SHORT_TIMEOUT,         /* signals that a short timer has expired */
   /* User-defined events start here */
   ES_NEW_KEY,               /* signals a new key received from terminal */
-  EV_I2CRead,
   EV_UNLOCK,
-  EV_I2CStepFinished,
+  EV_I2C_ReadClear,
+  EV_I2C_ReadRed,
+  EV_I2C_ReadGreen,
+  EV_I2C_ReadBlue,
+  EV_I2C_ReadAll,
+  EV_I2C_StepFinished,
   EV_I2C_InitSensor,
   EV_I2C_NextStep,
   EV_I2C_EOS,

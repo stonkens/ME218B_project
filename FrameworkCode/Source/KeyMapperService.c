@@ -126,8 +126,8 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
     {
         switch ( toupper(ThisEvent.EventParam))
         {
-            case '.' : ThisEvent.EventType = EV_I2CRead;  break;
-            case ',' : ThisEvent.EventType = EV_I2CStepFinished; break;
+            case '.' : ThisEvent.EventType = EV_I2C_ReadClear;  break;
+            case ',' : ThisEvent.EventType = EV_I2C_StepFinished; break;
         }
         PostI2CService(ThisEvent);
     }

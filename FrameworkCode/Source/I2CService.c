@@ -62,10 +62,14 @@
 // confirm that these match the order in the Sequence Lists
 #define INIT_INDEX 0
 #define READ_CLR   1
+#define READ_RED   2
+#define READ_GRN   3
+#define READ_BLU   4
 
 
 // Integration Time, in ms for TCS3472x
-#define INT_TIME 700
+// make sure that this matches constant programmed in Init
+#define INT_TIME 350
 
 /*----------------------------- Module Types ----------------------------*/
 typedef enum    /* definitions for the possible steps in command sequence */
@@ -122,13 +126,15 @@ static uint8_t CommandIndex;
 // index for stepping through the steps in a command
 static uint8_t StepIndex;
 // Content of the current step in the sequence
-StepDefinition_t CurrentStep;
+static StepDefinition_t CurrentStep;
 
-StepDefinition_t SequenceLists[5][8] = {
+static const StepDefinition_t SequenceLists[5][9] = {
   /* First up is the power-up initialization sequence */
   { {CMD_WriteMult, (TCS3472x_ENABLE_REG | TCS3472x_COMMAND_BIT), 0, BUSY_WAIT, NULL}, /* select the Enable register */
     {CMD_Write8NS, TCS3472x_ENABLE_PON, 0, BUSY_WAIT, NULL}, /* set the PON bit to power up */
     {CMD_NOP, 0, 4, TIME_WAIT, NULL}, /* time wait for min. 3ms with timer uncertainty */
+    {CMD_WriteMult, (TCS3472x_ATIME_REG | TCS3472x_COMMAND_BIT), 0, BUSY_WAIT, NULL}, /* select the ATIME register */
+    {CMD_Write8NS, TCS3472x_INT_TIME_350MS, 0, BUSY_WAIT, NULL}, /* program the integration time */
     {CMD_WriteMult, (TCS3472x_ENABLE_REG | TCS3472x_COMMAND_BIT), 0, BUSY_WAIT, NULL}, /* select the Enable register */
     {CMD_Write8NS, (TCS3472x_ENABLE_PON | TCS3472x_ENABLE_AEN), 0, BUSY_WAIT, NULL}, /* set the PON & AEN bits to start conversion */
     {CMD_NOP, 0, (INT_TIME+1), TIME_WAIT, NULL}, /* time wait for min. INT_TIME with timer uncertainty */
@@ -144,12 +150,43 @@ StepDefinition_t SequenceLists[5][8] = {
     {CMD_Form16, 0, 0, TIME_WAIT, &ClearValue}, /* combine the 2 8-bit resutls */
     {CMD_EOS, 0, 0, TIME_WAIT, NULL} /* mark the end of this sequence */
   },
+  /* next is read the red results */
+  { {CMD_WriteMult, (TCS3472x_RDATAL_REG | TCS3472x_COMMAND_BIT), 0, BUSY_WAIT, NULL}, /* select the lo byte result register */
+    {CMD_Read8, 0, 0, BUSY_WAIT, NULL}, /* read the low byte value */
+    {CMD_GetResult, 0, 0, TIME_WAIT, &readOne}, /* fetch result and move to next step */
+    {CMD_WriteMult, (TCS3472x_RDATAH_REG | TCS3472x_COMMAND_BIT), 0, BUSY_WAIT, NULL}, /* select the hi byte result register */
+    {CMD_Read8, 0, 0, BUSY_WAIT, NULL}, /* read the hi byte value */
+    {CMD_GetResult, 0, 0, TIME_WAIT, &readTwo}, /* fetch result and move to next step */
+    {CMD_Form16, 0, 0, TIME_WAIT, &RedValue}, /* combine the 2 8-bit resutls */
+    {CMD_EOS, 0, 0, TIME_WAIT, NULL} /* mark the end of this sequence */
+  },
+  /* next is read the green results */
+  { {CMD_WriteMult, (TCS3472x_GDATAL_REG | TCS3472x_COMMAND_BIT), 0, BUSY_WAIT, NULL}, /* select the lo byte result register */
+    {CMD_Read8, 0, 0, BUSY_WAIT, NULL}, /* read the low byte value */
+    {CMD_GetResult, 0, 0, TIME_WAIT, &readOne}, /* fetch result and move to next step */
+    {CMD_WriteMult, (TCS3472x_GDATAH_REG | TCS3472x_COMMAND_BIT), 0, BUSY_WAIT, NULL}, /* select the hi byte result register */
+    {CMD_Read8, 0, 0, BUSY_WAIT, NULL}, /* read the hi byte value */
+    {CMD_GetResult, 0, 0, TIME_WAIT, &readTwo}, /* fetch result and move to next step */
+    {CMD_Form16, 0, 0, TIME_WAIT, &GreenValue}, /* combine the 2 8-bit resutls */
+    {CMD_EOS, 0, 0, TIME_WAIT, NULL} /* mark the end of this sequence */
+  },
+  /* next is read the blue results */
+  { {CMD_WriteMult, (TCS3472x_BDATAL_REG | TCS3472x_COMMAND_BIT), 0, BUSY_WAIT, NULL}, /* select the lo byte result register */
+    {CMD_Read8, 0, 0, BUSY_WAIT, NULL}, /* read the low byte value */
+    {CMD_GetResult, 0, 0, TIME_WAIT, &readOne}, /* fetch result and move to next step */
+    {CMD_WriteMult, (TCS3472x_BDATAH_REG | TCS3472x_COMMAND_BIT), 0, BUSY_WAIT, NULL}, /* select the hi byte result register */
+    {CMD_Read8, 0, 0, BUSY_WAIT, NULL}, /* read the hi byte value */
+    {CMD_GetResult, 0, 0, TIME_WAIT, &readTwo}, /* fetch result and move to next step */
+    {CMD_Form16, 0, 0, TIME_WAIT, &BlueValue}, /* combine the 2 8-bit resutls */
+    {CMD_EOS, 0, 0, TIME_WAIT, NULL} /* mark the end of this sequence */
+  }
 };
 
 // this flag is used by the event checker to detect the busy-not-busy transition
 static bool I2C0_Busy;
 
-// add a deferral queue for up to 5 pending deferrals +1 to allow for ovehead in queue
+// add a deferral queue for up to 5 pending deferrals of commands
+// +1 to allow for ovehead in queue
 // make sure that the I2Cservice queue is at least this size as well.
 static ES_Event_t DeferralQueue[5 + 1];
 
@@ -170,7 +207,7 @@ static ES_Event_t DeferralQueue[5 + 1];
  Notes
 
  Author
-     J. Edward Carryer, 10/23/11, 18:55
+     J. Edward Carryer, 01/15/19, 15:18
 ****************************************************************************/
 bool InitI2CService(uint8_t Priority)
 {
@@ -209,7 +246,7 @@ bool InitI2CService(uint8_t Priority)
  Notes
 
  Author
-     J. Edward Carryer, 10/23/11, 19:25
+     J. Edward Carryer, 01/15/19, 15:20
 ****************************************************************************/
 bool PostI2CService(ES_Event_t ThisEvent)
 {
@@ -269,13 +306,60 @@ ES_Event_t RunI2CService(ES_Event_t ThisEvent)
         }
         break;
 
-        case EV_I2CRead:  
+        case EV_I2C_ReadClear:  
         {  
           // Set up the indices into the command sequence lists
           CommandIndex = READ_CLR; // read the clear result
         }
         break;
 
+        case EV_I2C_ReadRed:  
+        {  
+          // Set up the indices into the command sequence lists
+          CommandIndex = READ_RED; // read the clear result
+        }
+        break;
+
+        case EV_I2C_ReadGreen:  
+        {  
+          // Set up the indices into the command sequence lists
+          CommandIndex = READ_GRN; // read the clear result
+        }
+        break;
+
+        case EV_I2C_ReadBlue:  
+        {  
+          // Set up the indices into the command sequence lists
+          CommandIndex = READ_BLU; // read the clear result
+        }
+        break;
+
+        case EV_I2C_ReadAll:  
+        {  
+          // we read all by reading each color + clear
+          ES_Event_t ThisEvent;
+          ThisEvent.EventType = EV_I2C_ReadClear;
+          PostI2CService( ThisEvent );
+          ThisEvent.EventType = EV_I2C_ReadRed;
+          PostI2CService( ThisEvent );
+          ThisEvent.EventType = EV_I2C_ReadGreen;
+          PostI2CService( ThisEvent );
+          ThisEvent.EventType = EV_I2C_ReadBlue;
+          PostI2CService( ThisEvent );
+          CommandIndex = 0xff; // we didn't set up a list so skip that stuff
+        }
+        break;
+
+        case ES_TIMEOUT:  /* This is how we get repeating measurements */
+        {  
+          if(I2C_TIMER == ThisEvent.EventParam) // our timer?
+          {
+            ES_Event_t ThisEvent;
+            ThisEvent.EventType = EV_I2C_ReadAll;
+            PostI2CService( ThisEvent );
+          }
+          CommandIndex = 0xff; // we didn't set up a list so skip that stuff
+        }
         default: // these are events that we don't process so flag that
         {
           CommandIndex = 0xff; // flag event as one we don't process
@@ -284,7 +368,7 @@ ES_Event_t RunI2CService(ES_Event_t ThisEvent)
       }  // end of switch on ThisEvent
       
       // code common to all legal transitions
-      if (0xff != CommandIndex) // don't do this if we didn't recognize the event
+      if (0xff != CommandIndex) // don't do this unless we are setting up a list
       {
         StepIndex = 0; //start at the first step
           
@@ -354,7 +438,7 @@ ES_Event_t RunI2CService(ES_Event_t ThisEvent)
     
     case Waiting4Busy:        
     {
-      if( EV_I2CStepFinished == ThisEvent.EventType)
+      if( EV_I2C_StepFinished == ThisEvent.EventType)
       {
         // if no error, do the next step in the sequence
         if (I2C_MASTER_ERR_NONE == ROM_I2CMasterErr(I2C0_BASE))
@@ -428,10 +512,10 @@ I2CState_t QueryI2CService(void)
 // Event checker to test when an I2C tranfer completes
 bool IsI2C0Finished(void)
 {
-  if (( I2C0_Busy == true ) && (ROM_I2CMasterBusy(I2C0_BASE) != true))
+  if (( true == I2C0_Busy ) && (true != ROM_I2CMasterBusy(I2C0_BASE)))
   {
     ES_Event_t ThisEvent;
-    ThisEvent.EventType = EV_I2CStepFinished;
+    ThisEvent.EventType = EV_I2C_StepFinished;
     PostI2CService( ThisEvent );
     I2C0_Busy = false;   
     return true;
@@ -460,7 +544,8 @@ uint16_t I2C_GetBlueValue( void )
 {
   return(BlueValue);
 }
-  
+
+
 /***************************************************************************
  private functions
  ***************************************************************************/
@@ -675,8 +760,8 @@ static void InterpretCommand(StepDefinition_t CurrentStep)
       ES_Event_t ThisEvent;
       ThisEvent.EventType = EV_I2C_EOS;
       PostI2CService( ThisEvent );
-      ThisEvent.EventType = EV_I2CRead; // for testing, immed. start read
-      PostI2CService( ThisEvent );
+      // and start a timer for the next read
+      ES_Timer_InitTimer(I2C_TIMER, INT_TIME);
     }
     break;
 

@@ -146,7 +146,7 @@ ES_Event_t RunTestHarnessI2C(ES_Event_t ThisEvent)
   {
     case ES_INIT:
     {
-      ES_Timer_InitTimer(I2C_TEST_TIMER, ONE_SEC);
+      ES_Timer_InitTimer(I2C_TEST_TIMER, (ONE_SEC));
       puts("I2C TestHarness:");
       printf("\rES_INIT received in Service %d\r\n", MyPriority);
     }
@@ -164,8 +164,11 @@ ES_Event_t RunTestHarnessI2C(ES_Event_t ThisEvent)
       GreenValue = I2C_GetGreenValue();
       BlueValue  = I2C_GetBlueValue();
       
-      printf("Clr: %X, Red: %d, Grn: %d, Blu: %d \r\n",
-          ClearValue, RedValue, GreenValue, BlueValue);
+      printf("Clr: %d, Red: %d, Grn: %d, Blu: %d, R%%: %.2f, G%% %.2f, B%% %.2f \r\n",
+          ClearValue, RedValue, GreenValue, BlueValue, 
+          ((float)RedValue*100/ClearValue),
+          ((float)GreenValue*100/ClearValue),
+          ((float)BlueValue*100/ClearValue));
     }
     break;
     case ES_NEW_KEY:   // announce

@@ -31,5 +31,6 @@ uint16_t I2C_GetClearValue(void);
 uint16_t I2C_GetRedValue(void);
 uint16_t I2C_GetGreenValue(void);
 uint16_t I2C_GetBlueValue(void);
+
 #endif /* I2CService_H */
 

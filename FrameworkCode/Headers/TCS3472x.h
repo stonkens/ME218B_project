@@ -14,7 +14,7 @@ Header file for the TCS3472x Color Sensor
 #define TCS3472x_ENABLE_AEN       (0x02)    /* conversion Enable - set to active the ADC and begin conversions */
 #define TCS3472x_ENABLE_PON       (0x01)    /* Power on - set to start the ADC oscillator, wait 2.4ms before converting */
 
-#define TCS3472x_ATIME            (0x01)    /* Address of the Integration time register */
+#define TCS3472x_ATIME_REG        (0x01)    /* Address of the Integration time register */
 
 // Address 0x02 is unused
 
@@ -52,11 +52,11 @@ Header file for the TCS3472x Color Sensor
 #define TCS3472x_PERS_60_CYCLE    (0b1111)  /* 60 clear channel values outside threshold range generates an interrupt */
 
 #define TCS3472x_CONFIG_REG       (0x0D)    /* Address of Config register */
-#define TCS3472x_CONFIG_WLONG     (0x02)    /* Choose between short and long (12x) wait times in the WTIME register */
+#define TCS3472x_CONFIG_WLONG     (0x02)    /* 1 = long wait, 12x wait times in WTIME register */
 
 // Address 0x0E is unused
 
-#define TCS3472x_CONTROL_REG      (0x0F)    /* Address of Control register, used to set the gain for the sensor */
+#define TCS3472x_CONTROL_REG      (0x0F)    /* Address of Control register, set gain here */
 
 // Addresses 0x10 & 0x11 are unused
 
@@ -78,20 +78,22 @@ Header file for the TCS3472x Color Sensor
 #define TCS3472x_BDATAL_REG       (0x1A)    /* Blue channel data */
 #define TCS3472x_BDATAH_REG       (0x1B)
 
+// From daya sheet: Integration Time = 2.4 ms × (256 - ATIME)
+// these are the values for ATIME
 typedef enum
 {
-  TCS3472x_INTEGRATIONTIME_2_4MS  = 0xFF,   /**<  2.4ms - 1 cycle    - Max Count: 1024  */
-  TCS3472x_INTEGRATIONTIME_24MS   = 0xF6,   /**<  24ms  - 10 cycles  - Max Count: 10240 */
-  TCS3472x_INTEGRATIONTIME_50MS   = 0xEB,   /**<  50ms  - 20 cycles  - Max Count: 20480 */
-  TCS3472x_INTEGRATIONTIME_101MS  = 0xD5,   /**<  101ms - 42 cycles  - Max Count: 43008 */
-  TCS3472x_INTEGRATIONTIME_154MS  = 0xC0,   /**<  154ms - 64 cycles  - Max Count: 65535 */
-  TCS3472x_INTEGRATIONTIME_700MS  = 0x00    /**<  700ms - 256 cycles - Max Count: 65535 */
+  TCS3472x_INT_TIME_2_4MS  = 255,   /* 2.4ms=min. integration time, Max Count: 1024  */
+  TCS3472x_INT_TIME_50MS   = 235,   /* 50ms  50/60Hz rejection- Max Count: 20480 */
+  TCS3472x_INT_TIME_100MS  = 214,   /* 101ms 50/60Hz rejection- Max Count: 43008 */
+  TCS3472x_INT_TIME_150MS  = 193,   /* 151ms 50/60Hz rejection- Max Count: 65535 */
+  TCS3472x_INT_TIME_350MS  = 110,   /* 350ms 50/60Hz rejection- Max Count: 65535 */
+  TCS3472x_INT_TIME_700MS  = 0x00   /* 700ms max. integration time Max Count: 65535 */
 }
 tcs34725IntegrationTime_t;
 
 typedef enum
 {
-  TCS3472x_GAIN_1X                = 0x00,   /**<  No gain  */
+  TCS3472x_GAIN_1X                = 0x00,   /**<  1x gain  */
   TCS3472x_GAIN_4X                = 0x01,   /**<  4x gain  */
   TCS3472x_GAIN_16X               = 0x02,   /**<  16x gain */
   TCS3472x_GAIN_60X               = 0x03    /**<  60x gain */
