@@ -100,9 +100,9 @@ typedef struct  /* definition of each step */
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine.
 */
-static void I2C0_Init(void);
-static void I2C0_Write1Byte( uint8_t slave_addr, uint8_t value, bool InclStart, bool InclStop);
-static void I2C0_Read1Byte( uint8_t slave_addr, bool InclStart,  bool InclStop);
+static void I2C1_Init(void);
+static void I2C1_Write1Byte( uint8_t slave_addr, uint8_t value, bool InclStart, bool InclStop);
+static void I2C1_Read1Byte( uint8_t slave_addr, bool InclStart,  bool InclStop);
 static void InterpretCommand(StepDefinition_t CurrentStep);
 
 /*---------------------------- Module Variables ---------------------------*/
@@ -183,7 +183,7 @@ static const StepDefinition_t SequenceLists[5][9] = {
 };
 
 // this flag is used by the event checker to detect the busy-not-busy transition
-static bool I2C0_Busy;
+static bool I2C1_Busy;
 
 // add a deferral queue for up to 5 pending deferrals of commands
 // +1 to allow for ovehead in queue
@@ -282,7 +282,7 @@ ES_Event_t RunI2CService(ES_Event_t ThisEvent)
       if (ThisEvent.EventType == ES_INIT)    // only respond to ES_Init
       {
         // Initialize the I2C module
-        I2C0_Init();
+        I2C1_Init();
         // now put the machine into the idle state
         CurrentState = Idle;
         // and post a message to ourselves to start the init sequnce
@@ -441,7 +441,7 @@ ES_Event_t RunI2CService(ES_Event_t ThisEvent)
       if( EV_I2C_StepFinished == ThisEvent.EventType)
       {
         // if no error, do the next step in the sequence
-        if (I2C_MASTER_ERR_NONE == ROM_I2CMasterErr(I2C0_BASE))
+        if (I2C_MASTER_ERR_NONE == ROM_I2CMasterErr(I2C1_BASE))
         {  
           ES_Event_t ThisEvent;
           ThisEvent.EventType = EV_I2C_NextStep;
@@ -510,14 +510,14 @@ I2CState_t QueryI2CService(void)
 }
 
 // Event checker to test when an I2C tranfer completes
-bool IsI2C0Finished(void)
+bool IsI2C1Finished(void)
 {
-  if (( true == I2C0_Busy ) && (true != ROM_I2CMasterBusy(I2C0_BASE)))
+  if (( true == I2C1_Busy ) && (true != ROM_I2CMasterBusy(I2C1_BASE)))
   {
     ES_Event_t ThisEvent;
     ThisEvent.EventType = EV_I2C_StepFinished;
     PostI2CService( ThisEvent );
-    I2C0_Busy = false;   
+    I2C1_Busy = false;   
     return true;
   }else
   {
@@ -550,52 +550,52 @@ uint16_t I2C_GetBlueValue( void )
  private functions
  ***************************************************************************/
 // Initialize the I2C module using the TivaWare library
-static void I2C0_Init(void){
+static void I2C1_Init(void){
   //enable I2C module 0
-  ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C0);
+  ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C1);
 
   //wait for the clock to be ready
-  while (ROM_SysCtlPeripheralReady(SYSCTL_PERIPH_I2C0) != true)
+  while (ROM_SysCtlPeripheralReady(SYSCTL_PERIPH_I2C1) != true)
   {}
 
-  //reset I2C module 0
-  ROM_SysCtlPeripheralReset(SYSCTL_PERIPH_I2C0);
+  //reset I2C module 1
+  ROM_SysCtlPeripheralReset(SYSCTL_PERIPH_I2C1);
 
-  //enable GPIO port that contains I2C 0, Port B
-  ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+  //enable GPIO port that contains I2C 1, Port A
+  ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
  
   //wait for the clock on the port to be ready
-  while (ROM_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOB) != true)
+  while (ROM_SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOA) != true)
   {}
 
-  // Configure the pin muxing for I2C0 functions on port B2 and B3.
-  ROM_GPIOPinConfigure(GPIO_PB2_I2C0SCL);
-  ROM_GPIOPinConfigure(GPIO_PB3_I2C0SDA);
+  // Configure the pin muxing for I2C1 functions on port A6 and A7.
+  ROM_GPIOPinConfigure(GPIO_PA6_I2C1SCL);
+  ROM_GPIOPinConfigure(GPIO_PA7_I2C1SDA);
 		
   // Configure the pins for I2C, including enabling the PU on SCL.
-  ROM_GPIOPinTypeI2CSCL(GPIO_PORTB_BASE, GPIO_PIN_2); // SCL
-  ROM_GPIOPinTypeI2C(GPIO_PORTB_BASE, GPIO_PIN_3);    // SDA
+  ROM_GPIOPinTypeI2CSCL(GPIO_PORTA_BASE, GPIO_PIN_6); // SCL
+  ROM_GPIOPinTypeI2C(GPIO_PORTA_BASE, GPIO_PIN_7);    // SDA
 				
-  // Enable and initialize the I2C0 master module.  Use the system clock for
-  // the I2C0 module.  The last parameter sets the I2C data transfer rate.
+  // Enable and initialize the I2C1 master module.  Use the system clock for
+  // the I2C1 module.  The last parameter sets the I2C data transfer rate.
   // If false the data rate is set to 100kbps and if true the data rate will
   // be set to 400kbps.
-  ROM_I2CMasterInitExpClk(I2C0_BASE, SysCtlClockGet(), false);
+  ROM_I2CMasterInitExpClk(I2C1_BASE, SysCtlClockGet(), false);
      
 }
 
 // set up device address and write 1 byte
-static void I2C0_Write1Byte( uint8_t slave_addr, uint8_t value, bool InclStart, 
+static void I2C1_Write1Byte( uint8_t slave_addr, uint8_t value, bool InclStart, 
                              bool InclStop)
 {
   uint32_t I2C_Command; // what command to send to the HW
   
   //specify address of the slave device.
   //Writing is indicated by the false in the last parameter
-  ROM_I2CMasterSlaveAddrSet(I2C0_BASE, slave_addr, false);
+  ROM_I2CMasterSlaveAddrSet(I2C1_BASE, slave_addr, false);
 
   //specify data to be written
-  ROM_I2CMasterDataPut(I2C0_BASE, value);
+  ROM_I2CMasterDataPut(I2C1_BASE, value);
 
   // are we sending a start?
   if( true == InclStart )
@@ -624,19 +624,19 @@ static void I2C0_Write1Byte( uint8_t slave_addr, uint8_t value, bool InclStart,
     }  
   }
   // now issue the command
-  ROM_I2CMasterControl(I2C0_BASE, I2C_Command);
-  I2C0_Busy = true;
+  ROM_I2CMasterControl(I2C1_BASE, I2C_Command);
+  I2C1_Busy = true;
 }
 
 // set up device address and read 1 byte
-static void I2C0_Read1Byte( uint8_t slave_addr, bool InclStart, 
+static void I2C1_Read1Byte( uint8_t slave_addr, bool InclStart, 
                              bool InclStop)
 {
   uint32_t I2C_Command; // what command to send to the HW
   
   //specify address of the slave device.
   //reading is indicated by the true in the last parameter
-  ROM_I2CMasterSlaveAddrSet(I2C0_BASE, slave_addr, true);
+  ROM_I2CMasterSlaveAddrSet(I2C1_BASE, slave_addr, true);
 
   // are we sending a start?
   if( true == InclStart )
@@ -665,8 +665,8 @@ static void I2C0_Read1Byte( uint8_t slave_addr, bool InclStart,
     }  
   }
   // now issue the command
-  ROM_I2CMasterControl(I2C0_BASE, I2C_Command);
-  I2C0_Busy = true;
+  ROM_I2CMasterControl(I2C1_BASE, I2C_Command);
+  I2C1_Busy = true;
 }
 
 // I pulled this code out into a function in order to compact the state
@@ -677,49 +677,49 @@ static void InterpretCommand(StepDefinition_t CurrentStep)
   {
     case CMD_Write8:
     {
-      I2C0_Write1Byte(DEVICE_ADDR, CurrentStep.Value, DO_START, DO_STOP);
+      I2C1_Write1Byte(DEVICE_ADDR, CurrentStep.Value, DO_START, DO_STOP);
     }
     break;
 
     case CMD_Write8NS:
     {
-      I2C0_Write1Byte(DEVICE_ADDR, CurrentStep.Value, NO_START, DO_STOP);
+      I2C1_Write1Byte(DEVICE_ADDR, CurrentStep.Value, NO_START, DO_STOP);
     }
     break;
 
     case CMD_WriteMult:
     {
-      I2C0_Write1Byte(DEVICE_ADDR, CurrentStep.Value, DO_START, NO_STOP);
+      I2C1_Write1Byte(DEVICE_ADDR, CurrentStep.Value, DO_START, NO_STOP);
     }
     break;
 
     case CMD_WriteMultNS:
     {
-      I2C0_Write1Byte(DEVICE_ADDR, CurrentStep.Value, NO_START, NO_STOP);
+      I2C1_Write1Byte(DEVICE_ADDR, CurrentStep.Value, NO_START, NO_STOP);
     }
     break;
 
     case CMD_Read8:
     {
-      I2C0_Read1Byte(DEVICE_ADDR, DO_START, DO_STOP);
+      I2C1_Read1Byte(DEVICE_ADDR, DO_START, DO_STOP);
     }
     break;
 
     case CMD_Read8NS:
     {
-      I2C0_Read1Byte(DEVICE_ADDR, NO_START, DO_STOP);
+      I2C1_Read1Byte(DEVICE_ADDR, NO_START, DO_STOP);
     }
     break;
 
     case CMD_ReadMult:
     {
-      I2C0_Read1Byte(DEVICE_ADDR, DO_START, NO_STOP);
+      I2C1_Read1Byte(DEVICE_ADDR, DO_START, NO_STOP);
     }
     break;
 
     case CMD_ReadMultNS:
     {
-      I2C0_Read1Byte(DEVICE_ADDR, NO_START, NO_STOP);
+      I2C1_Read1Byte(DEVICE_ADDR, NO_START, NO_STOP);
     }
     break;
 
@@ -730,7 +730,7 @@ static void InterpretCommand(StepDefinition_t CurrentStep)
       ThisEvent.EventType = EV_I2C_NextStep;
       PostI2CService( ThisEvent );
       // don't forget to grab the result :-)
-      *(uint8_t *)CurrentStep.Result = (uint8_t)I2CMasterDataGet(I2C0_BASE);
+      *(uint8_t *)CurrentStep.Result = (uint8_t)I2CMasterDataGet(I2C1_BASE);
     }
     break;
 

@@ -33,7 +33,7 @@
 /****************************************************************************/
 // This macro determines that nuber of services that are *actually* used in
 // a particular application. It will vary in value from 1 to MAX_NUM_SERVICES
-#define NUM_SERVICES 3
+#define NUM_SERVICES 5
 
 /****************************************************************************/
 // These are the definitions for Service 0, the lowest priority service.
@@ -83,24 +83,24 @@
 // These are the definitions for Service 3
 #if NUM_SERVICES > 3
 // the header file with the public function prototypes
-#define SERV_3_HEADER "TestHarnessService3.h"
+#define SERV_3_HEADER "SPISM.h"
 // the name of the Init function
-#define SERV_3_INIT InitTestHarnessService3
+#define SERV_3_INIT InitSPISM
 // the name of the run function
-#define SERV_3_RUN RunTestHarnessService3
+#define SERV_3_RUN RunSPISM
 // How big should this services Queue be?
-#define SERV_3_QUEUE_SIZE 3
+#define SERV_3_QUEUE_SIZE 5
 #endif
 
 /****************************************************************************/
 // These are the definitions for Service 4
 #if NUM_SERVICES > 4
 // the header file with the public function prototypes
-#define SERV_4_HEADER "TestHarnessService4.h"
+#define SERV_4_HEADER "MotorService.h"
 // the name of the Init function
-#define SERV_4_INIT InitTestHarnessService4
+#define SERV_4_INIT InitMotorService
 // the name of the run function
-#define SERV_4_RUN RunTestHarnessService4
+#define SERV_4_RUN RunMotorService
 // How big should this services Queue be?
 #define SERV_4_QUEUE_SIZE 3
 #endif
@@ -271,7 +271,11 @@ typedef enum
   EV_I2C_NextStep,
   EV_I2C_EOS,
   EV_I2C_Wait4Busy,
-  EV_I2C_Wait4Time
+  EV_I2C_Wait4Time,
+  RESPONSE_RECEIVED,
+  ES_GAME_OVER,
+  ES_CLEANING_UP,
+  ES_BUMPER_HIT
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -306,7 +310,7 @@ typedef enum
 
 /****************************************************************************/
 // This is the list of event checking functions
-#define EVENT_CHECK_LIST Check4Keystroke, IsI2C0Finished
+#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished
 
 /****************************************************************************/
 // These are the definitions for the post functions to be executed when the
@@ -316,8 +320,8 @@ typedef enum
 // priority in servicing them
 #define TIMER_UNUSED ((pPostFunc)0)
 #define TIMER0_RESP_FUNC PostTestHarnessI2C
-#define TIMER1_RESP_FUNC TIMER_UNUSED
-#define TIMER2_RESP_FUNC TIMER_UNUSED
+#define TIMER1_RESP_FUNC PostSPISM
+#define TIMER2_RESP_FUNC PostSPISM
 #define TIMER3_RESP_FUNC TIMER_UNUSED
 #define TIMER4_RESP_FUNC TIMER_UNUSED
 #define TIMER5_RESP_FUNC TIMER_UNUSED
@@ -340,6 +344,8 @@ typedef enum
 // These symbolic names should be changed to be relevant to your application
 
 #define I2C_TEST_TIMER 0
+#define SPI_TIMER 1
+#define SPI_REFRESH_TIMER 2
 #define I2C_TIMER 15
 
 /**************************************************************************/
