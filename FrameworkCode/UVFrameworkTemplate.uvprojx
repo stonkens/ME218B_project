@@ -437,6 +437,31 @@
               <FileType>1</FileType>
               <FilePath>.\Source\TestHarnessI2C.c</FilePath>
             </File>
+            <File>
+              <FileName>BumperChecker.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\BumperChecker.c</FilePath>
+            </File>
+            <File>
+              <FileName>InitializeHardware.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\InitializeHardware.c</FilePath>
+            </File>
+            <File>
+              <FileName>MotorService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\MotorService.c</FilePath>
+            </File>
+            <File>
+              <FileName>PWM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\PWM.c</FilePath>
+            </File>
+            <File>
+              <FileName>SPISM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\SPISM.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -566,6 +591,51 @@
               <FileName>TestHarnessI2C.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\TestHarnessI2C.h</FilePath>
+            </File>
+            <File>
+              <FileName>hw_nvic.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\hw_nvic.h</FilePath>
+            </File>
+            <File>
+              <FileName>hw_pwm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\hw_pwm.h</FilePath>
+            </File>
+            <File>
+              <FileName>hw_timer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\hw_timer.h</FilePath>
+            </File>
+            <File>
+              <FileName>ADMulti.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\ADMulti.h</FilePath>
+            </File>
+            <File>
+              <FileName>BumperChecker.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\BumperChecker.h</FilePath>
+            </File>
+            <File>
+              <FileName>InitializeHardware.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\InitializeHardware.h</FilePath>
+            </File>
+            <File>
+              <FileName>MotorService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\MotorService.h</FilePath>
+            </File>
+            <File>
+              <FileName>PWM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\PWM.h</FilePath>
+            </File>
+            <File>
+              <FileName>SPISM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\SPISM.h</FilePath>
             </File>
           </Files>
         </Group>
