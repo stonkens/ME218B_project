@@ -37,6 +37,7 @@
 //#include "CommunicationSSI.h"
 #include "PWM.h"
 #include "SPISM.h"
+#include "IREmitter.h"
 
 // This module
 #include "InitializeHardware.h"
@@ -75,6 +76,7 @@ void InitializeHardware(void)
 {
   InitializePorts();
 	InitSPI();
+  InitEmitterPWM();
   //InitSPI(); //This uses bits xxx and xxx
   //InitInputCapture();
 

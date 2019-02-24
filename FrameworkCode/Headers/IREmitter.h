@@ -13,12 +13,8 @@
 #include "ES_Types.h"
 #include "ES_Configure.h"
 
-void InitReloadIRCapture(void);
-void ReloadIRInputCaptureResponse(void);
 void InitEmitterPWM(void);
-void UpdateEmitterPeriod(void);
-void EnableEmitterInputCapture(void);
-void DisableEmitterInputCapture(void);
+void UpdateEmitterPeriod(uint32_t RecycleIRPeriod);
 void EnableEmitterPWM(void);
 void DisableEmitterPWM(void);
 
