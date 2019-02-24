@@ -162,7 +162,8 @@ void InitPWM(void)
   //HWREG(GPIO_PORTB_BASE+GPIO_O_PCTL) =
   //(HWREG(GPIO_PORTB_BASE+GPIO_O_PCTL) & 0xf0ffffff) + (4<<(6*BitsPerNibble)) + (4<<(7*BitsPerNibble));
   HWREG(GPIO_PORTB_BASE + GPIO_O_PCTL) =
-      (HWREG(GPIO_PORTB_BASE + GPIO_O_PCTL) & 0x00ffffff) + (4 << (4 * BitsPerNibble)) + (4 << (5 * BitsPerNibble));
+      (HWREG(GPIO_PORTB_BASE + GPIO_O_PCTL) & 0xff00ffff) + (4 << (4 * BitsPerNibble)) + (4 << (5 * BitsPerNibble));
+      //Kristine + Sander comment: Check if working with this configuration: otherwise 0x00ffffff
   // Enable pins 6 on Port B for digital I/O
   //HWREG(GPIO_PORTB_BASE+GPIO_O_DEN) |= (BIT6HI | BIT7HI);
   HWREG(GPIO_PORTB_BASE + GPIO_O_DEN) |= (BIT4HI | BIT5HI);
