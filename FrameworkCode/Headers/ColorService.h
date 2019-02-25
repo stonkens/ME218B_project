@@ -17,8 +17,8 @@
 // State definitions for use with the query function
 typedef enum
 {
-  InitPState, Idle, Interpreting, Waiting4Busy, Waiting4Time
-}I2CState_t;
+ WaitingForBall, BallDetected
+}ColorState_t;
 
 // Public Function Prototypes
 

@@ -472,6 +472,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\DCMotorService.c</FilePath>
             </File>
+            <File>
+              <FileName>ColorService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\ColorService.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -656,6 +661,11 @@
               <FileName>DCMotorService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\DCMotorService.h</FilePath>
+            </File>
+            <File>
+              <FileName>ColorService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\ColorService.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1363,6 +1373,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\DCMotorService.c</FilePath>
             </File>
+            <File>
+              <FileName>ColorService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\ColorService.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1547,6 +1562,11 @@
               <FileName>DCMotorService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\DCMotorService.h</FilePath>
+            </File>
+            <File>
+              <FileName>ColorService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\ColorService.h</FilePath>
             </File>
           </Files>
         </Group>

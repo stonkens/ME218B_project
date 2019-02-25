@@ -275,7 +275,13 @@ typedef enum
   RESPONSE_RECEIVED,
   ES_GAME_OVER,
   ES_CLEANING_UP,
-  ES_BUMPER_HIT
+  ES_BUMPER_HIT,
+  ES_RED_DETECTED,
+  ES_ORANGE_DETECTED,
+  ES_YELLOW_DETECTED,
+  ES_GREEN_DETECTED,
+  ES_BLUE_DETECTED,
+  ES_PINK_DETECTED
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -333,7 +339,7 @@ typedef enum
 #define TIMER11_RESP_FUNC TIMER_UNUSED
 #define TIMER12_RESP_FUNC TIMER_UNUSED
 #define TIMER13_RESP_FUNC TIMER_UNUSED
-#define TIMER14_RESP_FUNC TIMER_UNUSED
+#define TIMER14_RESP_FUNC PostColorService
 #define TIMER15_RESP_FUNC PostI2CService
 
 /****************************************************************************/
@@ -347,6 +353,7 @@ typedef enum
 #define SPI_TIMER 1
 #define SPI_REFRESH_TIMER 2
 #define I2C_TIMER 15
+#define COLOR_SENSE_TIMER 14
 
 /**************************************************************************/
 // uncomment this line to get some basic framework operation debugging on
