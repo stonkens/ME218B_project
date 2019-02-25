@@ -467,6 +467,16 @@
               <FileType>1</FileType>
               <FilePath>.\Source\IREmitter.c</FilePath>
             </File>
+            <File>
+              <FileName>PickupMotorService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\PickupMotorService.c</FilePath>
+            </File>
+            <File>
+              <FileName>TransportMotorService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\TransportMotorService.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -646,6 +656,16 @@
               <FileName>IREmitter.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\IREmitter.h</FilePath>
+            </File>
+            <File>
+              <FileName>PickupMotorService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\PickupMotorService.h</FilePath>
+            </File>
+            <File>
+              <FileName>TransportMotorService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TransportMotorService.h</FilePath>
             </File>
           </Files>
         </Group>
