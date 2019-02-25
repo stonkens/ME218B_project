@@ -46,9 +46,7 @@
 #define PWMTicksPerMS 40000 / 32  //system clock frequency/32
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine.
-*/
-#define TEST
-static void InitDCPWM(void);  
+*/ 
 static void setPickupDuty(uint32_t duty); 
 static void setTransportDuty(uint32_t duty); 
 static void RestorePickupDC(void); 
@@ -87,7 +85,7 @@ bool InitDCMotorService(uint8_t Priority)
   MyPriority = Priority;
 
   // Initialize HW for PWM lines will be done in InitializeHardware.c
-  InitDCPWM();
+  //InitDCPWM();
   ThisEvent.EventType = ES_INIT;
   if (ES_PostToService(MyPriority, ThisEvent) == true)
   {
@@ -227,7 +225,7 @@ static void RestoreTransportDC(void)
   HWREG(PWM0_BASE + PWM_O_0_GENA) = GenA_Normal;
 }
 
-static void InitDCPWM(void)
+void InitDCPWM(void)
 {
 // start by enabling the clock to the PWM Module (PWM0)
   HWREG(SYSCTL_RCGCPWM) |= SYSCTL_RCGCPWM_R0;
@@ -281,99 +279,6 @@ static void InitDCPWM(void)
       PWM_0_CTL_GENAUPD_LS | PWM_0_CTL_GENBUPD_LS);
 }
 
-#ifdef TEST    
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdio.h>
-
-#include "inc/hw_types.h"
-#include "inc/hw_memmap.h"
-#include "driverlib/sysctl.h"
-
-#include "ES_Configure.h"
-#include "ES_Framework.h"
-#include "ES_Port.h"
-#include "termio.h"
-#include "EnablePA25_PB23_PD7_PF0.h"
-
-#include "DCMotorService.h"
-#include "hw_pwm.h"
-#include "PWM.h"
-
-#define clrScrn() printf("\x1b[2J")
-#define goHome() printf("\x1b[1,1H")
-#define clrLine() printf("\x1b[K")
-
-int main(void)
-{
-  ES_Return_t ErrorType;
-
-  // Set the clock to run at 40MhZ using the PLL and 16MHz external crystal
-  SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN
-      | SYSCTL_XTAL_16MHZ);
-  TERMIO_Init();
-  clrScrn();
-
-  // When doing testing, it is useful to announce just which program
-  // is running.
-  puts("\rStarting Pickup Test Harness for \r");
-  printf( "the 2nd Generation Events & Services Framework V2.4\r\n");
-  printf( "%s %s\n", __TIME__, __DATE__);
-  printf( "\n\r\n");
-
-  // reprogram the ports that are set as alternate functions or
-  // locked coming out of reset. (PA2-5, PB2-3, PD7, PF0)
-  // After this call these ports are set
-  // as GPIO inputs and can be freely re-programmed to change config.
-  // or assign to alternate any functions available on those pins
-  PortFunctionInit();
-
-  // Your hardware initialization function calls go here
-  //PabloTeamsCode(); 
-  //InitPWMDemo(); //this outputs two waveforms of 25% duty cycle (CMPB) CMPA NEVER works
-  InitDCPWM();
-  //startPickupMotor(25); 
-  //printf("\r\n Started pickup motor");
-  //stopPickupMotor(); 
-  
-  
-  // now initialize the Events and Services Framework and start it running
-  ErrorType = ES_Initialize(ES_Timer_RATE_1mS);
-  if (ErrorType == Success)
-  {
-    ErrorType = ES_Run();
-  }
-  //if we got to here, there was an error
-  switch (ErrorType)
-  {
-    case FailedPost:
-    {
-      printf("Failed on attempt to Post\n");
-    }
-    break;
-    case FailedPointer:
-    {
-      printf("Failed on NULL pointer\n");
-    }
-    break;
-    case FailedInit:
-    {
-      printf("Failed Initialization\n");
-    }
-    break;
-    default:
-    {
-      printf("Other Failure\n");
-    }
-    break;
-  }
-  for ( ; ;)
-  {
-    ;
-  }
-}
-
-#endif
 
 /*------------------------------- Footnotes -------------------------------*/
 /*------------------------------ End of file ------------------------------*/

@@ -23,4 +23,5 @@ void startPickupMotor(uint32_t DutyCycle);
 void stopPickupMotor(void);
 void startTransportMotor(uint32_t DutyCycle); 
 void stopTransportMotor(void);
+void InitDCPWM(void);
 #endif /* DCMotorService_H */

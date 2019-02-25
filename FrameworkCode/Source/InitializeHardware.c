@@ -36,6 +36,7 @@
 #include "ADMulti.h"
 //#include "CommunicationSSI.h"
 #include "PWM.h"
+#include "DCMotorService.h"
 #include "SPISM.h"
 #include "IREmitter.h"
 
@@ -77,6 +78,9 @@ void InitializeHardware(void)
   InitializePorts();
 	InitSPI();
   InitEmitterPWM();
+	InitDCPWM();
+  InitMotorGPIO();
+  InitPWM();
   //InitSPI(); //This uses bits xxx and xxx
   //InitInputCapture();
 

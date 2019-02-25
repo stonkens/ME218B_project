@@ -85,8 +85,8 @@ bool InitMotorService(uint8_t Priority)
   MyPriority = Priority;
 
   // Initialize HW for PWM lines is done in InitializeHardware.c
-  InitMotorGPIO();
-  InitPWM();
+//  InitMotorGPIO();
+//  InitPWM();
 
 
   //InitializeHardware();
