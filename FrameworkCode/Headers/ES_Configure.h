@@ -70,11 +70,11 @@
 // These are the definitions for Service 2
 #if NUM_SERVICES > 2
 // the header file with the public function prototypes
-#define SERV_2_HEADER "TestHarnessI2C.h"
+#define SERV_2_HEADER "DCMotorService.h"
 // the name of the Init function
-#define SERV_2_INIT InitTestHarnessI2C
+#define SERV_2_INIT InitDCMotorService
 // the name of the run function
-#define SERV_2_RUN RunTestHarnessI2C
+#define SERV_2_RUN RunDCMotorService
 // How big should this services Queue be?
 #define SERV_2_QUEUE_SIZE 3
 #endif
@@ -319,7 +319,7 @@ typedef enum
 // Unlike services, any combination of timers may be used and there is no
 // priority in servicing them
 #define TIMER_UNUSED ((pPostFunc)0)
-#define TIMER0_RESP_FUNC PostTestHarnessI2C
+#define TIMER0_RESP_FUNC TIMER_UNUSED//PostTestHarnessI2C
 #define TIMER1_RESP_FUNC PostSPISM
 #define TIMER2_RESP_FUNC PostSPISM
 #define TIMER3_RESP_FUNC TIMER_UNUSED
