@@ -1,0 +1,380 @@
+{\rtf1\ansi \deff1{\fonttbl{\f1\fmodern\fprq1\fcharset0 Courier New;}}{\colortbl;\red238\green238\blue238;\red00\green00\blue00;\red166\green133\blue00;\red128\green00\blue128;\red242\green121\blue00;\red255\green128\blue00;\red255\green00\blue255;\red00\green128\blue192;\red00\green00\blue255;\red48\green48\blue48;\red255\green00\blue128;\red158\green93\blue255;\red187\green121\blue119;\red128\green128\blue192;\red00\green128\blue192;\red00\green68\blue102;}
+\paperw11905\paperh16837\margl1134\margr1134\margt1134\margb1134\sectd\plain\f1\fs20
+\pard \cbpat1{{\cf2{}}{\cf6{/****************************************************************************}}}\par\pard
+\cbpat1{{\cf6{ Module}}}\par\pard
+\cbpat1{{\cf6{   DCMotorService.c}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Revision}}}\par\pard
+\cbpat1{{\cf6{   {1}.{0}.{1}}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Description}}}\par\pard
+\cbpat1{{\cf6{   Runs the DC Motors associated with ball collection }}}\par\pard
+\cbpat1{{\cf6{ Notes}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ History}}}\par\pard
+\cbpat1{{\cf6{ When           Who     What/Why}}}\par\pard
+\cbpat1{{\cf6{ -------------- ---     --------}}}\par\pard
+\cbpat1{{\cf6{ {0}{2}/{2}{4}/{1}{9} {1}{7}:{5}{0} kchen    First pass }}}\par\pard
+\cbpat1{{\cf6{****************************************************************************/}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf6{/*----------------------------- Include Files -----------------------------*/}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// Hardware}}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"inc/hw_memmap.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"inc/hw_types.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"inc/hw_gpio.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"inc/hw_sysctl.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"termio.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// Specific Hardware}}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"hw_pwm.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// Event & Services Framework}}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"ES_Configure.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"ES_Framework.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"ES_DeferRecall.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"ES_ShortTimer.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// Project modules}}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"PWM.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// This module}}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"DCMotorService.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf6{/*----------------------------- Module Defines ----------------------------*/}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #define BitsPerNibble {4}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #define GenB_Normal (PWM_{0}_GENB_ACTCMPBU_ONE | PWM_{0}_GENB_ACTCMPBD_ZERO)\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #define GenA_Normal (PWM_{0}_GENA_ACTCMPBU_ONE | PWM_{0}_GENA_ACTCMPBD_ZERO)\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #define PeriodInMS {5}\b0 }} {\cf5{//{2}{0}{0}Hz }}}\par\pard
+\cbpat1{{\cf8{\b \b0 }}{\cf2{}}{\cf8{\b #define PWMTicksPerMS {4}{0}{0}{0}{0} / {3}{2}\b0 }}  {\cf5{//system clock frequency/{3}{2}}}}\par\pard
+\cbpat1{{\cf8{\b \b0 }}{\cf2{}}{\cf6{/*---------------------------- Module Functions ---------------------------*/}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf6{/* prototypes for private functions for this machine.}}}\par\pard
+\cbpat1{{\cf6{*/}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #define TEST\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b static void\b0 }} {\cf2{}}{\cf16{InitDCPWM}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b void\b0 }}{\cf2{}}{\cf11{\b );\b0 }}  }\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b static void\b0 }} {\cf2{}}{\cf16{setPickupDuty}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b uint{3}{2}_t\b0 }} {\cf2{duty}}{\cf11{\b );\b0 }} }\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b static void\b0 }} {\cf2{}}{\cf16{setTransportDuty}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b uint{3}{2}_t\b0 }} {\cf2{duty}}{\cf11{\b );\b0 }} }\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b static void\b0 }} {\cf2{}}{\cf16{RestorePickupDC}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b void\b0 }}{\cf2{}}{\cf11{\b );\b0 }} }\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b static void\b0 }} {\cf2{}}{\cf16{RestoreTransportDC}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b void\b0 }}{\cf2{}}{\cf11{\b );\b0 }} }\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf6{/*---------------------------- Module Variables ---------------------------*/}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b static uint{8}_t\b0 }}    {\cf2{MyPriority}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf6{/*------------------------------ Module Code ------------------------------*/}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf6{/****************************************************************************}}}\par\pard
+\cbpat1{{\cf6{ Function}}}\par\pard
+\cbpat1{{\cf6{     InitDCMotorService}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Parameters}}}\par\pard
+\cbpat1{{\cf6{     uint{8}_t: the priority of this service}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Returns}}}\par\pard
+\cbpat1{{\cf6{     bool, false if error in initialization, true otherwise}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Description}}}\par\pard
+\cbpat1{{\cf6{     Saves away the priority, sets up the initial transition and determines}}}\par\pard
+\cbpat1{{\cf6{     Drive type. Initializes PWM lines and sets enable lines as output.}}}\par\pard
+\cbpat1{{\cf6{ Notes}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Author}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{****************************************************************************/}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b bool\b0 }} {\cf2{}}{\cf16{InitDCMotorService}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b uint{8}_t\b0 }} {\cf2{Priority}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{  ES_Event_t ThisEvent}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{  MyPriority}} {\cf11{\b =\b0 }} {\cf2{Priority}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{// Initialize HW for PWM lines will be done in InitializeHardware.c}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{InitDCPWM}}{\cf2{}}{\cf11{\b ();\b0 }}}\par\pard
+\cbpat1{{\cf2{  ThisEvent}}{\cf11{\b .\b0 }}{\cf2{EventType}} {\cf11{\b =\b0 }} {\cf2{ES_INIT}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b if\b0 }} {\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf16{ES_PostToService}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{MyPriority}}{\cf11{\b ,\b0 }} {\cf2{ThisEvent}}{\cf11{\b ) ==\b0 }} {\cf2{}}{\cf13{\b true\b0 }}{\cf2{}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf13{\b return true\b0 }}{\cf2{}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b else\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf13{\b return false\b0 }}{\cf2{}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf6{/****************************************************************************}}}\par\pard
+\cbpat1{{\cf6{ Function}}}\par\pard
+\cbpat1{{\cf6{     PostDCMotorService}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Parameters}}}\par\pard
+\cbpat1{{\cf6{     EF_Event ThisEvent , the event to post to the queue}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Returns}}}\par\pard
+\cbpat1{{\cf6{     boolean False if the Enqueue operation failed, True otherwise}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Description}}}\par\pard
+\cbpat1{{\cf6{     Posts an event to this state machine's queue}}}\par\pard
+\cbpat1{{\cf6{ Notes}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Author}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{****************************************************************************/}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b bool\b0 }} {\cf2{}}{\cf16{PostDCMotorService}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{ES_Event_t ThisEvent}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b return\b0 }} {\cf2{}}{\cf16{ES_PostToService}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{MyPriority}}{\cf11{\b ,\b0 }} {\cf2{ThisEvent}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf6{/****************************************************************************}}}\par\pard
+\cbpat1{{\cf6{ Function}}}\par\pard
+\cbpat1{{\cf6{    RunDCMotorService}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Parameters}}}\par\pard
+\cbpat1{{\cf6{   ES_Event: the event to process}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Returns}}}\par\pard
+\cbpat1{{\cf6{   ES_Event, ES_NO_EVENT if no error ES_ERROR otherwise}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Description}}}\par\pard
+\cbpat1{{\cf6{   Regulates commands, and sets motors accordingly}}}\par\pard
+\cbpat1{{\cf6{ Notes}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Author}}}\par\pard
+\cbpat1{{\cf6{****************************************************************************/}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{ES_Event_t}} {\cf16{RunDCMotorService}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{ES_Event_t ThisEvent}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{  ES_Event_t ReturnEvent}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{  ReturnEvent}}{\cf11{\b .\b0 }}{\cf2{EventType}} {\cf11{\b =\b0 }} {\cf2{ES_NO_EVENT}}{\cf11{\b ;\b0 }} {\cf2{}}{\cf5{// assume no errors}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b return\b0 }} {\cf2{ReturnEvent}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf6{/****************************************************************************}}}\par\pard
+\cbpat1{{\cf6{ Function}}}\par\pard
+\cbpat1{{\cf6{    startPickupMotorService}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Parameters}}}\par\pard
+\cbpat1{{\cf6{   ES_Event: the event to process}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Returns}}}\par\pard
+\cbpat1{{\cf6{   ES_Event, ES_NO_EVENT if no error ES_ERROR otherwise}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Description}}}\par\pard
+\cbpat1{{\cf6{   Regulates commands, and sets motors accordingly}}}\par\pard
+\cbpat1{{\cf6{ Notes}}}\par\pard
+\cbpat1{{\cf6{}}}\par\pard
+\cbpat1{{\cf6{ Author}}}\par\pard
+\cbpat1{{\cf6{****************************************************************************/}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b void\b0 }} {\cf2{}}{\cf16{startPickupMotor}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b uint{3}{2}_t\b0 }} {\cf2{DutyCycle}}{\cf11{\b )\{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{setPickupDuty}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{DutyCycle}}{\cf11{\b );\b0 }} }\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b void\b0 }} {\cf2{}}{\cf16{stopPickupMotor}}{\cf2{}}{\cf11{\b ()\{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{setPickupDuty}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf4{\b {0}\b0 }}{\cf2{}}{\cf11{\b );\b0 }} }\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \}\b0 }} }\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b void\b0 }} {\cf2{}}{\cf16{startTransportMotor}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b uint{3}{2}_t\b0 }} {\cf2{DutyCycle}}{\cf11{\b )\{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{setTransportDuty}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{DutyCycle}}{\cf11{\b );\b0 }} }\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b void\b0 }} {\cf2{}}{\cf16{stopTransportMotor}}{\cf2{}}{\cf11{\b ()\{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{setTransportDuty}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf4{\b {0}\b0 }}{\cf2{}}{\cf11{\b );\b0 }} }\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \}\b0 }} }\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf6{/***************************************************************************}}}\par\pard
+\cbpat1{{\cf6{ private functions}}}\par\pard
+\cbpat1{{\cf6{ ***************************************************************************/}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf6{/* Functions private to the module */}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b static void\b0 }} {\cf2{}}{\cf16{setPickupDuty}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b uint{3}{2}_t\b0 }} {\cf2{duty}}{\cf11{\b )\b0 }} {\cf2{}}{\cf5{//PB{7}}}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b if\b0 }} {\cf2{}}{\cf11{\b (\b0 }}{\cf2{duty}} {\cf11{\b ==\b0 }} {\cf2{}}{\cf4{\b {0}\b0 }}{\cf2{}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_GENB}}{\cf11{\b ) =\b0 }} {\cf2{PWM_{0}_GENB_ACTZERO_ZERO}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b else if\b0 }} {\cf2{}}{\cf11{\b (\b0 }}{\cf2{duty}} {\cf11{\b ==\b0 }} {\cf2{}}{\cf4{\b {1}{0}{0}\b0 }}{\cf2{}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_GENB}}{\cf11{\b ) =\b0 }} {\cf2{PWM_{0}_GENB_ACTZERO_ONE}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b else\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf16{RestorePickupDC}}{\cf2{}}{\cf11{\b ();\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_CMPB}}{\cf11{\b ) = (\b0 }}{\cf2{}}{\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_LOAD}}{\cf11{\b ) -\b0 }} {\cf2{}}{\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_LOAD}}{\cf11{\b ) *\b0 }} {\cf2{duty}} {\cf11{\b /\b0 }} {\cf2{}}{\cf4{\b {1}{0}{0}\b0 }}{\cf2{}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b static void\b0 }} {\cf2{}}{\cf16{setTransportDuty}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b uint{3}{2}_t\b0 }} {\cf2{duty}}{\cf11{\b )\b0 }} {\cf2{}}{\cf5{//PB{6}}}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b if\b0 }} {\cf2{}}{\cf11{\b (\b0 }}{\cf2{duty}} {\cf11{\b ==\b0 }} {\cf2{}}{\cf4{\b {0}\b0 }}{\cf2{}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_GENA}}{\cf11{\b ) =\b0 }} {\cf2{PWM_{0}_GENA_ACTZERO_ZERO}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b else if\b0 }} {\cf2{}}{\cf11{\b (\b0 }}{\cf2{duty}} {\cf11{\b ==\b0 }} {\cf2{}}{\cf4{\b {1}{0}{0}\b0 }}{\cf2{}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_GENA}}{\cf11{\b ) =\b0 }} {\cf2{PWM_{0}_GENA_ACTZERO_ONE}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b else\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf16{RestoreTransportDC}}{\cf2{}}{\cf11{\b ();\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_CMPA}}{\cf11{\b ) = (\b0 }}{\cf2{}}{\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_LOAD}}{\cf11{\b ) -\b0 }} {\cf2{}}{\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_LOAD}}{\cf11{\b ) *\b0 }} {\cf2{duty}} {\cf11{\b /\b0 }} {\cf2{}}{\cf4{\b {1}{0}{0}\b0 }}{\cf2{}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b static void\b0 }} {\cf2{}}{\cf16{RestorePickupDC}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b void\b0 }}{\cf2{}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// To restore the previos DC, simply set the action back to the normal actions}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_GENB}}{\cf11{\b ) =\b0 }} {\cf2{GenB_Normal}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b static void\b0 }} {\cf2{}}{\cf16{RestoreTransportDC}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b void\b0 }}{\cf2{}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// To restore the previos DC, simply set the action back to the normal actions}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_GENA}}{\cf11{\b ) =\b0 }} {\cf2{GenA_Normal}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b static void\b0 }} {\cf2{}}{\cf16{InitDCPWM}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b void\b0 }}{\cf2{}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// start by enabling the clock to the PWM Module (PWM{0})}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{SYSCTL_RCGCPWM}}{\cf11{\b ) |=\b0 }} {\cf2{SYSCTL_RCGCPWM_R{0}}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// enable the clock to Port B}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{SYSCTL_RCGCGPIO}}{\cf11{\b ) |=\b0 }} {\cf2{SYSCTL_RCGCGPIO_R{1}}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// make sure that Port B is initialized}}}\par\pard
+\cbpat1{{\cf2{}}      {\cf13{\b while\b0 }} {\cf2{}}{\cf11{\b ((\b0 }}{\cf2{}}{\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{SYSCTL_PRGPIO}}{\cf11{\b ) &\b0 }} {\cf2{SYSCTL_PRGPIO_R{1}}}{\cf11{\b ) !=\b0 }} {\cf2{BIT{1}HI}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}      {\cf11{\b \{\};\b0 }} }\par\pard
+\cbpat1{{\cf2{}}{\cf5{// Select the PWM clock as System Clock/{3}{2}}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{SYSCTL_RCC}}{\cf11{\b ) = (\b0 }}{\cf2{}}{\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{SYSCTL_RCC}}{\cf11{\b ) & ~\b0 }}{\cf2{SYSCTL_RCC_PWMDIV_M}}{\cf11{\b ) |\b0 }}}\par\pard
+\cbpat1{{\cf2{}}      {\cf11{\b (\b0 }}{\cf2{SYSCTL_RCC_USEPWMDIV}} {\cf11{\b |\b0 }} {\cf2{SYSCTL_RCC_PWMDIV_{3}{2}}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// make sure that the PWM module clock has gotten going}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b while\b0 }} {\cf2{}}{\cf11{\b ((\b0 }}{\cf2{}}{\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{SYSCTL_PRPWM}}{\cf11{\b ) &\b0 }} {\cf2{SYSCTL_PRPWM_R{0}}}{\cf11{\b ) !=\b0 }} {\cf2{SYSCTL_PRPWM_R{0}}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// disable the PWM while initializing}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_CTL}}{\cf11{\b ) =\b0 }} {\cf2{}}{\cf4{\b {0}\b0 }}{\cf2{}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// program generators to go to {1} at rising compare A/B, {0} on falling compare A/B}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_GENA}}{\cf11{\b ) =\b0 }} {\cf2{GenA_Normal}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_GENB}}{\cf11{\b ) =\b0 }} {\cf2{GenB_Normal}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// Set the PWM period. Since we are counting both up & down, we initialize}}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// the load register to {1}/{2} the desired total period. We will also program}}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// the match compare registers to {1}/{2} the desired high time}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_LOAD}}{\cf11{\b ) = ((\b0 }}{\cf2{PeriodInMS}} {\cf11{\b *\b0 }} {\cf2{PWMTicksPerMS}}{\cf11{\b )) /\b0 }} {\cf2{}}{\cf4{\b {2}\b0 }}{\cf2{}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// Set the initial Duty cycle on A to {5}{0}% by programming the compare value}}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// to {1}/{2} the period to count up (or down). Technically, the value to program}}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// should be Period/{2} - DesiredHighTime/{2}, but since the desired high time is {1}/{2}}}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// the period, we can skip the subtract}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_CMPA}}{\cf11{\b ) =\b0 }} {\cf2{}}{\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_LOAD}}{\cf11{\b ) >>\b0 }} {\cf2{}}{\cf4{\b {1}\b0 }}{\cf2{}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_CMPB}}{\cf11{\b ) =\b0 }} {\cf2{}}{\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_LOAD}}{\cf11{\b ) >>\b0 }} {\cf2{}}{\cf4{\b {1}\b0 }}{\cf2{}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// enable the PWM outputs}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_ENABLE}}{\cf11{\b ) |= (\b0 }}{\cf2{PWM_ENABLE_PWM{1}EN}} {\cf11{\b |\b0 }} {\cf2{PWM_ENABLE_PWM{0}EN}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// now configure the Port B pins to be PWM outputs}}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// start by selecting the alternate function for PB{6} & {7}}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{GPIO_PORTB_BASE}} {\cf11{\b +\b0 }} {\cf2{GPIO_O_AFSEL}}{\cf11{\b ) |= (\b0 }}{\cf2{BIT{7}HI}} {\cf11{\b |\b0 }} {\cf2{BIT{6}HI}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// now choose to map PWM to those pins, this is a mux value of {4} that we}}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// want to use for specifying the function on bits {6} & {7}}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{GPIO_PORTB_BASE}} {\cf11{\b +\b0 }} {\cf2{GPIO_O_PCTL}}{\cf11{\b ) =\b0 }}}\par\pard
+\cbpat1{{\cf2{}}      {\cf11{\b (\b0 }}{\cf2{}}{\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{GPIO_PORTB_BASE}} {\cf11{\b +\b0 }} {\cf2{GPIO_O_PCTL}}{\cf11{\b ) &\b0 }} {\cf2{}}{\cf4{\b {0}x{0}{0}ffffff\b0 }}{\cf2{}}{\cf11{\b ) + (\b0 }}{\cf2{}}{\cf4{\b {4}\b0 }} {\cf2{}}{\cf11{\b << (\b0 }}{\cf2{}}{\cf4{\b {7}\b0 }} {\cf2{}}{\cf11{\b *\b0 }} {\cf2{BitsPerNibble}}{\cf11{\b )) +\b0 }}}\par\pard
+\cbpat1{{\cf2{}}      {\cf11{\b (\b0 }}{\cf2{}}{\cf4{\b {4}\b0 }} {\cf2{}}{\cf11{\b << (\b0 }}{\cf2{}}{\cf4{\b {6}\b0 }} {\cf2{}}{\cf11{\b *\b0 }} {\cf2{BitsPerNibble}}{\cf11{\b ));\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// Enable pins {6} & {7} on Port B for digital I/O}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{GPIO_PORTB_BASE}} {\cf11{\b +\b0 }} {\cf2{GPIO_O_DEN}}{\cf11{\b ) |= (\b0 }}{\cf2{BIT{7}HI}} {\cf11{\b |\b0 }} {\cf2{BIT{6}HI}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// make pins {6} & {7} on Port B into outputs}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{GPIO_PORTB_BASE}} {\cf11{\b +\b0 }} {\cf2{GPIO_O_DIR}}{\cf11{\b ) |= (\b0 }}{\cf2{BIT{7}HI}} {\cf11{\b |\b0 }} {\cf2{BIT{6}HI}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// set the up/down count mode, enable the PWM generator and make}}}\par\pard
+\cbpat1{{\cf2{}}{\cf5{// both generator updates locally synchronized to zero count}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{HWREG}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{PWM{0}_BASE}} {\cf11{\b +\b0 }} {\cf2{PWM_O_{0}_CTL}}{\cf11{\b ) = (\b0 }}{\cf2{PWM_{0}_CTL_MODE}} {\cf11{\b |\b0 }} {\cf2{PWM_{0}_CTL_ENABLE}} {\cf11{\b |\b0 }}}\par\pard
+\cbpat1{{\cf2{      PWM_{0}_CTL_GENAUPD_LS}} {\cf11{\b |\b0 }} {\cf2{PWM_{0}_CTL_GENBUPD_LS}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #ifdef TEST    \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include <stdint.h>\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include <stdbool.h>\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include <stdio.h>\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"inc/hw_types.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"inc/hw_memmap.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"driverlib/sysctl.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"ES_Configure.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"ES_Framework.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"ES_Port.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"termio.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"EnablePA{2}{5}_PB{2}{3}_PD{7}_PF{0}.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"DCMotorService.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"hw_pwm.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #include\b0 }} {\cf9{"PWM.h"}}{\cf8{\b \b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #define clrScrn() printf(\b0 }}{\cf9{"}}{\cf7{\b \\x{1}b\b0 }}{\cf9{[{2}J"}}{\cf8{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #define goHome() printf(\b0 }}{\cf9{"}}{\cf7{\b \\x{1}b\b0 }}{\cf9{[{1},{1}H"}}{\cf8{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #define clrLine() printf(\b0 }}{\cf9{"}}{\cf7{\b \\x{1}b\b0 }}{\cf9{[K"}}{\cf8{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf14{\b int\b0 }} {\cf2{}}{\cf16{main}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf14{\b void\b0 }}{\cf2{}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{  ES_Return_t ErrorType}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{// Set the clock to run at {4}{0}MhZ using the PLL and {1}{6}MHz external crystal}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{SysCtlClockSet}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{SYSCTL_SYSDIV_{5}}} {\cf11{\b |\b0 }} {\cf2{SYSCTL_USE_PLL}} {\cf11{\b |\b0 }} {\cf2{SYSCTL_OSC_MAIN}}}\par\pard
+\cbpat1{{\cf2{}}      {\cf11{\b |\b0 }} {\cf2{SYSCTL_XTAL_{1}{6}MHZ}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{TERMIO_Init}}{\cf2{}}{\cf11{\b ();\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{clrScrn}}{\cf2{}}{\cf11{\b ();\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{// When doing testing, it is useful to announce just which program}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{// is running.}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{puts}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf3{"}}{\cf7{\b \\r\b0 }}{\cf3{Starting Pickup Test Harness for}} {\cf7{\b \\r\b0 }}{\cf3{"}}{\cf2{}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{printf}}{\cf2{}}{\cf11{\b (\b0 }} {\cf2{}}{\cf3{"the {2}nd Generation Events & Services Framework V{2}.{4}}}{\cf7{\b \\r\\n\b0 }}{\cf3{"}}{\cf2{}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{printf}}{\cf2{}}{\cf11{\b (\b0 }} {\cf2{}}{\cf3{"%s %s}}{\cf7{\b \\n\b0 }}{\cf3{"}}{\cf2{}}{\cf11{\b ,\b0 }} {\cf2{__TIME__}}{\cf11{\b ,\b0 }} {\cf2{__DATE__}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{printf}}{\cf2{}}{\cf11{\b (\b0 }} {\cf2{}}{\cf3{"}}{\cf7{\b \\n\\r\\n\b0 }}{\cf3{"}}{\cf2{}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{// reprogram the ports that are set as alternate functions or}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{// locked coming out of reset. (PA{2}-{5}, PB{2}-{3}, PD{7}, PF{0})}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{// After this call these ports are set}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{// as GPIO inputs and can be freely re-programmed to change config.}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{// or assign to alternate any functions available on those pins}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf16{PortFunctionInit}}{\cf2{}}{\cf11{\b ();\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{// Your hardware initialization function calls go here}}}\par\pard
+\cbpat1{{\cf2{}}  }\par\pard
+\cbpat1{{\cf2{}}  {\cf16{InitDCPWM}}{\cf2{}}{\cf11{\b ();\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{//startPickupMotor({2}{5}); }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{//printf("\\r\\n Started pickup motor");}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{//stopPickupMotor(); }}}\par\pard
+\cbpat1{{\cf2{}}  }\par\pard
+\cbpat1{{\cf2{}}  }\par\pard
+\cbpat1{{\cf2{}}  {\cf5{// now initialize the Events and Services Framework and start it running}}}\par\pard
+\cbpat1{{\cf2{  ErrorType}} {\cf11{\b =\b0 }} {\cf2{}}{\cf16{ES_Initialize}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{ES_Timer_RATE_{1}mS}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b if\b0 }} {\cf2{}}{\cf11{\b (\b0 }}{\cf2{ErrorType}} {\cf11{\b ==\b0 }} {\cf2{Success}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{    ErrorType}} {\cf11{\b =\b0 }} {\cf2{}}{\cf16{ES_Run}}{\cf2{}}{\cf11{\b ();\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf5{//if we got to here, there was an error}}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b switch\b0 }} {\cf2{}}{\cf11{\b (\b0 }}{\cf2{ErrorType}}{\cf11{\b )\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf13{\b case\b0 }} {\cf2{FailedPost}}{\cf11{\b :\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}      {\cf16{printf}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf3{"Failed on attempt to Post}}{\cf7{\b \\n\b0 }}{\cf3{"}}{\cf2{}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf13{\b break\b0 }}{\cf2{}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf13{\b case\b0 }} {\cf2{FailedPointer}}{\cf11{\b :\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}      {\cf16{printf}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf3{"Failed on NULL pointer}}{\cf7{\b \\n\b0 }}{\cf3{"}}{\cf2{}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf13{\b break\b0 }}{\cf2{}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf13{\b case\b0 }} {\cf2{FailedInit}}{\cf11{\b :\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}      {\cf16{printf}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf3{"Failed Initialization}}{\cf7{\b \\n\b0 }}{\cf3{"}}{\cf2{}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf13{\b break\b0 }}{\cf2{}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf13{\b default\b0 }}{\cf2{}}{\cf11{\b :\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}      {\cf16{printf}}{\cf2{}}{\cf11{\b (\b0 }}{\cf2{}}{\cf3{"Other Failure}}{\cf7{\b \\n\b0 }}{\cf3{"}}{\cf2{}}{\cf11{\b );\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf13{\b break\b0 }}{\cf2{}}{\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf13{\b for\b0 }} {\cf2{}}{\cf11{\b ( ; ;)\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \{\b0 }}}\par\pard
+\cbpat1{{\cf2{}}    {\cf11{\b ;\b0 }}}\par\pard
+\cbpat1{{\cf2{}}  {\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}{\cf11{\b \}\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf8{\b #endif\b0 }}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf6{/*------------------------------- Footnotes -------------------------------*/}}{\cf2{}}}\par\pard
+\cbpat1{{\cf2{}}{\cf6{/*------------------------------ End of file ------------------------------*/}}{\cf2{}}}\par\pard
+\cbpat1{}}

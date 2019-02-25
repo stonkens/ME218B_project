@@ -462,6 +462,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\SPISM.c</FilePath>
             </File>
+            <File>
+              <FileName>ColorService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\ColorService.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
