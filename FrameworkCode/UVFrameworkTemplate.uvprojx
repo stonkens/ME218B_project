@@ -447,6 +447,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\DCMotorService.c</FilePath>
             </File>
+            <File>
+              <FileName>EncoderService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\EncoderService.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -631,6 +636,11 @@
               <FileName>DCMotorService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\DCMotorService.h</FilePath>
+            </File>
+            <File>
+              <FileName>EncoderService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\EncoderService.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1287,6 +1297,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\DCMotorService.c</FilePath>
             </File>
+            <File>
+              <FileName>EncoderService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\EncoderService.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1471,6 +1486,11 @@
               <FileName>DCMotorService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\DCMotorService.h</FilePath>
+            </File>
+            <File>
+              <FileName>EncoderService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\EncoderService.h</FilePath>
             </File>
           </Files>
         </Group>
