@@ -1,0 +1,4 @@
+﻿"thickness_acrylic0.1"=0.1in
+"motor offset"=6mm
+"thickness0.25"=0.225in
+"thickness0.125"=0.122in
