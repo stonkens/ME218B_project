@@ -27,10 +27,12 @@
 
 #include "MotorSpeedControl.h"
 #include "EncoderCapture.h"
+#include "DriveMotorPWM.h"
 
-
+#include <math.h>
 #include "inc/hw_timer.h"
 #include "inc/hw_memmap.h"
+#include "hw_nvic.h"
 #include "inc/hw_types.h"
 #include "inc/hw_gpio.h"
 #include "inc/hw_sysctl.h"
@@ -39,16 +41,10 @@
 #include "driverlib/gpio.h"
 
 /*----------------------------- Module Defines ----------------------------*/
-#define LEFT_A 1
-#define RIGHT_A 2
-#define LEFT_B 3
-#define RIGHT_B 4
-#define BOTH	0
-
 #define TICKS_PER_SECOND	 40000000
 #define TICKS_PER_MS 40000
 #define GEAR_RATIO 50
-#define PULSES_PER_REV 5
+#define PULSES_PER_REV 12
 
 #define MIN_ERROR	0
 #define MIN_TICKS	0
@@ -58,13 +54,11 @@
 #define KPD	5
 #define KDD	10
 
-#define RPM_P_GAIN	2
-#define RPM_I_GAIN	0.3
+#define RPM_P_GAIN 2
+#define RPM_I_GAIN 0.3
 
-#define STRAIGHT	0
-#define TURN			1
 
-#define UPDATE_TIME 	2			//Adjusted every 2 ms
+#define UPDATE_TIME 2			//Adjusted every 2 ms
 
 /*---------------------------- Module Functions ---------------------------*
   prototypes for private functions for this service.They should be functions
@@ -79,12 +73,12 @@ static float Clamp(float, float, float);
 //Data private to the module
 static float DesiredDistance;
 static float DesiredHeading;
-static float MuError;
-static float DeltaError;
-static float MuV;
-static float DeltaV;
-static float LastMuError;
-static float LastDeltaError;
+static float DistanceError;
+static float HeadingError;
+static float DistancePDTerm;
+static float HeadingPDTerm;
+static float LastDistanceError;
+static float LastHeadingError;
 
 static int LastTickCount_1;
 static int LastTickCount_2;
@@ -92,8 +86,8 @@ static float DesiredSpeed_1;
 static float DesiredSpeed_2;
 static float LastRecordedSpeed_1;
 static float LastRecordedSpeed_2;
-static float RequestedDuty_1;
-static float RequestedDuty_2;
+static float UpdatedDutyCycle_1;
+static float UpdatedDutyCycle_2;
 static float RPMError_1;
 static float RPMError_2;
 static float IntegralTerm_1;
@@ -102,43 +96,40 @@ static float IntegralTerm_2;
 static bool Driving;
 static float ClampRPM;
 
-static uint32_t runCount;
-static uint32_t checkSpeed_2;
+static uint32_t ControlLoopCount;
+
 
 static float ClampPWM = 100;
 
 /*------------------------------ Module Code ------------------------------*/
 
-uint32_t GetRunCount(void){
-	return runCount;
+uint32_t QueryRunCount(void){
+	return ControlLoopCount;
 }
 
-uint16_t GetDuty2(void){
-	return RequestedDuty_1;
+uint16_t QueryDuty2(void){
+	return UpdatedDutyCycle_1;
 }
 
-uint16_t GetDuty1(void){
-	return RequestedDuty_2;
+uint16_t QueryDuty1(void){
+	return UpdatedDutyCycle_2;
 }
 
-uint32_t checkSpeed(void){
-	return checkSpeed_2;
+
+float QueryDistancePDTerm(void){
+	return DistancePDTerm;
 }
 
-float GetMuV(void){
-	return MuV;
+float QueryHeadingPDTerm(void){
+	return HeadingPDTerm;
 }
 
-float GetDeltaV(void){
-	return DeltaV;
+float QueryDistanceError(void){
+	return DistanceError;
 }
 
-float GetMuError(void){
-	return MuError;
-}
-
-float GetDeltaError(void){
-	return DeltaError;
+float QueryHeadingError(void){
+	return HeadingError;
 }
 
 /****************************************************************************
@@ -156,17 +147,19 @@ float GetDeltaError(void){
  Notes
 
  Author
-     LXW, 02/16/16, 15:20
+     Sander Tonkens
 ****************************************************************************/
 void Drive_SpeedControl_Init(void){
-	 //initialize drive motor control
-	Drive_Motor_Init();
+	//All initializations done in InitializeHardware.c
+	//Initialize drive motor control
+	//InitDrivePWM();
+	//InitDriveMotor(GPIO);
 	
-	 //initialize drive motor encoders
-	Enc_Sense_Init();
+	//initialize drive motor encoders
+	//Enc_Sense_Init();
 	
 	 //initialize the periodic speed update timer
-	Drive_SpeedUpdate_Timer_Init(UPDATE_TIME);
+	Drive_SpeedUpdateTimer_Init(UPDATE_TIME);
 }
 
 void Drive_Stop(void){
@@ -174,18 +167,25 @@ void Drive_Stop(void){
 	 //reset control variables
 	DesiredDistance = 0;
 	DesiredHeading = 0;
-	Enc_ResetTickCount(BOTH);
+	//Reset tick count of both encoders
+	ResetEncoderTickCount(BOTH_WHEELS);
+	
+	//Reset number of wheel spins
 	LastTickCount_1 = 0;
 	LastTickCount_2 = 0;
+	//Reset integral term of controller
 	IntegralTerm_1 = 0;
 	IntegralTerm_2 = 0;
 }
 
 void Drive_SetDistance(float newLimit){
-	 //reset control variables
-	Enc_ResetTickCount(BOTH);
+	//reset control variables
+	//Reset tick count of both encoders
+	ResetEncoderTickCount(BOTH_WHEELS);
+	//Reset number of wheel spins
 	LastTickCount_1 = 0;
 	LastTickCount_2 = 0;
+	//Reset integral term of controller
 	IntegralTerm_1 = 0.0;
 	IntegralTerm_2 = 0.0;
 	 //set new distance setpoint
@@ -196,12 +196,15 @@ void Drive_SetDistance(float newLimit){
 
 void Drive_SetHeading(float newLimit){
 	 //reset control variables
-	Enc_ResetTickCount(BOTH);
+	//Reset tick count of both encoders
+	ResetEncoderTickCount(BOTH_WHEELS);
+	//Reset number of wheel spins
 	LastTickCount_1 = 0;
 	LastTickCount_2 = 0;
+	//Reset integral term of controller
 	IntegralTerm_1 = 0.0;
 	IntegralTerm_2 = 0.0;
-	 //set new distance setpoint
+	//set new distance setpoint
 	DesiredHeading = newLimit;
 	DesiredDistance = 0;
 	Driving = true;
@@ -222,15 +225,15 @@ float : new clamping rpm
  Notes
    
  Author
-   lxw, 02/17/16, 13:50
+   Sander Tonkens
 ****************************************************************************/
-void Drive_SetClampRPM(float newRPM){
-	ClampRPM = newRPM;
+void Drive_SetClampRPM(float MaxRPM){
+	ClampRPM = MaxRPM;
 }
 
 /****************************************************************************
  Function
-   Drive_GetRPM
+  QueryDriveRPM
 
  Parameters
 	uint8_t : selected wheel
@@ -243,13 +246,13 @@ void Drive_SetClampRPM(float newRPM){
  Notes
    
  Author
-   lxw, 02/16/16, 16:15
+   Sander Tonkens
 ****************************************************************************/
-float Drive_GetRPM(uint8_t wheel){
-	if(wheel == LEFT_A){
+float QueryDriveRPM(uint8_t wheel){
+	if(wheel == WHEEL1A){
 		return LastRecordedSpeed_1;
 	}
-	else if(wheel == RIGHT_A){
+	else if(wheel == WHEEL2A){
 		return LastRecordedSpeed_2;
 	}
 	else{
@@ -272,84 +275,99 @@ float Drive_GetRPM(uint8_t wheel){
  Notes
    
  Author
-   lxw, 01/28/16, 19:00
+   Sander Tonkens
 ****************************************************************************/
 void Drive_SpeedControlISR(void){
-	 //control loop variables
 	
-	runCount++;
+	ControlLoopCount++;
 	
 	 //start by clearing the source of the interrupt
-	HWREG(WTIMER1_BASE+TIMER_O_ICR) = TIMER_ICR_TATOCINT;
+	HWREG(WTIMER5_BASE+TIMER_O_ICR) = TIMER_ICR_TATOCINT;
 	
-	//****************************************************************NEW INFO GATHERING
-	//for wheel 1 (LEFT)
-	 //if not enough new ticks have not been found
-	if(abs(Enc_GetTickCount(1) - LastTickCount_1) <= MIN_TICKS){
-		 //set last recorded encoder RPM to 0
+	//***Gather new info from DriveMotorPWM module***//
+	
+	//Determine Tick Counts for Motor 1
+	//If not enough new ticks have not been registered (i.e. Motor is at standstill)
+	if(fabsf(QueryEncoderTickCount(1) - LastTickCount_1) <= MIN_TICKS)
+	{
+		//Set last recorded Motor RPM to 0
 		LastRecordedSpeed_1 = 0;
 	}
-	 //else
-	else{
-		 //calculate RPM from current period
-		LastRecordedSpeed_1 = ((TICKS_PER_SECOND/(Enc_GetPeriod(LEFT_A))*60)/(PULSES_PER_REV*GEAR_RATIO));
-		 //capture new tick count
-		LastTickCount_1 = Enc_GetTickCount(1);
+
+	else
+	{
+		//Calculate RPM from current period
+		LastRecordedSpeed_1 = ((TICKS_PER_SECOND/(QueryEncoderPeriod(WHEEL1A))*60)/(PULSES_PER_REV*GEAR_RATIO));
+		//Query new tick count
+		LastTickCount_1 = QueryEncoderTickCount(1);
 	}
 	
-	//for wheel 2 (RIGHT)
-	 //if not enough new ticks have not been found
-	if(abs(Enc_GetTickCount(2) - LastTickCount_2) <= MIN_TICKS){
-		 //set last recorded encoder RPM to 0
+	//Determine Tick Counts for Motor 2
+	//If not enough new ticks have not been registered (i.e. Motor is at standstill)
+	if(fabsf(QueryEncoderTickCount(2) - LastTickCount_2) <= MIN_TICKS)
+	{
+		//Set last recorded Motor RPM to 0
 		LastRecordedSpeed_2 = 0;
 	}
-	 //else
 	else{
-		 //calculate RPM from current period
-		LastRecordedSpeed_2 = ((TICKS_PER_SECOND/(Enc_GetPeriod(RIGHT_A))*60)/(PULSES_PER_REV*GEAR_RATIO));
-		 //capture new tick count
-		LastTickCount_2 = Enc_GetTickCount(2);
+		//Calculate current RPM from current period
+		LastRecordedSpeed_2 = ((TICKS_PER_SECOND/(QueryEncoderPeriod(WHEEL2A))*60)/(PULSES_PER_REV*GEAR_RATIO));
+		//Capture new tick count
+		LastTickCount_2 = QueryEncoderTickCount(2);
 	}
 	
-	//****************************************************************POSITION CONTROL
+	//***Position and Heading control***//
 	
-	MuError = (DesiredDistance - ((LastTickCount_1+LastTickCount_2)/2)); //taking average
-	DeltaError = (DesiredHeading- ((LastTickCount_2-LastTickCount_1)/2));
-	MuV = KPM*MuError + KDM*(MuError-LastMuError);
-	DeltaV = KPD*DeltaError + KDD*(DeltaError-LastDeltaError); // pos delta is right wheel neg is left wheel
-	DesiredSpeed_1 = Clamp(MuV - DeltaV, -ClampRPM, ClampRPM);
-	DesiredSpeed_2 = Clamp(MuV + DeltaV, -ClampRPM, ClampRPM);
-	LastMuError = MuError;
-	LastDeltaError = DeltaError;
+	//Based on PD controller
+	DistanceError = (DesiredDistance - ((LastTickCount_1+LastTickCount_2)/2)); //taking average of wheel 1 and 2 when driving straight
+	HeadingError = (DesiredHeading- ((LastTickCount_2-LastTickCount_1)/2)); //Subtracting both to take average when turning
+	DistancePDTerm = KPM*DistanceError + KDM*(DistanceError-LastDistanceError);
+	HeadingPDTerm = KPD*HeadingError + KDD*(HeadingError-LastHeadingError); //Positive HeadingError is wheel 2, negative wheel 1
+	DesiredSpeed_1 = Clamp(DistancePDTerm - HeadingPDTerm, -ClampRPM, ClampRPM);
+	DesiredSpeed_2 = Clamp(DistancePDTerm + HeadingPDTerm, -ClampRPM, ClampRPM);
+	LastDistanceError = DistanceError;
+	LastHeadingError = HeadingError;
  
-	//****************************************************************SPEED CONTROL FOR LEFT MOTOR (1)
+	//***Speed control for Motor 1***//
 	
 	RPMError_1 = DesiredSpeed_1 - LastRecordedSpeed_1;
 	
+	//Add RPM Error to integral term
 	IntegralTerm_1 += RPMError_1;
-	IntegralTerm_1 = Clamp(IntegralTerm_1, -ClampPWM, ClampPWM); /* anti-windup */
+	//Include Anti-windup for integral term
+	IntegralTerm_1 = Clamp(IntegralTerm_1, -ClampPWM, ClampPWM); 
 	
-	RequestedDuty_1 = RPM_P_GAIN*RPMError_1 + RPM_I_GAIN*IntegralTerm_1;
-	RequestedDuty_1 = Clamp(RequestedDuty_1, -ClampPWM, ClampPWM);
+  //Compute UpdatedDutyCycle based on PI controller
+	UpdatedDutyCycle_1 = RPM_P_GAIN*RPMError_1 + RPM_I_GAIN*IntegralTerm_1;
+	//Include anti-windup for full term
+	//Positive = Turn CW, Negative = Turn CCW (To update if necessary)
+	UpdatedDutyCycle_1 = Clamp(UpdatedDutyCycle_1, -ClampPWM, ClampPWM); 
 	
-	Drive_SetDuty_Left(RequestedDuty_1); // output calculated control
+	//Set Duty Cycle for Motor 1
+	PWMSetDutyCycle_1(UpdatedDutyCycle_1);
 	
-	//****************************************************************SPEED CONTROL FOR RIGHT MOTOR (2)
+	//***Speed control for Motor 2***//
 	
 	RPMError_2 = DesiredSpeed_2 - LastRecordedSpeed_2;
 	
+	//Add RPM Error to integral term
 	IntegralTerm_2 += RPMError_2;
-	IntegralTerm_2 = Clamp(IntegralTerm_2, -ClampPWM, ClampPWM); /* anti-windup */
+	//Include Anti-windup for integral term
+	IntegralTerm_2 = Clamp(IntegralTerm_2, -ClampPWM, ClampPWM);
 	
-	RequestedDuty_2 = RPM_P_GAIN*RPMError_2 + RPM_I_GAIN*IntegralTerm_2;
-	RequestedDuty_2 = Clamp(RequestedDuty_2, -ClampPWM, ClampPWM);
+	//Compute UpdatedDutyCycle based on PI controller
+	UpdatedDutyCycle_2 = RPM_P_GAIN*RPMError_2 + RPM_I_GAIN*IntegralTerm_2;
+	//Include anti-windup for full term
+	//Positive = Turn CW, Negative = Turn CCW (To update if necessary)
+	UpdatedDutyCycle_2 = Clamp(UpdatedDutyCycle_2, -ClampPWM, ClampPWM);
 	
-	Drive_SetDuty_Right(RequestedDuty_2); // output calculated control
+	//Set Duty Cycle for Motor 2
+	PWMSetDutyCycle_2(UpdatedDutyCycle_2);
 	
-	//****************************************************************TICK COUNT MONITOR
+	//***Desired geolocation monitor***//
 	
-	 //if position is within error bounds
-	if( (abs(DeltaError) <= MIN_ERROR) && (abs(MuError) <= MIN_ERROR) && Driving == true){
+	 //if Distance Error and Heading Error is within error bounds
+	if((fabsf(DistanceError) <= MIN_ERROR) && (fabsf(HeadingError) <= MIN_ERROR) && Driving == true){
 		Driving = false;
 		
 		//post event to Master SM indicating that target has been reached
@@ -358,6 +376,58 @@ void Drive_SpeedControlISR(void){
 		//PostCampaignService(doneEvent);
 	}
 	
+}
+
+/****************************************************************************
+ Function
+    Drive_SpeedUpdateTimer_Init
+
+ Parameters
+ uint16_t : speed update delay in ms
+
+ Returns
+   void
+
+ Description
+   initializes periodic timer functionality for wide timer 5A
+ Notes
+   
+ Author
+   Sander Tonkens
+****************************************************************************/
+void Drive_SpeedUpdateTimer_Init(uint16_t updateTime){
+	//initialization for Periodic Timer (Timer 5-A)
+	
+	//start by enabling the clock to the timer (Wide Timer 5)
+	HWREG(SYSCTL_RCGCWTIMER) |= SYSCTL_RCGCWTIMER_R5;
+	
+	//Ensure Peripheral is ready
+  while ((HWREG(SYSCTL_RCGCWTIMER) & SYSCTL_RCGCWTIMER_R5) != SYSCTL_RCGCWTIMER_R5)
+  {}
+	
+	//make sure that timer (Timer A) is disabled before configuring
+	HWREG(WTIMER5_BASE+TIMER_O_CTL) &= ~TIMER_CTL_TAEN;
+	//set it up in 32bit wide (individual, not concatenated) mode
+	HWREG(WTIMER5_BASE+TIMER_O_CFG) = TIMER_CFG_16_BIT;
+	
+	//set up timer B in periodic mode so that it repeats the time-outs
+	HWREG(WTIMER5_BASE+TIMER_O_TAMR) = (HWREG(WTIMER5_BASE+TIMER_O_TAMR)& ~TIMER_TAMR_TAMR_M)| TIMER_TAMR_TAMR_PERIOD;
+	
+	//set Periodic timeout rate
+	HWREG(WTIMER1_BASE+TIMER_O_TAILR) = TICKS_PER_MS * updateTime; //***************
+	
+	//enable a local timeout interrupt
+	HWREG(WTIMER5_BASE+TIMER_O_IMR) |= TIMER_IMR_TATOIM;
+	
+	//enable the Timer A in Wide Timer 1 interrupt in the NVIC
+	//it is interrupt number 95 so appears in EN3 at bit 0  //***************************
+	HWREG(NVIC_EN3) |= (BIT8HI);
+	
+	//make sure interrupts are enabled globally (Check whether this should be done in InitializeHardware)
+	__enable_irq();
+	
+	//now kick the timer off by enabling it and enabling the timer to stall while stopped by the debugger
+	HWREG(WTIMER5_BASE+TIMER_O_CTL) |= (TIMER_CTL_TAEN | TIMER_CTL_TASTALL);
 }
 
 /****************************************************************************
@@ -386,3 +456,6 @@ static float Clamp(float x, float LowBound, float HighBound){
 	}
 	return x;
 }
+
+/*------------------------------- Footnotes -------------------------------*/
+/*------------------------------ End of file ------------------------------*/

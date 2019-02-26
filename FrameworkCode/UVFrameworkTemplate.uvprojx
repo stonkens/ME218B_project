@@ -457,6 +457,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\DriveMotorPWM.c</FilePath>
             </File>
+            <File>
+              <FileName>DriveCommandModule.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\DriveCommandModule.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -651,6 +656,11 @@
               <FileName>DriveMotorPWM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\DriveMotorPWM.h</FilePath>
+            </File>
+            <File>
+              <FileName>DriveCommandModule.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\DriveCommandModule.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1317,6 +1327,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\DriveMotorPWM.c</FilePath>
             </File>
+            <File>
+              <FileName>DriveCommandModule.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\DriveCommandModule.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1511,6 +1526,11 @@
               <FileName>DriveMotorPWM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\DriveMotorPWM.h</FilePath>
+            </File>
+            <File>
+              <FileName>DriveCommandModule.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\DriveCommandModule.h</FilePath>
             </File>
           </Files>
         </Group>

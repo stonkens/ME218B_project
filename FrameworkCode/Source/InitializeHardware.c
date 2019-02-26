@@ -80,8 +80,8 @@ void InitializeHardware(void)
 	InitSPI();
   InitEmitterPWM();
 	InitDCPWM();
-  InitDriveMotorGPIO();
-  InitDriveMotorPWM();
+  InitDriveMotor();
+  //InitDriveMotorPWM();
 	Enc_Init();
   //InitSPI(); //This uses bits xxx and xxx
   //InitInputCapture();

@@ -13,14 +13,9 @@
 #include "ES_Configure.h"
 #include "ES_Framework.h"
 
-// Public module defines
-#define ADVANCE 0
-#define REVERSE 1
-#define CW 2
-#define CCW 3
-
 // Public Function Prototypes
 
+void InitDriveMotor(void);
 void InitDriveMotorPWM(void);
 void InitDriveMotorGPIO(void);
 void PWMSetDutyCycle_1(int DutyCycle_1);

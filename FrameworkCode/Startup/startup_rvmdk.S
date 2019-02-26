@@ -86,6 +86,7 @@ __heap_limit
 		EXTERN  Enc_1BISR
 		EXTERN  Enc_2AISR
 		EXTERN  Enc_2BISR
+		EXTERN  Drive_SpeedControlISR
 ;        EXTERN  UARTStdioIntHandler
 
 ;******************************************************************************
@@ -215,7 +216,7 @@ __Vectors
         DCD     IntDefaultHandler           ; Wide Timer 3 subtimer B
         DCD     IntDefaultHandler           ; Wide Timer 4 subtimer A
         DCD     IntDefaultHandler           ; Wide Timer 4 subtimer B
-        DCD     IntDefaultHandler           ; Wide Timer 5 subtimer A
+        DCD     Drive_SpeedControlISR       ; Wide Timer 5 subtimer A
         DCD     IntDefaultHandler           ; Wide Timer 5 subtimer B
         DCD     IntDefaultHandler           ; FPU
         DCD     0                           ; Reserved

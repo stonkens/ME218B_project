@@ -49,21 +49,7 @@
 
 /*----------------------------- Module Defines ----------------------------*/
 #define BitsPerNibble 4
-#define GenB_Normal (PWM_1_GENB_ACTCMPBU_ONE | PWM_1_GENB_ACTCMPBD_ZERO)
-#define GenA_Normal (PWM_1_GENB_ACTCMPBU_ONE | PWM_1_GENB_ACTCMPBD_ZERO)
-#define PeriodInMS 0.414                      //empirically determined for this motor
-#define TicksPerMS 40000
-#define PULSES_PER_REV 512
-#define PULSES_PER_REV_SMALL 3
 
-#define LEFT_WHEEL 1
-#define RIGHT_WHEEL 2
-#define BOTH_WHEELS 0
-
-#define LEFT_A 1
-#define RIGHT_A 2
-#define LEFT_B 3
-#define RIGHT_B 4
 
 /*---------------------------- Module Variables ---------------------------*/
 // Data private to the module
@@ -115,7 +101,7 @@ void Enc_Init(void){
 
 /****************************************************************************
  Function
-   Enc_GetTickCount
+   QueryEncoderTickCount
 
  Parameters
 uint8_t: select which wheel's current tick count to return
@@ -131,13 +117,13 @@ uint8_t: select which wheel's current tick count to return
    Sander Tonkens
 ****************************************************************************/
 
-float Enc_GetTickCount(uint8_t wheel)
+float QueryEncoderTickCount(uint8_t wheel)
 {
-	if (wheel == LEFT_WHEEL)
+	if (wheel == WHEEL_1)
 	{
 		return TickCount_1;
 	}
-	else if (wheel == RIGHT_WHEEL)
+	else if (wheel == WHEEL_2)
 	{
 		return TickCount_2;
 	}
@@ -165,12 +151,12 @@ uint8_t : select which wheels's current tick count you want to reset
  Author
    Sander Tonkens
 ****************************************************************************/
-void Enc_ResetTickCount(uint8_t wheel){
+void ResetEncoderTickCount(uint8_t wheel){
 	
-	if(wheel == LEFT_WHEEL){
+	if(wheel == WHEEL_1){
 		TickCount_1 = 0;
 	}
-	else if(wheel == RIGHT_WHEEL){
+	else if(wheel == WHEEL_2){
 		TickCount_2 = 0;
 	}
 	else if(wheel == BOTH_WHEELS){
@@ -196,18 +182,18 @@ uint8_t : select which sensor's reading you want to return
  Author
    Sander Tonkens
 ****************************************************************************/
-float Enc_GetPeriod(uint8_t sensor){
+float QueryEncoderPeriod(uint8_t sensor){
 	
-	if(sensor == LEFT_A){
+	if(sensor == WHEEL1A){
 		return Last_Period_1A;
 	}
-	else if(sensor == LEFT_B){
+	else if(sensor == WHEEL1B){
 		return Last_Period_1B;
 	}
-	else if(sensor == RIGHT_A){
+	else if(sensor == WHEEL2A){
 		return Last_Period_2A;
 	}
-	else if(sensor == RIGHT_B){
+	else if(sensor == WHEEL2B){
 		return Last_Period_2B;
 	}
 	else{
@@ -232,18 +218,18 @@ uint8_t : select which sensor's reading you want to return
  Author
    Sander Tonkens
 ****************************************************************************/
-uint32_t Enc_GetLastEdge(uint8_t sensor){
+uint32_t QueryEncoderLastEdge(uint8_t sensor){
 	
-	if(sensor == LEFT_A){
+	if(sensor == WHEEL1A){
 		return Last_Capture_1A;
 	}
-	else if(sensor == LEFT_B){
+	else if(sensor == WHEEL1B){
 		return Last_Capture_1B;
 	}
-	else if(sensor == RIGHT_A){
+	else if(sensor == WHEEL2A){
 		return Last_Capture_2A;
 	}
-	else if(sensor == RIGHT_B){
+	else if(sensor == WHEEL2B){
 		return Last_Capture_2B;
 	}
 	else{
@@ -536,3 +522,4 @@ void Enc_2BISR(void)
 }
 
 /*------------------------------- Footnotes -------------------------------*/
+/*------------------------------ End of file ------------------------------*/

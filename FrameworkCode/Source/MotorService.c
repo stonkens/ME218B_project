@@ -155,7 +155,7 @@ ES_Event_t RunMotorService(ES_Event_t ThisEvent)
       {
         printf("\r\n In init state of MotorService\r\n");
         //Transitioning to RegularOperation state
-        PWMSetDuty(0, 0, ADVANCE);
+        //PWMSetDuty(0, 0, ADVANCE);
         CurrentState = Forward;
       }
     }
@@ -164,7 +164,7 @@ ES_Event_t RunMotorService(ES_Event_t ThisEvent)
     {
       if (ThisEvent.EventType == ES_CLEANING_UP)
       {
-        PWMSetDuty(HALF_SPEED_A, HALF_SPEED_B, ADVANCE);
+        //PWMSetDuty(HALF_SPEED_A, HALF_SPEED_B, ADVANCE);
       
       /*  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
         HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI;
@@ -177,7 +177,7 @@ ES_Event_t RunMotorService(ES_Event_t ThisEvent)
       
       if(ThisEvent.EventType == ES_GAME_OVER)
       {
-        PWMSetDuty(0, 0, ADVANCE);
+        //PWMSetDuty(0, 0);
       }
       
       if(ThisEvent.EventType == ES_BUMPER_HIT)
@@ -189,7 +189,7 @@ ES_Event_t RunMotorService(ES_Event_t ThisEvent)
     }
     case Backward:
     {
-       PWMSetDuty(HALF_SPEED_A, HALF_SPEED_B, REVERSE);
+       //PWMSetDuty(HALF_SPEED_A, HALF_SPEED_B);
      /*   HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT4HI;
         HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT5HI;
         

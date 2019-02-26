@@ -38,13 +38,12 @@
 #include "DriveMotorPWM.h"
 
 /*----------------------------- Module Defines ----------------------------*/
-#define ONE_SEC 1000
 #define PWMTicksPerMs 40000 / 32    // period in ms * pwm ticks per ms
 #define PWMTicksPer100us 4000 / 32  // period in us * pwm ticks per us
 #define BitsPerNibble 4
 
-#define GenA_Normal1 (PWM_1_GENA_ACTCMPAU_ONE | PWM_1_GENA_ACTCMPAD_ZERO)
-#define GenB_Normal1 (PWM_1_GENB_ACTCMPBU_ONE | PWM_1_GENB_ACTCMPBD_ZERO)
+#define PWM1_GenA_Normal (PWM_1_GENA_ACTCMPAU_ONE | PWM_1_GENA_ACTCMPAD_ZERO)
+#define PWM1_GenB_Normal (PWM_1_GENB_ACTCMPBU_ONE | PWM_1_GENB_ACTCMPBD_ZERO)
 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine.
@@ -62,6 +61,28 @@ static void RestoreDC_2(void);
 static uint32_t PWMFrequency = 3000;
 
 /*------------------------------ Module Code ------------------------------*/
+/****************************************************************************
+ Function
+    InitDriveMotor
+
+ Parameters
+   None
+
+ Returns
+   None
+
+ Description
+   Initializes Enable lines for DC motor PB0 and PB1
+ Notes
+
+ Author
+   Sander Tonkens, 2/05/18, 17:50
+****************************************************************************/
+void InitDriveMotor(void)
+{
+	InitDriveMotorGPIO();
+	InitDriveMotorPWM();
+}
 
 /****************************************************************************
  Function
@@ -88,8 +109,6 @@ void InitDriveMotorGPIO(void)
   {}
   ;
 
-  //HWREG(GPIO_PORTB_BASE + GPIO_O_DEN) |= (BIT0HI | BIT1HI);
-  //HWREG(GPIO_PORTB_BASE + GPIO_O_DIR) |= (BIT0HI | BIT1HI);
   HWREG(GPIO_PORTB_BASE + GPIO_O_DEN) |= (BIT2HI | BIT3HI);
   HWREG(GPIO_PORTB_BASE + GPIO_O_DIR) |= (BIT2HI | BIT3HI);
 
@@ -116,11 +135,10 @@ void InitDriveMotorGPIO(void)
    Sander Tonkens, 2/05/18, 17:50
 ****************************************************************************/
 
-void InitDrivePWM(void)
+void InitDriveMotorPWM(void)
 {
-  // start by enabling the clock to the PWM Module (PWM0)
+  // start by enabling the clock to the PWM Module (There is PWM0 and PWM1 as options)
   HWREG(SYSCTL_RCGCPWM) |= SYSCTL_RCGCPWM_R0;
-
   //The clock for Port B is already enabled in InitMotorGPIO
   //HWREG(SYSCTL_RCGCGPIO) |= SYSCTL_RCGCGPIO_R1;
   // Select the PWM clock as System Clock/32
@@ -131,48 +149,38 @@ void InitDrivePWM(void)
   {}
   ;
   // disable the PWM while initializing
-  //HWREG(PWM0_BASE + PWM_O_0_CTL) = 0;
   HWREG(PWM0_BASE + PWM_O_1_CTL) = 0;
   // program generators to go to 1 at rising compare A/B, 0 on falling compare A/B
-  //HWREG(PWM0_BASE + PWM_O_0_GENA) = GenA_Normal;
-  //HWREG(PWM0_BASE + PWM_O_0_GENB) = GenB_Normal;
-  HWREG(PWM0_BASE + PWM_O_1_GENA) = GenA_Normal1;
-  HWREG(PWM0_BASE + PWM_O_1_GENB) = GenB_Normal1;
+  HWREG(PWM0_BASE + PWM_O_1_GENA) = PWM1_GenA_Normal;
+  HWREG(PWM0_BASE + PWM_O_1_GENB) = PWM1_GenB_Normal;
 
   uint32_t PeriodIn100us = 10000 / PWMFrequency;
   // If this mode above is selected we need to modify PWM Ticks per ms by factor 10
-  //HWREG(PWM0_BASE+PWM_O_0_LOAD) = ((PeriodIn100us * PWMTicksPer100us))>>1;
   HWREG(PWM0_BASE + PWM_O_1_LOAD) = ((PeriodIn100us * PWMTicksPer100us)) >> 1;
-  //Set100_DC_1();
-  //HWREG(PWM0_BASE+PWM_O_0_CMPA) = HWREG(PWM0_BASE+PWM_O_0_LOAD)>>1;
-  //HWREG(PWM0_BASE+PWM_O_0_CMPB) = HWREG(PWM0_BASE+PWM_O_0_LOAD)>>1;
-
+		
   HWREG(PWM0_BASE + PWM_O_1_CMPA) = HWREG(PWM0_BASE + PWM_O_1_LOAD) >> 1;
   HWREG(PWM0_BASE + PWM_O_1_CMPB) = HWREG(PWM0_BASE + PWM_O_1_LOAD) >> 1;
-  // enable the PWM outputs
-  //HWREG(PWM0_BASE+PWM_O_ENABLE) |= (PWM_ENABLE_PWM0EN | PWM_ENABLE_PWM1EN);
+  
+	// enable the PWM outputs
   HWREG(PWM0_BASE + PWM_O_ENABLE) |= (PWM_ENABLE_PWM2EN | PWM_ENABLE_PWM3EN);
-  // now configure the Port B pins to be PWM outputs
-  // alternate function for PB6
-  //HWREG(GPIO_PORTB_BASE+GPIO_O_AFSEL) |= (BIT6HI | BIT7HI);
+  
+	// now configure the Port B pins to be PWM outputs
   HWREG(GPIO_PORTB_BASE + GPIO_O_AFSEL) |= (BIT4HI | BIT5HI);
+		
   // now choose to map PWM to those pins, this is a mux value of 4 that we
   // want to use for specifying the function on bits 6 and 7
-  //HWREG(GPIO_PORTB_BASE+GPIO_O_PCTL) =
-  //(HWREG(GPIO_PORTB_BASE+GPIO_O_PCTL) & 0xf0ffffff) + (4<<(6*BitsPerNibble)) + (4<<(7*BitsPerNibble));
   HWREG(GPIO_PORTB_BASE + GPIO_O_PCTL) =
       (HWREG(GPIO_PORTB_BASE + GPIO_O_PCTL) & 0xff00ffff) + (4 << (4 * BitsPerNibble)) + (4 << (5 * BitsPerNibble));
       //Kristine + Sander comment: Check if working with this configuration: otherwise 0x00ffffff
-  // Enable pins 6 on Port B for digital I/O
-  //HWREG(GPIO_PORTB_BASE+GPIO_O_DEN) |= (BIT6HI | BIT7HI);
+			
+  // Enable pins 4 and 5 on Port B for digital I/O
   HWREG(GPIO_PORTB_BASE + GPIO_O_DEN) |= (BIT4HI | BIT5HI);
-  // make pins 6 on Port B into outputs
-  //HWREG(GPIO_PORTB_BASE+GPIO_O_DIR) |= (BIT6HI | BIT7HI);
+	
+  // make pins 4 and 5 on Port B into outputs
   HWREG(GPIO_PORTB_BASE + GPIO_O_DIR) |= (BIT4HI | BIT5HI);
+	
   // set the up/down count mode, enable the PWM generator and make
   // both generator updates locally synchronized to zero count
-  //HWREG(PWM0_BASE+ PWM_O_0_CTL) = (PWM_0_CTL_MODE | PWM_0_CTL_ENABLE |
-  //PWM_0_CTL_GENAUPD_LS | PWM_0_CTL_GENBUPD_LS);
   HWREG(PWM0_BASE + PWM_O_1_CTL) = (PWM_1_CTL_MODE | PWM_1_CTL_ENABLE |
       PWM_1_CTL_GENAUPD_LS | PWM_1_CTL_GENBUPD_LS);
 }
@@ -364,7 +372,7 @@ static void Set100_DC_1(void)
 static void RestoreDC_1(void)
 {
   // To restore the previous DC, simply set the action back to the normal actions
-  HWREG(PWM0_BASE + PWM_O_1_GENA) = GenA_Normal1;
+  HWREG(PWM0_BASE + PWM_O_1_GENA) = PWM1_GenA_Normal;
 }
 
 /****************************************************************************
@@ -436,6 +444,6 @@ static void Set100_DC_2(void)
 static void RestoreDC_2(void)
 {
   // To restore the previous DC, simply set the action back to the normal actions
-  HWREG(PWM0_BASE + PWM_O_1_GENB) = GenB_Normal1;
+  HWREG(PWM0_BASE + PWM_O_1_GENB) = PWM1_GenB_Normal;
 }
 
