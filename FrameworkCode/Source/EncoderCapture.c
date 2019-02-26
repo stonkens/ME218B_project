@@ -44,264 +44,215 @@
 #include "InitializeHardware.h"
 #include "MotorService.h"
 
+
+#include "EncoderCapture.h"
+
 /*----------------------------- Module Defines ----------------------------*/
 #define BitsPerNibble 4
 #define GenB_Normal (PWM_1_GENB_ACTCMPBU_ONE | PWM_1_GENB_ACTCMPBD_ZERO)
 #define GenA_Normal (PWM_1_GENB_ACTCMPBU_ONE | PWM_1_GENB_ACTCMPBD_ZERO)
 #define PeriodInMS 0.414                      //empirically determined for this motor
 #define TicksPerMS 40000
-#define ENCODER_TIME 1000
 #define PULSES_PER_REV 512
 #define PULSES_PER_REV_SMALL 3
+
+#define LEFT_WHEEL 1
+#define RIGHT_WHEEL 2
+#define BOTH_WHEELS 0
+
+#define LEFT_A 1
+#define RIGHT_A 2
+#define LEFT_B 3
+#define RIGHT_B 4
+
+/*---------------------------- Module Variables ---------------------------*/
+// Data private to the module
+static float Last_Period_1A;
+static float Last_Period_1B;
+static float Last_Period_2A;
+static float Last_Period_2B;
+
+static uint32_t Last_Capture_1A;
+static uint32_t Last_Capture_1B;
+static uint32_t Last_Capture_2A;
+static uint32_t Last_Capture_2B;
+
+static float TickCount_1;
+static float TickCount_2;
 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this service.They should be functions
    relevant to the behavior of this service
 */
-static void InitInputCaptures(void);
-static void InitPeriodicInt(void);
-static uint32_t calculateRPM(void);
-/*---------------------------- Module Variables ---------------------------*/
-// with the introduction of Gen2, we need a module level Priority variable
-static uint8_t  MyPriority;
-static uint32_t periodInTicks_A1; //period for channel A for MOTOR 1/A in ticks
-static uint32_t periodInTicks_B1; //period for channel B for MOTOR 1/A in ticks
-static uint32_t periodInTicks_A2; //period for channel A for MOTOR 2/B in ticks
-static uint32_t periodInTicks_B2; //period for channel B for MOTOR 2/B in ticks
-static uint32_t LastCapture_A1; //encoder channel A for MOTOR 1/A
-static uint32_t LastCapture_B1; //encoder channel B for MOTOR 1/A
-static uint32_t LastCapture_A2; //encoder channel A for MOTOR 2/B
-static uint32_t LastCapture_B2; //encoder channel B for MOTOR 2/B
-// control variables 
-static float    Kp;
-static float    Ki;
-static uint32_t RPM;
-static int32_t  SumError;
-static int32_t  RPMError;
-static uint32_t TargetRPM;
-static float    RequestedDuty;
-static uint32_t CommandDuty;
+static void InitInputCaptureEnc_1(void);
+static void InitInputCaptureEnc_2(void);
+
 /*------------------------------ Module Code ------------------------------*/
+
 /****************************************************************************
  Function
-     InitMotorService
+   Enc_Init
 
  Parameters
-     uint8_t : the priority of this service
+   void
 
  Returns
-     bool, false if error in initialization, true otherwise
+   void
 
  Description
-
+   initializes hardware and interrupts for left and right encoders
  Notes
-
+   
+ Author
+   Sander Tonkens
 ****************************************************************************/
-bool InitEncoderService(uint8_t Priority)
-{
-  ES_Event_t ThisEvent;
-  MyPriority = Priority;
-  ES_Timer_InitTimer(ENCODER_TIMER, ENCODER_TIME);
-  InitInputCaptures();
-  //InitPeriodicInt();
-  //Kp = 2;
-  //Ki = 0.1;
-  
-
-  //ThisEvent.EventType = ES_INIT;
-  if (ES_PostToService(MyPriority, ThisEvent) == true)
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+void Enc_Init(void){
+	 //initialize encoders A & B for motor 1 (left)
+	InitInputCaptureEnc_1();
+	 //initialize encoders A & B for motor 2 (right)
+	InitInputCaptureEnc_2();
 }
 
 /****************************************************************************
  Function
-     PostEncoderService
+   Enc_GetTickCount
 
  Parameters
-     ES_Event ThisEvent ,the event to post to the queue
+uint8_t: select which wheel's current tick count to return
 
  Returns
-     bool false if the Enqueue operation failed, true otherwise
+   Current tick count for the selected wheel
 
  Description
-     Posts an event to this state machine's queue
+   
  Notes
-
+   
+ Author
+   Sander Tonkens
 ****************************************************************************/
-bool PostEncoderService(ES_Event_t ThisEvent)
+
+float Enc_GetTickCount(uint8_t wheel)
 {
-  return ES_PostToService(MyPriority, ThisEvent);
+	if (wheel == LEFT_WHEEL)
+	{
+		return TickCount_1;
+	}
+	else if (wheel == RIGHT_WHEEL)
+	{
+		return TickCount_2;
+	}
+	
+	else
+	{
+		return 0;
+	}
 }
 
 /****************************************************************************
  Function
-    RunEncoderService
+   Enc_ResetTickCount
 
  Parameters
-   ES_Event : the event to process
+uint8_t : select which wheels's current tick count you want to reset
 
  Returns
-   ES_Event, ES_NO_EVENT if no error ES_ERROR otherwise
+  void
 
  Description
-
+	Sets a wheel's tick count to 0
  Notes
-
+   
+ Author
+   Sander Tonkens
 ****************************************************************************/
-ES_Event_t RunEncoderService(ES_Event_t ThisEvent)
-{
-  ES_Event_t ReturnEvent;
-  ReturnEvent.EventType = ES_NO_EVENT; // assume no errors
-
-  //printf("\r\n Running encoder service"); 
-  
-  if ((ThisEvent.EventType == ES_TIMEOUT) && (ThisEvent.EventParam ==
-      ENCODER_TIMER))
-  {
-    //printf("\r\n A1_period: %d B1_period: %d",periodInTicks_A1,periodInTicks_B1);
-    printf("\r\n A2_period: %d B2_period: %d",periodInTicks_A2,periodInTicks_B2);
-    ES_Timer_InitTimer(ENCODER_TIMER, ENCODER_TIME);
-  }
-  //printf("Right before the return\r\n");
-  return ReturnEvent;
+void Enc_ResetTickCount(uint8_t wheel){
+	
+	if(wheel == LEFT_WHEEL){
+		TickCount_1 = 0;
+	}
+	else if(wheel == RIGHT_WHEEL){
+		TickCount_2 = 0;
+	}
+	else if(wheel == BOTH_WHEELS){
+		TickCount_1 = 0;
+		TickCount_2 = 0;
+	}
 }
 
-//uint32_t getEncoderPeriod(void)
-//{
-//  return periodInTicks;
-//}
+/****************************************************************************
+ Function
+   Enc_GetPeriod
 
-/* Functions private to the module */
+ Parameters
+uint8_t : select which sensor's reading you want to return
 
-static uint32_t calculateRPM(void)
-{
-//  //RPM = 2400000000 / periodInTicks / (PULSES_PER_REV) * 6);  // calculation for large motors in lab
-//  RPM = 2400000000 / periodInTicks / (PULSES_PER_REV_SMALL * 298);  // 2400000000 is the number of ticks/min ; 6 is the 5.9 gear ratio rounded up
-//  return RPM;
+ Returns
+  void
+
+ Description
+	Getter for last recorded pulse period from selected sensor
+ Notes
+   
+ Author
+   Sander Tonkens
+****************************************************************************/
+float Enc_GetPeriod(uint8_t sensor){
+	
+	if(sensor == LEFT_A){
+		return Last_Period_1A;
+	}
+	else if(sensor == LEFT_B){
+		return Last_Period_1B;
+	}
+	else if(sensor == RIGHT_A){
+		return Last_Period_2A;
+	}
+	else if(sensor == RIGHT_B){
+		return Last_Period_2B;
+	}
+	else{
+		return 0;
+	}
 }
 
-static void InitPeriodicInt(void)    //PC5
-{// start by enabling the clock to the timer (Wide Timer 0)
-//  HWREG(SYSCTL_RCGCWTIMER) |= SYSCTL_RCGCWTIMER_R0; // kill a few cycles to let the clock get going
-//  while ((HWREG(SYSCTL_PRWTIMER) & SYSCTL_PRWTIMER_R0) != SYSCTL_PRWTIMER_R0)
-//  {}
-//  ;
-//// make sure that timer (Timer B) is disabled before configuring
-//  HWREG(WTIMER0_BASE + TIMER_O_CTL) &= ~TIMER_CTL_TBEN;
-//// set it up in 32bit wide (individual, not concatenated) mode
-//  HWREG(WTIMER0_BASE + TIMER_O_CFG) = TIMER_CFG_16_BIT;
-//// set up timer B in periodic mode so that it repeats the time-outs
-//  HWREG(WTIMER0_BASE + TIMER_O_TBMR) =
-//      (HWREG(WTIMER0_BASE + TIMER_O_TBMR) & ~TIMER_TBMR_TBMR_M) |
-//      TIMER_TBMR_TBMR_PERIOD;
-//// set timeout to 2mS
-//  HWREG(WTIMER0_BASE + TIMER_O_TBILR) = TicksPerMS * 2;
-//// enable a local timeout interrupt
-//  HWREG(WTIMER0_BASE + TIMER_O_IMR) |= TIMER_IMR_TBTOIM;
-//// set the interrupt priority to the second highest priority: 1;
-//  HWREG(NVIC_PRI23_INTD_M) = 1;
-//// enable the Timer B in Wide Timer 0 interrupt in the NVIC
-//// it is interrupt number 95 so appears in EN2 at bit 31
-//  HWREG(NVIC_EN2) |= BIT31HI;
-//// make sure interrupts are enabled globally
-//  __enable_irq();
-//// now kick the timer off by enabling it and enabling the timer to
-//// stall while stopped by the debugger
-//  HWREG(WTIMER0_BASE + TIMER_O_CTL) |= (TIMER_CTL_TBEN |
-//      TIMER_CTL_TBSTALL);
-}
+/****************************************************************************
+ Function
+   Enc_GetLastEdge
 
-void controlLoopISR(void)
-{
-//  raiseIO(); //for 2.6
-//  //start by clearing the source of the interrupt, the input capture event
-//  HWREG(WTIMER0_BASE + TIMER_O_ICR) = TIMER_ICR_TBTOCINT;
-//  //implement control law
-//  TargetRPM = 30; //getScaledValue();
-//  RPM = calculateRPM();
-//  RPMError = TargetRPM - RPM;
-//  SumError = SumError + RPMError;
-//  RequestedDuty = Kp * (RPMError + (Ki * SumError));
-//  //anti-windup for the integrator
-//  if (RequestedDuty > 100)
-//  {
-//    RequestedDuty = 100;
-//    SumError -= RPMError; /* anti-windup */
-//  }
-//  else if (RequestedDuty < 0)
-//  {
-//    RequestedDuty = 0;
-//    SumError -= RPMError; /* anti-windup */
-//  }
-//  CommandDuty = RequestedDuty;
-//  setDuty(CommandDuty);
-//  lowerIO(); //for 2.6
-}
+ Parameters
+uint8_t : select which sensor's reading you want to return
 
-void A1ISR(void)
-{
-  //printf(".");
-  uint32_t    ThisCapture_A1;
-  //start by clearing the source of the interrupt, the input capture event
-  HWREG(WTIMER0_BASE + TIMER_O_ICR) = TIMER_ICR_CAECINT;
-  //read the input capture pin
-  ThisCapture_A1 = HWREG(WTIMER0_BASE + TIMER_O_TAR);
-  //take the difference between the last input capture and this input capture
-  periodInTicks_A1 = ThisCapture_A1 - LastCapture_A1;
-  //set the last capture value
-  LastCapture_A1 = ThisCapture_A1;
+ Returns
+  void
+
+ Description
+	Getter for last recorded edge time from selected sensor
+ Notes
+   
+ Author
+   Sander Tonkens
+****************************************************************************/
+uint32_t Enc_GetLastEdge(uint8_t sensor){
+	
+	if(sensor == LEFT_A){
+		return Last_Capture_1A;
+	}
+	else if(sensor == LEFT_B){
+		return Last_Capture_1B;
+	}
+	else if(sensor == RIGHT_A){
+		return Last_Capture_2A;
+	}
+	else if(sensor == RIGHT_B){
+		return Last_Capture_2B;
+	}
+	else{
+		return 0;
+	}
 }
 
 
-void B1ISR(void)
-{
-  //printf(",");
-  uint32_t    ThisCapture_B1;
-  //start by clearing the source of the interrupt, the input capture event
-  HWREG(WTIMER0_BASE + TIMER_O_ICR) = TIMER_ICR_CBECINT;
-  //read the input capture pin
-  ThisCapture_B1 = HWREG(WTIMER0_BASE + TIMER_O_TBR);
-  //take the difference between the last input capture and this input capture
-  periodInTicks_B1 = ThisCapture_B1 - LastCapture_B1;
-  //set the last capture value
-  LastCapture_B1 = ThisCapture_B1;
-}
-
-void A2ISR(void)
-{
-  //printf(".");
-  uint32_t    ThisCapture_A2;
-  //start by clearing the source of the interrupt, the input capture event
-  HWREG(WTIMER1_BASE + TIMER_O_ICR) = TIMER_ICR_CAECINT;
-  //read the input capture pin
-  ThisCapture_A2 = HWREG(WTIMER1_BASE + TIMER_O_TAR);
-  //take the difference between the last input capture and this input capture
-  periodInTicks_A2 = ThisCapture_A2 - LastCapture_A2;
-  //set the last capture value
-  LastCapture_A2 = ThisCapture_A2;
-}
-
-void B2ISR(void)
-{
-  //printf(",");
-  uint32_t    ThisCapture_B2;
-  //start by clearing the source of the interrupt, the input capture event
-  HWREG(WTIMER1_BASE + TIMER_O_ICR) = TIMER_ICR_CBECINT;
-  //read the input capture pin
-  ThisCapture_B2 = HWREG(WTIMER1_BASE + TIMER_O_TBR);
-  //take the difference between the last input capture and this input capture
-  periodInTicks_B2 = ThisCapture_B2 - LastCapture_B2;
-  //set the last capture value
-  LastCapture_B2 = ThisCapture_B2;
-}
-
-static void InitInputCaptures(void)
+static void InitInputCaptureEnc_1(void)
 {
   /*----------------------------- PC4 -----------------------------*/
 // start by enabling the clock to the timer (Wide Timer 0)
@@ -394,12 +345,16 @@ static void InitInputCaptures(void)
 // it is interrupt number 95 so appears in EN2 at bit 31
   HWREG(NVIC_EN2) |= BIT31HI;
 // make sure interrupts are enabled globally
-  __enable_irq();
+ // __enable_irq();
 // now kick the timer off by enabling it and enabling the timer to
 // stall while stopped by the debugger
   HWREG(WTIMER0_BASE + TIMER_O_CTL) |= (TIMER_CTL_TBEN | TIMER_CTL_TBSTALL);
    //printf("\r\nFinished init input captures");
-  
+
+}
+
+static void InitInputCaptureEnc_2(void)
+{	
   /*----------------------------- PC6 -----------------------------*/
 // start by enabling the clock to the timer (Wide Timer 1)
   HWREG(SYSCTL_RCGCWTIMER) |= SYSCTL_RCGCWTIMER_R1;
@@ -489,10 +444,95 @@ static void InitInputCaptures(void)
 // it is interrupt number 97 so appears in EN3 at bit 1
   HWREG(NVIC_EN3) |= BIT1HI;
 // make sure interrupts are enabled globally
-  __enable_irq();
+ // __enable_irq();
 // now kick the timer off by enabling it and enabling the timer to
 // stall while stopped by the debugger
   HWREG(WTIMER1_BASE + TIMER_O_CTL) |= (TIMER_CTL_TBEN | TIMER_CTL_TBSTALL); 
+}
+
+
+void Enc_1AISR(void)
+{
+  //printf(".");
+  uint32_t    ThisCapture_1A;
+  //start by clearing the source of the interrupt, the input capture event
+  HWREG(WTIMER0_BASE + TIMER_O_ICR) = TIMER_ICR_CAECINT;
+  //read the input capture pin
+  ThisCapture_1A = HWREG(WTIMER0_BASE + TIMER_O_TAR);
+  //take the difference between the last input capture and this input capture
+  Last_Period_1A = ThisCapture_1A - Last_Capture_1A;
+  //set the last capture value
+  Last_Capture_1A = ThisCapture_1A;
+	
+	//change Tick Count (based on quadrature) MAYBE REVERSED
+	
+	//if Encoder B is high
+	if(HWREG(GPIO_PORTC_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT5HI)
+	{
+		//Increment Tick Count
+		TickCount_1++;
+	}
+	else
+	{
+		//Decrement Tick count and take negative of Last Period
+		TickCount_1--;
+		Last_Period_1A = -Last_Period_1A;
+	}
+	
+}
+
+
+void Enc_1BISR(void)
+{
+  //printf(",");
+  uint32_t    ThisCapture_1B;
+  //start by clearing the source of the interrupt, the input capture event
+  HWREG(WTIMER0_BASE + TIMER_O_ICR) = TIMER_ICR_CBECINT;
+  //read the input capture pin
+  ThisCapture_1B = HWREG(WTIMER0_BASE + TIMER_O_TBR);
+  //take the difference between the last input capture and this input capture
+  Last_Period_1B = ThisCapture_1B - Last_Capture_1B;
+  //set the last capture value
+  Last_Capture_1B = ThisCapture_1B;
+}
+
+void Enc_2AISR(void)
+{
+  //printf(".");
+  uint32_t    ThisCapture_2A;
+  //start by clearing the source of the interrupt, the input capture event
+  HWREG(WTIMER1_BASE + TIMER_O_ICR) = TIMER_ICR_CAECINT;
+  //read the input capture pin
+  ThisCapture_2A = HWREG(WTIMER1_BASE + TIMER_O_TAR);
+  //take the difference between the last input capture and this input capture
+  Last_Period_2A = ThisCapture_2A - Last_Capture_2A;
+  //set the last capture value
+  Last_Capture_2A = ThisCapture_2A;
+	
+	//Change tick count (based on quadrature)
+	if(HWREG(GPIO_PORTC_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT7HI)
+	{
+		TickCount_2++;
+	}
+	else
+	{
+		TickCount_2--;
+		Last_Period_2A = - Last_Period_2A;
+	}
+}
+
+void Enc_2BISR(void)
+{
+  //printf(",");
+  uint32_t    ThisCapture_2B;
+  //start by clearing the source of the interrupt, the input capture event
+  HWREG(WTIMER1_BASE + TIMER_O_ICR) = TIMER_ICR_CBECINT;
+  //read the input capture pin
+  ThisCapture_2B = HWREG(WTIMER1_BASE + TIMER_O_TBR);
+  //take the difference between the last input capture and this input capture
+  Last_Capture_2B = ThisCapture_2B - Last_Capture_2B;
+  //set the last capture value
+  Last_Capture_2B = ThisCapture_2B;
 }
 
 /*------------------------------- Footnotes -------------------------------*/

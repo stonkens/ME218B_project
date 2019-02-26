@@ -82,10 +82,10 @@ __heap_limit
         EXTERN  ShortTimerAHandler
         EXTERN  ShortTimerBHandler
 		EXTERN  SPIISRResponse
-		EXTERN  A1ISR
-		EXTERN  B1ISR
-		EXTERN  A2ISR
-		EXTERN  B2ISR
+		EXTERN  Enc_1AISR
+		EXTERN  Enc_1BISR
+		EXTERN  Enc_2AISR
+		EXTERN  Enc_2BISR
 ;        EXTERN  UARTStdioIntHandler
 
 ;******************************************************************************
@@ -205,10 +205,10 @@ __Vectors
         DCD     0                           ; Reserved
         DCD     ShortTimerAHandler          ; Timer 5 subtimer A
         DCD     ShortTimerBHandler          ; Timer 5 subtimer B
-        DCD     A1ISR			            ; Wide Timer 0 subtimer A
-        DCD     B1ISR			            ; Wide Timer 0 subtimer B
-        DCD     A2ISR			            ; Wide Timer 1 subtimer A
-        DCD     B2ISR			            ; Wide Timer 1 subtimer B
+        DCD     Enc_1AISR		            ; Wide Timer 0 subtimer A
+        DCD     Enc_1BISR		            ; Wide Timer 0 subtimer B
+        DCD     Enc_2AISR			        ; Wide Timer 1 subtimer A
+        DCD     Enc_2BISR		            ; Wide Timer 1 subtimer B
         DCD     IntDefaultHandler           ; Wide Timer 2 subtimer A
         DCD     IntDefaultHandler           ; Wide Timer 2 subtimer B
         DCD     IntDefaultHandler           ; Wide Timer 3 subtimer A

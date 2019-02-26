@@ -570,8 +570,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Source\EncoderService.c</PathWithFileName>
-      <FilenameWithoutPath>EncoderService.c</FilenameWithoutPath>
+      <PathWithFileName>.\Source\EncoderCapture.c</PathWithFileName>
+      <FilenameWithoutPath>EncoderCapture.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1022,8 +1022,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Headers\EncoderService.h</PathWithFileName>
-      <FilenameWithoutPath>EncoderService.h</FilenameWithoutPath>
+      <PathWithFileName>.\Headers\EncoderCapture.h</PathWithFileName>
+      <FilenameWithoutPath>EncoderCapture.h</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

@@ -448,9 +448,9 @@
               <FilePath>.\Source\DCMotorService.c</FilePath>
             </File>
             <File>
-              <FileName>EncoderService.c</FileName>
+              <FileName>EncoderCapture.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Source\EncoderService.c</FilePath>
+              <FilePath>.\Source\EncoderCapture.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -638,9 +638,9 @@
               <FilePath>.\Headers\DCMotorService.h</FilePath>
             </File>
             <File>
-              <FileName>EncoderService.h</FileName>
+              <FileName>EncoderCapture.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\Headers\EncoderService.h</FilePath>
+              <FilePath>.\Headers\EncoderCapture.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1298,9 +1298,9 @@
               <FilePath>.\Source\DCMotorService.c</FilePath>
             </File>
             <File>
-              <FileName>EncoderService.c</FileName>
+              <FileName>EncoderCapture.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Source\EncoderService.c</FilePath>
+              <FilePath>.\Source\EncoderCapture.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1488,9 +1488,9 @@
               <FilePath>.\Headers\DCMotorService.h</FilePath>
             </File>
             <File>
-              <FileName>EncoderService.h</FileName>
+              <FileName>EncoderCapture.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\Headers\EncoderService.h</FilePath>
+              <FilePath>.\Headers\EncoderCapture.h</FilePath>
             </File>
           </Files>
         </Group>

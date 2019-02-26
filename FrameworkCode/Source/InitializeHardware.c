@@ -39,6 +39,7 @@
 #include "DCMotorService.h"
 #include "SPISM.h"
 #include "IREmitter.h"
+#include "EncoderCapture.h"
 
 // This module
 #include "InitializeHardware.h"
@@ -81,6 +82,7 @@ void InitializeHardware(void)
 	InitDCPWM();
   InitMotorGPIO();
   InitPWM();
+	Enc_Init();
   //InitSPI(); //This uses bits xxx and xxx
   //InitInputCapture();
 
