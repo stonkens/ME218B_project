@@ -5,8 +5,8 @@
 
  ****************************************************************************/
 
-#ifndef PWM_H
-#define PWM_H
+#ifndef DriveMotorPWM_H
+#define DriveMotorPWM_H
 
 #include "ES_Types.h"
 #include <stdint.h>
@@ -21,9 +21,8 @@
 
 // Public Function Prototypes
 
-void InitPWM(void);
-void InitMotorGPIO(void);
-void PWMSetDuty(uint8_t DutyCycleA, uint8_t DutyCycleB, uint8_t RotationDirection);
-void PWMSetDutyCycleA(uint32_t DutyCycleA);
-void PWMSetDutyCycleB(uint32_t DutyCycleB);
-#endif /* PWM_H */
+void InitDriveMotorPWM(void);
+void InitDriveMotorGPIO(void);
+void PWMSetDutyCycle_1(int DutyCycle_1);
+void PWMSetDutyCycle_2(int DutyCycle_2);
+#endif /* DriveMotorPWM_H */

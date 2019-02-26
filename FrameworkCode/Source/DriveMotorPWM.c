@@ -35,7 +35,7 @@
 // Project modules
 
 // This module
-#include "PWM.h"
+#include "DriveMotorPWM.h"
 
 /*----------------------------- Module Defines ----------------------------*/
 #define ONE_SEC 1000
@@ -49,18 +49,17 @@
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine.
 */
-static void Set0_DCA(void);
-static void Set100_DCA(void);
-static void RestoreDCA(void);
+static void Set0_DC_1(void);
+static void Set100_DC_1(void);
+static void RestoreDC_1(void);
 
-static void Set0_DCB(void);
-static void Set100_DCB(void);
-static void RestoreDCB(void);
+static void Set0_DC_2(void);
+static void Set100_DC_2(void);
+static void RestoreDC_2(void);
 
-static void SetRotationDirection(uint8_t RotationDirection);
 
 /*---------------------------- Module Variables ---------------------------*/
-static uint32_t PWMFrequency = 5000;
+static uint32_t PWMFrequency = 3000;
 
 /*------------------------------ Module Code ------------------------------*/
 
@@ -82,7 +81,7 @@ static uint32_t PWMFrequency = 5000;
    Sander Tonkens, 2/05/18, 17:50
 ****************************************************************************/
 
-void InitMotorGPIO(void)
+void InitDriveMotorGPIO(void)
 {
   HWREG(SYSCTL_RCGCGPIO) |= SYSCTL_RCGCGPIO_R1;
   while ((HWREG(SYSCTL_RCGCGPIO) & BIT1HI) != BIT1HI)
@@ -117,7 +116,7 @@ void InitMotorGPIO(void)
    Sander Tonkens, 2/05/18, 17:50
 ****************************************************************************/
 
-void InitPWM(void)
+void InitDrivePWM(void)
 {
   // start by enabling the clock to the PWM Module (PWM0)
   HWREG(SYSCTL_RCGCPWM) |= SYSCTL_RCGCPWM_R0;
@@ -144,7 +143,7 @@ void InitPWM(void)
   // If this mode above is selected we need to modify PWM Ticks per ms by factor 10
   //HWREG(PWM0_BASE+PWM_O_0_LOAD) = ((PeriodIn100us * PWMTicksPer100us))>>1;
   HWREG(PWM0_BASE + PWM_O_1_LOAD) = ((PeriodIn100us * PWMTicksPer100us)) >> 1;
-  //Set100_DCA();
+  //Set100_DC_1();
   //HWREG(PWM0_BASE+PWM_O_0_CMPA) = HWREG(PWM0_BASE+PWM_O_0_LOAD)>>1;
   //HWREG(PWM0_BASE+PWM_O_0_CMPB) = HWREG(PWM0_BASE+PWM_O_0_LOAD)>>1;
 
@@ -178,34 +177,10 @@ void InitPWM(void)
       PWM_1_CTL_GENAUPD_LS | PWM_1_CTL_GENBUPD_LS);
 }
 
-/****************************************************************************
- Function
-    PWMSetDuty
-
- Parameters
-   None
-
- Returns
-   None
-
- Description
-   Middle level function interfacing with MotorService.c, sets desired PWM & direction
- Notes
-
- Author
-   Sander Tonkens, 2/05/18, 17:50
-****************************************************************************/
-
-void PWMSetDuty(uint8_t DutyCycleA, uint8_t DutyCycleB, uint8_t RotationDirection)
-{
-  PWMSetDutyCycleA(DutyCycleA);
-  PWMSetDutyCycleB(DutyCycleB);
-  SetRotationDirection(RotationDirection);
-}
 
 /****************************************************************************
  Function
-    PWMSetDutyCycleA
+    PWMSetDutyCycle_1
 
  Parameters
    None
@@ -221,30 +196,49 @@ void PWMSetDuty(uint8_t DutyCycleA, uint8_t DutyCycleB, uint8_t RotationDirectio
    Sander Tonkens, 2/05/18, 17:50
 ****************************************************************************/
 
-void PWMSetDutyCycleA(uint32_t DutyCycleA)
+void PWMSetDutyCycle_1(int DutyCycle_1)
 {
-  if (DutyCycleA == 0)
+  if (DutyCycle_1 < 0)
   {
-    Set0_DCA();
+		//Set PB2 high (Motor direction pin)
+		HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT2HI;
+		//Set Duty Cycle to positive
+		DutyCycle_1 = - DutyCycle_1;
+    //Change polarity of bits
+    HWREG(PWM0_BASE + PWM_O_INVERT) |= PWM_INVERT_PWM2INV;
+	}
+	
+	else //if DutyCycle_1>=0
+	{
+		HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT2LO;
+		HWREG(PWM0_BASE + PWM_O_INVERT) &= ~PWM_INVERT_PWM2INV;
+	}
+	
+	//After setting direction, bound DutyCycle_1 to interval
+	if(DutyCycle_1 >=100)
+	{
+		Set100_DC_1();
+	}
+	else if (DutyCycle_1 ==0)
+	{
+		//If necessary calculate inverted Duty
+		//DutyCycle_1 = 100 - DutyCycle_1;
+    Set0_DC_1();
   }
-  else if (DutyCycleA == 100)
+  else //Regular operation 0<DutyCycle_1<100
   {
-    Set100_DCA();
-  }
-  else
-  {
-    //printf("DutyCycleA: %d", DutyCycleA);
+    //printf("DutyCycle_1: %d", DutyCycle_1);
     //Ensure to reset DC
-    RestoreDCA();
+    RestoreDC_1();
     //calculate Compare value for Desired Duty Cycle
-    HWREG(PWM0_BASE + PWM_O_1_CMPA) = (HWREG(PWM0_BASE + PWM_O_1_LOAD) * (100 - DutyCycleA)) / 100;
+    HWREG(PWM0_BASE + PWM_O_1_CMPA) = (HWREG(PWM0_BASE + PWM_O_1_LOAD) * (100 - DutyCycle_1)) / 100;
     //store compare value into PWM port
   }
 }
 
 /****************************************************************************
  Function
-    PWMSetDutyCycleB
+    PWMSetDutyCycle_2
 
  Parameters
    None
@@ -260,29 +254,50 @@ void PWMSetDutyCycleA(uint32_t DutyCycleA)
    Sander Tonkens, 2/05/18, 17:50
 ****************************************************************************/
 
-void PWMSetDutyCycleB(uint32_t DutyCycleB)
+void PWMSetDutyCycle_2(int DutyCycle_2)
 {
-  if (DutyCycleB == 0)
+  if (DutyCycle_2 < 0)
   {
-    Set0_DCB();
+		//Set PB2 high (Motor direction pin)
+		HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT3HI;
+		//Set Duty Cycle to positive
+		DutyCycle_2 = - DutyCycle_2;
+    //Change polarity of bits
+    HWREG(PWM0_BASE + PWM_O_INVERT) |= PWM_INVERT_PWM3INV;
+	}
+	
+	else //if DutyCycle_1>=0
+	{
+		HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT3LO;
+		HWREG(PWM0_BASE + PWM_O_INVERT) &= ~PWM_INVERT_PWM3INV;
+	}
+	
+	//After setting direction, bound DutyCycle_1 to interval
+	if(DutyCycle_2 >=100)
+	{
+		Set100_DC_2();
+	}
+	else if (DutyCycle_2 ==0)
+	{
+		//If necessary calculate inverted Duty
+		//DutyCycle_1 = 100 - DutyCycle_1;
+    Set0_DC_2();
   }
-  else if (DutyCycleB == 100)
+  else //Regular operation 0<DutyCycle_1<100
   {
-    Set100_DCB();
-  }
-  else
-  {
+    //printf("DutyCycle_1: %d", DutyCycle_1);
     //Ensure to reset DC
-    RestoreDCB();
+    RestoreDC_2();
     //calculate Compare value for Desired Duty Cycle
-    HWREG(PWM0_BASE + PWM_O_1_CMPB) = (HWREG(PWM0_BASE + PWM_O_1_LOAD) * (100 - DutyCycleB)) / 100;
+    HWREG(PWM0_BASE + PWM_O_1_CMPB) = (HWREG(PWM0_BASE + PWM_O_1_LOAD) * (100 - DutyCycle_2)) / 100;
     //store compare value into PWM port
   }
 }
 
+
 /****************************************************************************
  Function
-    Set0_DCA
+    Set0_DC_1
 
  Parameters
    None
@@ -298,7 +313,7 @@ void PWMSetDutyCycleB(uint32_t DutyCycleB)
    Sander Tonkens, 2/05/18, 17:50
 ****************************************************************************/
 
-static void Set0_DCA(void)
+static void Set0_DC_1(void)
 {
   // To program 0% DC, simply set the action on Zero to set the output to zero
   HWREG(PWM0_BASE + PWM_O_1_GENA) = PWM_1_GENA_ACTZERO_ZERO;
@@ -306,7 +321,7 @@ static void Set0_DCA(void)
 
 /****************************************************************************
  Function
-    Set100_DCA
+    Set100_DC_1
 
  Parameters
    None
@@ -322,7 +337,7 @@ static void Set0_DCA(void)
    Sander Tonkens, 2/05/18, 17:50
 ****************************************************************************/
 
-static void Set100_DCA(void)
+static void Set100_DC_1(void)
 {
   // To program 100% DC, simply set the action on Zero to set the output to one
   HWREG(PWM0_BASE + PWM_O_1_GENA) = PWM_1_GENA_ACTZERO_ONE;
@@ -330,7 +345,7 @@ static void Set100_DCA(void)
 
 /****************************************************************************
  Function
-    RestoreDCA
+    RestoreDC_1
 
  Parameters
    None
@@ -346,7 +361,7 @@ static void Set100_DCA(void)
    Sander Tonkens, 2/05/18, 17:50
 ****************************************************************************/
 
-static void RestoreDCA(void)
+static void RestoreDC_1(void)
 {
   // To restore the previous DC, simply set the action back to the normal actions
   HWREG(PWM0_BASE + PWM_O_1_GENA) = GenA_Normal1;
@@ -354,7 +369,7 @@ static void RestoreDCA(void)
 
 /****************************************************************************
  Function
-    Set0_DCB
+    Set0_DC_2
 
  Parameters
    None
@@ -370,7 +385,7 @@ static void RestoreDCA(void)
    Sander Tonkens, 2/05/18, 17:50
 ****************************************************************************/
 
-static void Set0_DCB(void)
+static void Set0_DC_2(void)
 {
   // To program 0% DC, simply set the action on Zero to set the output to zero
   HWREG(PWM0_BASE + PWM_O_1_GENB) = PWM_1_GENB_ACTZERO_ZERO;
@@ -378,7 +393,7 @@ static void Set0_DCB(void)
 
 /****************************************************************************
  Function
-    Set100_DCB
+    Set100_DC_2
 
  Parameters
    None
@@ -394,7 +409,7 @@ static void Set0_DCB(void)
    Sander Tonkens, 2/05/18, 17:50
 ****************************************************************************/
 
-static void Set100_DCB(void)
+static void Set100_DC_2(void)
 {
   // To program 100% DC, simply set the action on Zero to set the output to one
   HWREG(PWM0_BASE + PWM_O_1_GENB) = PWM_1_GENB_ACTZERO_ONE;
@@ -402,7 +417,7 @@ static void Set100_DCB(void)
 
 /****************************************************************************
  Function
-    RestoreDCB
+    RestoreDC_2
 
  Parameters
    None
@@ -418,75 +433,9 @@ static void Set100_DCB(void)
    Sander Tonkens, 2/05/18, 17:50
 ****************************************************************************/
 
-static void RestoreDCB(void)
+static void RestoreDC_2(void)
 {
   // To restore the previous DC, simply set the action back to the normal actions
   HWREG(PWM0_BASE + PWM_O_1_GENB) = GenB_Normal1;
 }
 
-/****************************************************************************
- Function
-    SetRotationDirection
-
- Parameters
-   None
-
- Returns
-   None
-
- Description
-   Low level function, setting rotation directions on both motor A and B
- Notes
-
- Author
-   Sander Tonkens, 2/05/18, 17:50
-****************************************************************************/
-
-static void SetRotationDirection(uint8_t RotationDirection)
-{
-  if (RotationDirection == ADVANCE)
-  {
-    //Set both high
-   // HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0LO;
-   // HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO;
-    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT2LO;
-    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT3LO;
-
-    HWREG(PWM0_BASE + PWM_O_INVERT) &= ~PWM_INVERT_PWM2INV;
-    HWREG(PWM0_BASE + PWM_O_INVERT) &= ~PWM_INVERT_PWM3INV;
-  }
-  else if (RotationDirection == REVERSE)
-  {
-    //Set both low
-    //HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
-    //HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI;
-    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT2HI;
-    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT3HI;
-    //Change polarity of bits
-    HWREG(PWM0_BASE + PWM_O_INVERT) |= PWM_INVERT_PWM2INV;
-    HWREG(PWM0_BASE + PWM_O_INVERT) |= PWM_INVERT_PWM3INV;
-  }
-  else if (RotationDirection == CW) //equals left turn (CW is more general)
-  {
-   // HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0LO;
-    //HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI;
-    
-    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT2LO;
-    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT3HI;
-
-    HWREG(PWM0_BASE + PWM_O_INVERT) &= ~PWM_INVERT_PWM2INV;
-    HWREG(PWM0_BASE + PWM_O_INVERT) |= PWM_INVERT_PWM3INV;
-  }
-  else if (RotationDirection == CCW) //equals right turn (CCW is more general)
-  {
-    //HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
-    //HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO;
-    
-    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT2HI;
-    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT3LO;
-    
-
-    HWREG(PWM0_BASE + PWM_O_INVERT) |= PWM_INVERT_PWM2INV;
-    HWREG(PWM0_BASE + PWM_O_INVERT) &= ~PWM_INVERT_PWM3INV;
-  }
-}

@@ -428,11 +428,6 @@
               <FilePath>.\Source\MotorService.c</FilePath>
             </File>
             <File>
-              <FileName>PWM.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\PWM.c</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\SPISM.c</FilePath>
@@ -451,6 +446,16 @@
               <FileName>EncoderCapture.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\EncoderCapture.c</FilePath>
+            </File>
+            <File>
+              <FileName>MotorSpeedControl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\MotorSpeedControl.c</FilePath>
+            </File>
+            <File>
+              <FileName>DriveMotorPWM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\DriveMotorPWM.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -618,11 +623,6 @@
               <FilePath>.\Headers\MotorService.h</FilePath>
             </File>
             <File>
-              <FileName>PWM.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\PWM.h</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\SPISM.h</FilePath>
@@ -641,6 +641,16 @@
               <FileName>EncoderCapture.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\EncoderCapture.h</FilePath>
+            </File>
+            <File>
+              <FileName>MotorSpeedControl.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\MotorSpeedControl.h</FilePath>
+            </File>
+            <File>
+              <FileName>DriveMotorPWM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\DriveMotorPWM.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1278,11 +1288,6 @@
               <FilePath>.\Source\MotorService.c</FilePath>
             </File>
             <File>
-              <FileName>PWM.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\PWM.c</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\SPISM.c</FilePath>
@@ -1301,6 +1306,16 @@
               <FileName>EncoderCapture.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\EncoderCapture.c</FilePath>
+            </File>
+            <File>
+              <FileName>MotorSpeedControl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\MotorSpeedControl.c</FilePath>
+            </File>
+            <File>
+              <FileName>DriveMotorPWM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\DriveMotorPWM.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1468,11 +1483,6 @@
               <FilePath>.\Headers\MotorService.h</FilePath>
             </File>
             <File>
-              <FileName>PWM.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\PWM.h</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\SPISM.h</FilePath>
@@ -1491,6 +1501,16 @@
               <FileName>EncoderCapture.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\EncoderCapture.h</FilePath>
+            </File>
+            <File>
+              <FileName>MotorSpeedControl.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\MotorSpeedControl.h</FilePath>
+            </File>
+            <File>
+              <FileName>DriveMotorPWM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\DriveMotorPWM.h</FilePath>
             </File>
           </Files>
         </Group>

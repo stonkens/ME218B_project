@@ -32,7 +32,7 @@
 #include "ES_ShortTimer.h"
 
 // Project modules
-#include "PWM.h"
+#include "DriveMotorPWM.h"
 
 // This module
 #include "DCMotorService.h"
