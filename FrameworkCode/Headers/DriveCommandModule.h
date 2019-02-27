@@ -14,8 +14,8 @@
 #include "ES_Configure.h"
 
 void Drive_Control_Init(void);
-void Drive_Straight(float clampRPM, float distancex100);
-void Drive_Turn(float clampRPM, float degreesx10);
+void Drive_Straight(float distancex100);
+void Drive_Turn(float degreesx10);
 
 
 #endif //DriveCommandModule_H

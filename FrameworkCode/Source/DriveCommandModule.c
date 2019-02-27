@@ -46,11 +46,20 @@
 #define RIGHT 2
 #define BOTH 0
 
+#define PI 3.14159265358979
+
+#define DEG_RAD PI/180
+
 #define STRAIGHT	0
 #define TURN			1
 
-#define TICKS_PER_INCHx10	267.94  //TO BE RECALIBRATED
-#define TICKS_PER_DEGREEx100	226.51 //TO BE RECALIBRATED
+#define STRAIGHT_DRIVE_SPEED	300 //Max drive speed
+#define TURNING_SPEED					300 //Max rotation speed
+
+#define ROTATION_RADIUS 5.12 //In inches (IF RECALIBRATED UPDATED BELOW)
+
+#define TICKS_PER_INCHx10	606.38 //TO BE RECALIBRATED
+#define TICKS_PER_DEGREEx100	541.87 //TO BE RECALIBRATED
 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this service.They should be functions
@@ -107,8 +116,8 @@ void Drive_Control_Init(void){
  Author
    Sander Tonkens
 ****************************************************************************/
-void Drive_Straight(float clampRPM, float distancex100){
-	Drive_SetClampRPM(clampRPM);
+void Drive_Straight(float distancex100){
+	Drive_SetClampRPM(STRAIGHT_DRIVE_SPEED);
 	Drive_SetDistance(distancex100*TICKS_PER_INCHx10/1000);
 }
 
@@ -129,8 +138,8 @@ void Drive_Straight(float clampRPM, float distancex100){
  Author
    Sander Tonkens
 ****************************************************************************/
-void Drive_Turn(float clampRPM, float degreesx10){
-	Drive_SetClampRPM(clampRPM);
+void Drive_Turn(float degreesx10){
+	Drive_SetClampRPM(TURNING_SPEED);
 	Drive_SetHeading(degreesx10*TICKS_PER_DEGREEx100/1000);
 }
 

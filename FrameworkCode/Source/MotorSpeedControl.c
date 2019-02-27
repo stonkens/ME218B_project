@@ -13,7 +13,7 @@
  History
  When           Who     What/Why
  -------------- ---     --------
- 02/16/16 15:05 lxw		 first pass
+ 02/16/16 15:05 ST		 first pass
 ****************************************************************************/
 /*----------------------------- Include Files -----------------------------*/
 /* include header files for the framework and this service
@@ -368,6 +368,8 @@ void Drive_SpeedControlISR(void){
 	
 	 //if Distance Error and Heading Error is within error bounds
 	if((fabsf(DistanceError) <= MIN_ERROR) && (fabsf(HeadingError) <= MIN_ERROR) && Driving == true){
+		printf("Amount of ticks executed: %d", LastTickCount_1);
+		
 		Driving = false;
 		
 		//post event to Master SM indicating that target has been reached
