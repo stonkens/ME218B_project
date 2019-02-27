@@ -245,7 +245,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
                   // for internal transitions, skip changing MakeTransition
                   MakeTransition = true; //mark that we are taking a transition
                   // if transitioning to a state with history change kind of entry
-                  EntryEventKind.EventType = ES_ENTRY;
+                  EntryEventKind.EventType = ES_ENTRY_HISTORY;
                   
 							 }
 							 break;
