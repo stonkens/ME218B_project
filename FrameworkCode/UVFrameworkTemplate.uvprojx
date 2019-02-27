@@ -452,6 +452,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\EncoderService.c</FilePath>
             </File>
+            <File>
+              <FileName>MasterHSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\MasterHSM.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -641,6 +646,11 @@
               <FileName>EncoderService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\EncoderService.h</FilePath>
+            </File>
+            <File>
+              <FileName>MasterHSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\MasterHSM.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1302,6 +1312,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\EncoderService.c</FilePath>
             </File>
+            <File>
+              <FileName>MasterHSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\MasterHSM.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1491,6 +1506,11 @@
               <FileName>EncoderService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\EncoderService.h</FilePath>
+            </File>
+            <File>
+              <FileName>MasterHSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\MasterHSM.h</FilePath>
             </File>
           </Files>
         </Group>
