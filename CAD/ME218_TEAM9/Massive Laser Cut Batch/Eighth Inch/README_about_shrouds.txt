@@ -1,0 +1,1 @@
+Shrouds should be 6 inches tall
