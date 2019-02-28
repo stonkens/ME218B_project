@@ -275,7 +275,8 @@ typedef enum
   RESPONSE_RECEIVED,
   ES_GAME_OVER,
   ES_CLEANING_UP,
-  ES_BUMPER_HIT
+  ES_BUMPER_HIT,
+  EV_MOVE_COMPLETED
 }ES_EventType_t;
 
 /****************************************************************************/

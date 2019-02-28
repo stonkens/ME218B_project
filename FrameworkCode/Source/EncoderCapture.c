@@ -97,6 +97,8 @@ void Enc_Init(void){
 	InitInputCaptureEnc_1();
 	 //initialize encoders A & B for motor 2 (right)
 	InitInputCaptureEnc_2();
+  
+  printf("Initialized Encoder interrupts\r\n");
 }
 
 /****************************************************************************
@@ -439,7 +441,7 @@ static void InitInputCaptureEnc_2(void)
 
 void Enc_1AISR(void)
 {
-  //printf(".");
+  //printf("'");
   uint32_t    ThisCapture_1A;
   //start by clearing the source of the interrupt, the input capture event
   HWREG(WTIMER0_BASE + TIMER_O_ICR) = TIMER_ICR_CAECINT;
@@ -456,13 +458,20 @@ void Enc_1AISR(void)
 	if(HWREG(GPIO_PORTC_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT5HI)
 	{
 		//Increment Tick Count
-		TickCount_1++;
+		//TickCount_1++;
+    
+    //Testing alternative
+    //Decrement Tick Count and take negative of Last Period
+		TickCount_1--;
+		Last_Period_1A = -Last_Period_1A;    
 	}
 	else
 	{
 		//Decrement Tick count and take negative of Last Period
-		TickCount_1--;
-		Last_Period_1A = -Last_Period_1A;
+		//TickCount_1--;
+		//Last_Period_1A = -Last_Period_1A;
+    //Testing alternative
+		TickCount_1++;
 	}
 	
 }
@@ -470,7 +479,7 @@ void Enc_1AISR(void)
 
 void Enc_1BISR(void)
 {
-  //printf(",");
+  //printf("/");
   uint32_t    ThisCapture_1B;
   //start by clearing the source of the interrupt, the input capture event
   HWREG(WTIMER0_BASE + TIMER_O_ICR) = TIMER_ICR_CBECINT;

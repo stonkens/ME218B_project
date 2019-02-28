@@ -16,6 +16,6 @@
 void Drive_Control_Init(void);
 void Drive_Straight(float distancex100);
 void Drive_Turn(float degreesx10);
-
+void StopDrive(void);
 
 #endif //DriveCommandModule_H

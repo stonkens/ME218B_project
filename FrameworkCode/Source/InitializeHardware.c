@@ -40,6 +40,7 @@
 #include "SPISM.h"
 #include "IREmitter.h"
 #include "EncoderCapture.h"
+#include "DriveCommandModule.h"
 
 // This module
 #include "InitializeHardware.h"
@@ -83,6 +84,7 @@ void InitializeHardware(void)
   InitDriveMotor();
   //InitDriveMotorPWM();
 	Enc_Init();
+  Drive_Control_Init();
   //InitSPI(); //This uses bits xxx and xxx
   //InitInputCapture();
 

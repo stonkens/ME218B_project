@@ -39,7 +39,6 @@
 
 /*----------------------------- Module Defines ----------------------------*/
 // Readability defines:
-#define ALL_BITS		(0xff<<2)
 #define BitsPerNibble 4
 
 #define LEFT 1
@@ -141,6 +140,11 @@ void Drive_Straight(float distancex100){
 void Drive_Turn(float degreesx10){
 	Drive_SetClampRPM(TURNING_SPEED);
 	Drive_SetHeading(degreesx10*TICKS_PER_DEGREEx100/1000);
+}
+
+void StopDrive(void)
+{
+  Drive_Stop();
 }
 
 /*------------------------------- Footnotes -------------------------------*/

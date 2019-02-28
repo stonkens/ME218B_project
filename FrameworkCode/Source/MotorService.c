@@ -176,6 +176,11 @@ ES_Event_t RunMotorService(ES_Event_t ThisEvent)
 			printf("Stop MOTOR from moving");
 		}
 	}
+  
+  else if (ThisEvent.EventType == EV_MOVE_COMPLETED)
+  {
+    StopDrive();
+  }
   return ReturnEvent;
 }
 

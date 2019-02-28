@@ -14,6 +14,11 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "ES_Types.h"
+#include <stdint.h>
+#include "ES_Configure.h"
+#include "ES_Framework.h"
+
 /****************************************************************************
 	FUNCTION PROTOTYPES
 ****************************************************************************/

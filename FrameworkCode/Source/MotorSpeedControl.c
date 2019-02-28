@@ -29,6 +29,8 @@
 #include "EncoderCapture.h"
 #include "DriveMotorPWM.h"
 
+#include "MotorService.h"
+
 #include <math.h>
 #include "inc/hw_timer.h"
 #include "inc/hw_memmap.h"
@@ -46,7 +48,7 @@
 #define GEAR_RATIO 50
 #define PULSES_PER_REV 12
 
-#define MIN_ERROR	0
+#define MIN_ERROR	5
 #define MIN_TICKS	0
 
 #define KPM	2
@@ -58,7 +60,7 @@
 #define RPM_I_GAIN 0.3
 
 
-#define UPDATE_TIME 2			//Adjusted every 2 ms
+#define UPDATE_TIME 10			//Adjusted every 2 ms
 
 /*---------------------------- Module Functions ---------------------------*
   prototypes for private functions for this service.They should be functions
@@ -280,7 +282,7 @@ float QueryDriveRPM(uint8_t wheel){
 void Drive_SpeedControlISR(void){
 	
 	ControlLoopCount++;
-	
+	//printf("Timer interrupt\r\n");
 	 //start by clearing the source of the interrupt
 	HWREG(WTIMER5_BASE+TIMER_O_ICR) = TIMER_ICR_TATOCINT;
 	
@@ -320,7 +322,11 @@ void Drive_SpeedControlISR(void){
 	
 	//Based on PD controller
 	DistanceError = (DesiredDistance - ((LastTickCount_1+LastTickCount_2)/2)); //taking average of wheel 1 and 2 when driving straight
-	HeadingError = (DesiredHeading- ((LastTickCount_2-LastTickCount_1)/2)); //Subtracting both to take average when turning
+  //printf("E:%f\r \n", DistanceError);
+	printf("1:%d\r\n", LastTickCount_1);
+  printf("2:%d\r\n", LastTickCount_2);
+  HeadingError = (DesiredHeading- ((LastTickCount_2-LastTickCount_1)/2)); //Subtracting both to take average when turning
+  //printf("HeadingError:%f", HeadingError);
 	DistancePDTerm = KPM*DistanceError + KDM*(DistanceError-LastDistanceError);
 	HeadingPDTerm = KPD*HeadingError + KDD*(HeadingError-LastHeadingError); //Positive HeadingError is wheel 2, negative wheel 1
 	DesiredSpeed_1 = Clamp(DistancePDTerm - HeadingPDTerm, -ClampRPM, ClampRPM);
@@ -339,13 +345,15 @@ void Drive_SpeedControlISR(void){
 	
   //Compute UpdatedDutyCycle based on PI controller
 	UpdatedDutyCycle_1 = RPM_P_GAIN*RPMError_1 + RPM_I_GAIN*IntegralTerm_1;
+  
 	//Include anti-windup for full term
 	//Positive = Turn CW, Negative = Turn CCW (To update if necessary)
 	UpdatedDutyCycle_1 = Clamp(UpdatedDutyCycle_1, -ClampPWM, ClampPWM); 
-	
+	//printf("1:%f \r\n", UpdatedDutyCycle_1);
 	//Set Duty Cycle for Motor 1
-	PWMSetDutyCycle_1(UpdatedDutyCycle_1);
-	
+	PWMSetDutyCycle_1(UpdatedDutyCycle_1); //REMOVED FOR TESTING
+  //PWMSetDutyCycle_1(ClampPWM); //ADDED FOR TESTING
+	 
 	//***Speed control for Motor 2***//
 	
 	RPMError_2 = DesiredSpeed_2 - LastRecordedSpeed_2;
@@ -360,9 +368,10 @@ void Drive_SpeedControlISR(void){
 	//Include anti-windup for full term
 	//Positive = Turn CW, Negative = Turn CCW (To update if necessary)
 	UpdatedDutyCycle_2 = Clamp(UpdatedDutyCycle_2, -ClampPWM, ClampPWM);
-	
+	//printf("2:%f \r\n", UpdatedDutyCycle_2);
 	//Set Duty Cycle for Motor 2
-	PWMSetDutyCycle_2(UpdatedDutyCycle_2);
+	PWMSetDutyCycle_2(UpdatedDutyCycle_2); //REMOVED FOR TESTING
+  //PWMSetDutyCycle_2(ClampPWM); //ADDED FOR TESTING
 	
 	//***Desired geolocation monitor***//
 	
@@ -373,9 +382,9 @@ void Drive_SpeedControlISR(void){
 		Driving = false;
 		
 		//post event to Master SM indicating that target has been reached
-		//ES_Event doneEvent;
-		//doneEvent.EventType = ES_MOVE_COMPLETE;
-		//PostCampaignService(doneEvent);
+		ES_Event_t doneEvent;
+		doneEvent.EventType = EV_MOVE_COMPLETED;
+		PostMotorService(doneEvent);
 	}
 	
 }
@@ -399,7 +408,7 @@ void Drive_SpeedControlISR(void){
 ****************************************************************************/
 void Drive_SpeedUpdateTimer_Init(uint16_t updateTime){
 	//initialization for Periodic Timer (Timer 5-A)
-	
+	printf("Update control loop \r\n");
 	//start by enabling the clock to the timer (Wide Timer 5)
 	HWREG(SYSCTL_RCGCWTIMER) |= SYSCTL_RCGCWTIMER_R5;
 	
@@ -416,7 +425,7 @@ void Drive_SpeedUpdateTimer_Init(uint16_t updateTime){
 	HWREG(WTIMER5_BASE+TIMER_O_TAMR) = (HWREG(WTIMER5_BASE+TIMER_O_TAMR)& ~TIMER_TAMR_TAMR_M)| TIMER_TAMR_TAMR_PERIOD;
 	
 	//set Periodic timeout rate
-	HWREG(WTIMER1_BASE+TIMER_O_TAILR) = TICKS_PER_MS * updateTime; //***************
+	HWREG(WTIMER5_BASE+TIMER_O_TAILR) = TICKS_PER_MS * updateTime; //***************
 	
 	//enable a local timeout interrupt
 	HWREG(WTIMER5_BASE+TIMER_O_IMR) |= TIMER_IMR_TATOIM;
