@@ -56,30 +56,29 @@
 /* include header files for this state machine as well as any machines at the
    next lower level in the hierarchy that are sub-machines to this machine
 */
-#include "WaitingForStartHSM.h"
+#include "CollisionAvoidanceHSM.h"
 
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
 // and any other local defines
 
-#define ENTRY_STATE WAITING_FOR_COMPASS_ACK
+#define ENTRY_STATE MOVING_BACKWARDS
 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
    functions, entry & exit functions.They should be functions relevant to the
    behavior of this state machine
 */
-static ES_Event_t DuringWaitingForCompassAck( ES_Event_t Event);
-static ES_Event_t DuringWaitingForCompassStart(ES_Event_t Event);
+static ES_Event_t DuringMovingBackwards( ES_Event_t Event);
 
 /*---------------------------- Module Variables ---------------------------*/
 // everybody needs a state variable, you may need others as well
-static WaitingForStartState_t CurrentState;
+static CollisionAvoidanceState_t CurrentState;
 
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
  Function
-    RunWaitingForStartHSM
+    RunCollisionAvoidanceHSM
 
  Parameters
    ES_Event_t: the event to process
@@ -94,84 +93,53 @@ static WaitingForStartState_t CurrentState;
  Author
    J. Edward Carryer, 2/11/05, 10:45AM
 ****************************************************************************/
-ES_Event_t RunWaitingForStartHSM( ES_Event_t CurrentEvent )
+ES_Event_t RunCollisionAvoidanceHSM( ES_Event_t CurrentEvent )
 {
    bool MakeTransition = false;/* are we making a state transition? */
-   WaitingForStartState_t NextState = CurrentState;
+   CollisionAvoidanceState_t NextState = CurrentState;
    ES_Event_t EntryEventKind = { ES_ENTRY, 0 };// default to normal entry to new state
    ES_Event_t ReturnEvent = CurrentEvent; // assume we are not consuming event
 
    switch ( CurrentState )
    {
-       case WAITING_FOR_COMPASS_ACK :      
+       case MOVING_BACKWARDS :      
 			 {
-         ReturnEvent = CurrentEvent = DuringWaitingForCompassAck(CurrentEvent);
+         ReturnEvent = CurrentEvent = DuringMovingBackwards(CurrentEvent);
          //process any events
-         if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
-         {
-            switch (CurrentEvent.EventType)
-            {
-               case EV_RECEIVED_COMPASS_ACK :
-							 {
-								 //If event is event one
-                  // Execute action function for state one : event one
-                  NextState = WAITING_FOR_COMPASS_START;//Decide what the next state will be
-                  // for internal transitions, skip changing MakeTransition
-                  MakeTransition = true; //mark that we are taking a transition
-                  // if transitioning to a state with history change kind of entry
-                  EntryEventKind.EventType = ES_ENTRY;
-                  // optionally, consume or re-map this event for the upper
-                  // level state machine
-                  ReturnEvent.EventType = ES_NO_EVENT;
-                  
-							 }
-							 break;
-							 
-							 default:
-							{;
-							}
-                // repeat cases as required for relevant events
-            }
+				 
+				 //Do we want to respond to any events here?
+//         if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
+//         {
+//            switch (CurrentEvent.EventType)
+//            {
+//               case EV_RECEIVED_COMPASS_ACK :
+//							 {
+//								 //If event is event one
+//                  // Execute action function for state one : event one
+//                  NextState = WAITING_FOR_COMPASS_START;//Decide what the next state will be
+//                  // for internal transitions, skip changing MakeTransition
+//                  MakeTransition = true; //mark that we are taking a transition
+//                  // if transitioning to a state with history change kind of entry
+//                  EntryEventKind.EventType = ES_ENTRY;
+//                  // optionally, consume or re-map this event for the upper
+//                  // level state machine
+//                  ReturnEvent.EventType = ES_NO_EVENT;
+//                  
+//							 }
+//							 break;
+//							 
+//							 default:
+//							{;
+//							}
+//                // repeat cases as required for relevant events
+//            }
 
-         }
+//         }
        
       // repeat state pattern as required for other states
     }
 		break;
-		
-		case WAITING_FOR_COMPASS_START:
-		{
-         ReturnEvent = CurrentEvent = DuringWaitingForCompassStart(CurrentEvent);
-         //process any events
-         if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
-         {
-            switch (CurrentEvent.EventType)
-            {
-               case EV_RECEIVED_COMPASS_CLEANING_UP :
-							 {
-
-                  // for internal transitions, skip changing MakeTransition
-                  MakeTransition = true; //mark that we are taking a transition
-                  // if transitioning to a state with history change kind of entry
-                  EntryEventKind.EventType = ES_ENTRY;
-                  // optionally, consume or re-map this event for the upper
-                  // level state machine
-                  ReturnEvent.EventType = ES_NO_EVENT;
-                  
-							 }
-							 break;
-							 
-							 default:
-							{;
-							}
-                // repeat cases as required for relevant events
-            }
-
-         }
-       
-      // repeat state pattern as required for other states
-		}
-		break;
+	
 		default:
 		{;
 		}
@@ -181,19 +149,19 @@ ES_Event_t RunWaitingForStartHSM( ES_Event_t CurrentEvent )
     {
        //   Execute exit function for current state
        CurrentEvent.EventType = ES_EXIT;
-       RunWaitingForStartHSM(CurrentEvent);
+       RunCollisionAvoidanceHSM(CurrentEvent);
 
        CurrentState = NextState; //Modify state variable
 
        //   Execute entry function for new state
        // this defaults to ES_ENTRY
-       RunWaitingForStartHSM(EntryEventKind);
+       RunCollisionAvoidanceHSM(EntryEventKind);
      }
      return(ReturnEvent);
 }
 /****************************************************************************
  Function
-     StartWaitingForStartHSM
+     StartCollisionAvoidanceHSM
 
  Parameters
      None
@@ -208,7 +176,7 @@ ES_Event_t RunWaitingForStartHSM( ES_Event_t CurrentEvent )
  Author
      J. Edward Carryer, 2/18/99, 10:38AM
 ****************************************************************************/
-void StartWaitingForStartHSM ( ES_Event_t CurrentEvent )
+void StartCollisionAvoidanceHSM ( ES_Event_t CurrentEvent )
 {
    // to implement entry to a history state or directly to a substate
    // you can modify the initialization of the CurrentState variable
@@ -219,7 +187,7 @@ void StartWaitingForStartHSM ( ES_Event_t CurrentEvent )
         CurrentState = ENTRY_STATE;
    }
    // call the entry function (if any) for the ENTRY_STATE
-   RunWaitingForStartHSM(CurrentEvent);
+   RunCollisionAvoidanceHSM(CurrentEvent);
 }
 
 /****************************************************************************
@@ -230,7 +198,7 @@ void StartWaitingForStartHSM ( ES_Event_t CurrentEvent )
      None
 
  Returns
-     WaitingForStartState_t The current state of the Template state machine
+     CollisionAvoidanceState_t The current state of the Template state machine
 
  Description
      returns the current state of the Template state machine
@@ -239,7 +207,7 @@ void StartWaitingForStartHSM ( ES_Event_t CurrentEvent )
  Author
      J. Edward Carryer, 2/11/05, 10:38AM
 ****************************************************************************/
-WaitingForStartState_t QueryWaitingForStartHSM(void)
+CollisionAvoidanceState_t QueryCollisionAvoidanceHSM(void)
 {
    return CurrentState;
 }
@@ -248,7 +216,7 @@ WaitingForStartState_t QueryWaitingForStartHSM(void)
  private functions
  ***************************************************************************/
 
-static ES_Event_t DuringWaitingForCompassAck( ES_Event_t Event)
+static ES_Event_t DuringMovingBackwards( ES_Event_t Event)
 {
     ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
 
@@ -259,12 +227,9 @@ static ES_Event_t DuringWaitingForCompassAck( ES_Event_t Event)
         // implement any entry actions required for this state machine
         
 			
-				// Send Compass registration message (if this is not handled by CompassService) 
+				// Based on which of the limit switches have been activated: Set distance to move and which direction
+			  // Likely a combination of moving and reorienting afterwards
 				
-        // after that start any lower level machines that run in this state
-        //StartLowerLevelSM( Event );
-        // repeat the StartxxxSM() functions for concurrent state machines
-        // on the lower level
     }
     else if ( Event.EventType == ES_EXIT )
     {
@@ -272,7 +237,9 @@ static ES_Event_t DuringWaitingForCompassAck( ES_Event_t Event)
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
         // now do any local exit functionality
+				
 			
+				// Assure we are not moving anymore! by setting MotorMovement to zero
       
     }else
     // do the 'during' function for this state
@@ -283,48 +250,15 @@ static ES_Event_t DuringWaitingForCompassAck( ES_Event_t Event)
         // repeat for any concurrent lower level machines
       
         // do any activity that is repeated as long as we are in this state
-    }
-    // return either Event, if you don't want to allow the lower level machine
-    // to remap the current event, or ReturnEvent if you do want to allow it.
-    return(ReturnEvent);
-}
-
-
-static ES_Event_t DuringWaitingForCompassStart( ES_Event_t Event)
-{
-    ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
-
-    // process ES_ENTRY, ES_ENTRY_HISTORY & ES_EXIT events
-    if ( (Event.EventType == ES_ENTRY) ||
-         (Event.EventType == ES_ENTRY_HISTORY) )
-    {
-        // implement any entry actions required for this state machine
-        
-			
-				// Send Compass registration message (if this is not handled by CompassService) 
+				if (Event.EventType == EV_MOVE_COMPLETED)
+				{
+					ReturnEvent.EventType = EV_MOVED_BACK;
+				}
 				
-        // after that start any lower level machines that run in this state
-        //StartLowerLevelSM( Event );
-        // repeat the StartxxxSM() functions for concurrent state machines
-        // on the lower level
-    }
-    else if ( Event.EventType == ES_EXIT )
-    {
-        // on exit, give the lower levels a chance to clean up first
-        //RunLowerLevelSM(Event);
-        // repeat for any concurrently running state machines
-        // now do any local exit functionality
-			
-      
-    }else
-    // do the 'during' function for this state
-    {
-        // run any lower level state machine
-        // ReturnEvent = RunLowerLevelSM(Event);
-      
-        // repeat for any concurrent lower level machines
-      
-        // do any activity that is repeated as long as we are in this state
+				else if (Event.EventType == ES_BUMPER_HIT)
+				{
+					//Decide what to do if the bumper is hit again
+				}
     }
     // return either Event, if you don't want to allow the lower level machine
     // to remap the current event, or ReturnEvent if you do want to allow it.

@@ -42,7 +42,6 @@
 #include "WaitingForStartHSM.h"
 #include "GamePlayHSM.h"
 #include "CollisionAvoidanceHSM.h"
-#include "GameEndedHSM.h"
 
 // the headers to access the GPIO subsystem
 #include "inc/hw_memmap.h"
@@ -242,7 +241,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-               case ES_MOVED_BACK : //If event is event one
+               case EV_MOVED_BACK : //If event is event one
 							 {
                   // Execute action function for state one : event one
                   NextState = GAME_PLAY;//Decide what the next state will be
@@ -427,6 +426,11 @@ static ES_Event_t DuringGameEnded (ES_Event_t Event)
       (Event.EventType == ES_ENTRY_HISTORY))
   {
 		
+		//Stop moving all parts (set all moving parts down)
+		//Disable all interrupts
+		
+		//Turn off all LEDs
+		
 		//StartGameEndedSM(Event);
 	}
 	else if (Event.EventType == ES_EXIT)
@@ -442,4 +446,4 @@ static ES_Event_t DuringGameEnded (ES_Event_t Event)
 	return ReturnEvent;
 		
 }
-		
+

@@ -285,7 +285,11 @@ typedef enum
 	EV_READY_TO_RECYCLE,
 	EV_READY_TO_LANDFILL,
 	EV_RECYCLING_DONE,
-	EV_LANDFILLING_DONE
+	EV_LANDFILLING_DONE,
+	EV_MOVED_BACK,
+	EV_MOVE_COMPLETED,
+	EV_COMPASS_CLEANING_UP,
+	EV_RECEIVED_COMPASS_ACK
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -343,7 +347,7 @@ typedef enum
 #define TIMER11_RESP_FUNC TIMER_UNUSED
 #define TIMER12_RESP_FUNC TIMER_UNUSED
 #define TIMER13_RESP_FUNC TIMER_UNUSED
-#define TIMER14_RESP_FUNC PostMasterHSM
+#define TIMER14_RESP_FUNC PostMasterSM
 #define TIMER15_RESP_FUNC PostI2CService
 
 /****************************************************************************/

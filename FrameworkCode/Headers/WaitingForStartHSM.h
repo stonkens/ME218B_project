@@ -17,9 +17,9 @@ typedef enum { WAITING_FOR_COMPASS_ACK, WAITING_FOR_COMPASS_START } WaitingForSt
 
 // Public Function Prototypes
 
-ES_Event_t RunWaitingForStartHSM( ES_Event_t CurrentEvent );
-void StartWaitingForStartHSM ( ES_Event_t CurrentEvent );
-WaitingForStartState_t QueryWaitingForStartHSM ( void );
+ES_Event_t RunWaitingForStartSM( ES_Event_t CurrentEvent );
+void StartWaitingForStartSM ( ES_Event_t CurrentEvent );
+WaitingForStartState_t QueryWaitingForStartSM ( void );
 
 #endif /*WaitingForStartHSM_H */
 

@@ -4,22 +4,22 @@
  3/17/09  Fixed prototpyes to use Event_t
  ****************************************************************************/
 
-#ifndef WaitingForStartHSM_H
-#define WaitingForStartHSM_H
+#ifndef CollisionAvoidanceHSM_H
+#define CollisionAvoidanceHSM_H
 
 #include <stdbool.h>
 #include "ES_Events.h"
 
 // typedefs for the states
 // State definitions for use with the query function
-typedef enum { WAITING_FOR_COMPASS_ACK, WAITING_FOR_COMPASS_START } WaitingForStartState_t ;
+typedef enum { MOVING_BACKWARDS} CollisionAvoidanceState_t ;
 
 
 // Public Function Prototypes
 
-ES_Event_t RunWaitingForStartHSM( ES_Event_t CurrentEvent );
-void StartWaitingForStartHSM ( ES_Event_t CurrentEvent );
-WaitingForStartState_t QueryWaitingForStartHSM ( void );
+ES_Event_t RunCollisionAvoidanceHSM( ES_Event_t CurrentEvent );
+void StartCollisionAvoidanceHSM ( ES_Event_t CurrentEvent );
+CollisionAvoidanceState_t QueryCollisionAvoidanceHSM ( void );
 
-#endif /*WaitingForStartHSM_H */
+#endif /*CollisionAvoidanceHSM_H */
 

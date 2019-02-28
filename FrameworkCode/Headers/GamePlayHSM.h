@@ -18,9 +18,9 @@ typedef enum { COLLECTING_GARBAGE, RECYCLING, LANDFILLING } GamePlayState_t ;
 
 // Public Function Prototypes
 
-ES_Event_t RunGamePlayHSM( ES_Event_t CurrentEvent );
-void StartGamePlayHSM ( ES_Event_t CurrentEvent );
-GamePlayState_t QueryGamePlayHSM ( void );
+ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent );
+void StartGamePlaySM ( ES_Event_t CurrentEvent );
+GamePlayState_t QueryGamePlaySM ( void );
 
 #endif /*GamePlayHSM_H */
 

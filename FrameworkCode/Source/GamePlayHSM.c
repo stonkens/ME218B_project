@@ -1,6 +1,6 @@
 /****************************************************************************
  Module
-   GamePlayHSM.c
+   GamePlaySM.c
 
  Revision
    2.0.1
@@ -80,7 +80,7 @@ static GamePlayState_t CurrentState;
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
  Function
-    RunGamePlayHSM
+    RunGamePlaySM
 
  Parameters
    ES_Event_t: the event to process
@@ -95,7 +95,7 @@ static GamePlayState_t CurrentState;
  Author
    J. Edward Carryer, 2/11/05, 10:45AM
 ****************************************************************************/
-ES_Event_t RunGamePlayHSM( ES_Event_t CurrentEvent )
+ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
 {
    bool MakeTransition = false;/* are we making a state transition? */
    GamePlayState_t NextState = CurrentState;
@@ -258,19 +258,19 @@ ES_Event_t RunGamePlayHSM( ES_Event_t CurrentEvent )
     {
        //   Execute exit function for current state
        CurrentEvent.EventType = ES_EXIT;
-       RunGamePlayHSM(CurrentEvent);
+       RunGamePlaySM(CurrentEvent);
 
        CurrentState = NextState; //Modify state variable
 
        //   Execute entry function for new state
        // this defaults to ES_ENTRY
-       RunGamePlayHSM(EntryEventKind);
+       RunGamePlaySM(EntryEventKind);
      }
      return(ReturnEvent);
 }
 /****************************************************************************
  Function
-     StartGamePlayHSM
+     StartGamePlaySM
 
  Parameters
      None
@@ -285,7 +285,7 @@ ES_Event_t RunGamePlayHSM( ES_Event_t CurrentEvent )
  Author
      J. Edward Carryer, 2/18/99, 10:38AM
 ****************************************************************************/
-void StartGamePlayHSM ( ES_Event_t CurrentEvent )
+void StartGamePlaySM ( ES_Event_t CurrentEvent )
 {
    // to implement entry to a history state or directly to a substate
    // you can modify the initialization of the CurrentState variable
@@ -296,7 +296,7 @@ void StartGamePlayHSM ( ES_Event_t CurrentEvent )
         CurrentState = ENTRY_STATE;
    }
    // call the entry function (if any) for the ENTRY_STATE
-   RunGamePlayHSM(CurrentEvent);
+   RunGamePlaySM(CurrentEvent);
 }
 
 /****************************************************************************
@@ -316,7 +316,7 @@ void StartGamePlayHSM ( ES_Event_t CurrentEvent )
  Author
      J. Edward Carryer, 2/11/05, 10:38AM
 ****************************************************************************/
-GamePlayState_t QueryGamePlayHSM(void)
+GamePlayState_t QueryGamePlaySM(void)
 {
    return CurrentState;
 }

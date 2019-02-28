@@ -79,7 +79,7 @@ static WaitingForStartState_t CurrentState;
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
  Function
-    RunWaitingForStartHSM
+    RunWaitingForStartSM
 
  Parameters
    ES_Event_t: the event to process
@@ -94,7 +94,7 @@ static WaitingForStartState_t CurrentState;
  Author
    J. Edward Carryer, 2/11/05, 10:45AM
 ****************************************************************************/
-ES_Event_t RunWaitingForStartHSM( ES_Event_t CurrentEvent )
+ES_Event_t RunWaitingForStartSM( ES_Event_t CurrentEvent )
 {
    bool MakeTransition = false;/* are we making a state transition? */
    WaitingForStartState_t NextState = CurrentState;
@@ -147,7 +147,7 @@ ES_Event_t RunWaitingForStartHSM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-               case EV_RECEIVED_COMPASS_CLEANING_UP :
+               case EV_COMPASS_CLEANING_UP :
 							 {
 
                   // for internal transitions, skip changing MakeTransition
@@ -156,7 +156,7 @@ ES_Event_t RunWaitingForStartHSM( ES_Event_t CurrentEvent )
                   EntryEventKind.EventType = ES_ENTRY;
                   // optionally, consume or re-map this event for the upper
                   // level state machine
-                  ReturnEvent.EventType = ES_NO_EVENT;
+                  ReturnEvent = CurrentEvent;
                   
 							 }
 							 break;
@@ -181,19 +181,19 @@ ES_Event_t RunWaitingForStartHSM( ES_Event_t CurrentEvent )
     {
        //   Execute exit function for current state
        CurrentEvent.EventType = ES_EXIT;
-       RunWaitingForStartHSM(CurrentEvent);
+       RunWaitingForStartSM(CurrentEvent);
 
        CurrentState = NextState; //Modify state variable
 
        //   Execute entry function for new state
        // this defaults to ES_ENTRY
-       RunWaitingForStartHSM(EntryEventKind);
+       RunWaitingForStartSM(EntryEventKind);
      }
      return(ReturnEvent);
 }
 /****************************************************************************
  Function
-     StartWaitingForStartHSM
+     StartWaitingForStartSM
 
  Parameters
      None
@@ -208,7 +208,7 @@ ES_Event_t RunWaitingForStartHSM( ES_Event_t CurrentEvent )
  Author
      J. Edward Carryer, 2/18/99, 10:38AM
 ****************************************************************************/
-void StartWaitingForStartHSM ( ES_Event_t CurrentEvent )
+void StartWaitingForStartSM ( ES_Event_t CurrentEvent )
 {
    // to implement entry to a history state or directly to a substate
    // you can modify the initialization of the CurrentState variable
@@ -219,7 +219,7 @@ void StartWaitingForStartHSM ( ES_Event_t CurrentEvent )
         CurrentState = ENTRY_STATE;
    }
    // call the entry function (if any) for the ENTRY_STATE
-   RunWaitingForStartHSM(CurrentEvent);
+   RunWaitingForStartSM(CurrentEvent);
 }
 
 /****************************************************************************
@@ -239,7 +239,7 @@ void StartWaitingForStartHSM ( ES_Event_t CurrentEvent )
  Author
      J. Edward Carryer, 2/11/05, 10:38AM
 ****************************************************************************/
-WaitingForStartState_t QueryWaitingForStartHSM(void)
+WaitingForStartState_t QueryWaitingForStartSM(void)
 {
    return CurrentState;
 }
