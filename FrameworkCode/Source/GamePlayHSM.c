@@ -112,39 +112,49 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-               case EV_START_RECYCLING :
-							 {
-								 //If event is event one
-                  // Execute action function for state one : event one
-                  NextState = RECYCLING;//Decide what the next state will be
-                  // for internal transitions, skip changing MakeTransition
-                  MakeTransition = true; //mark that we are taking a transition
-                  // if transitioning to a state with history change kind of entry
-                  EntryEventKind.EventType = ES_ENTRY;
-                  // optionally, consume or re-map this event for the upper
-                  // level state machine
-                  ReturnEvent.EventType = ES_NO_EVENT;
+							 
+             case ES_TIMEOUT :
+             {
+               if (CurrentEvent.EventParam == BALL_COLLECTION_TIMER)
+               {
+                  if (QueryRecycleBalls() != 0)
+                  {
+                    // Execute action function for state one : event one
+                    NextState = RECYCLING;//Decide what the next state will be
+                    // for internal transitions, skip changing MakeTransition
+                    MakeTransition = true; //mark that we are taking a transition
+                    // if transitioning to a state with history change kind of entry
+                    EntryEventKind.EventType = ES_ENTRY;
+                    // optionally, consume or re-map this event for the upper
+                    // level state machine
+                    ReturnEvent.EventType = ES_NO_EVENT;
+                  }
                   
+                  else if(QueryLandFillBalls() != 0)
+                  {
+                    // Execute action function for state one : event one
+                    NextState = LANDFILLING;//Decide what the next state will be
+                    // for internal transitions, skip changing MakeTransition
+                    MakeTransition = true; //mark that we are taking a transition
+                    // if transitioning to a state with history change kind of entry
+                    EntryEventKind.EventType = ES_ENTRY;
+                    // optionally, consume or re-map this event for the upper
+                    // level state machine
+                    ReturnEvent.EventType = ES_NO_EVENT;
+                  }
+                  else
+                  {
+                    //This time we only allow for BALL_COLLECTION_TIME/2 seconds to query again
+                    ES_Timer_InitTimer(BALL_COLLECTION_TIMER, BALL_COLLECTION_TIME/2);
+                  }
+                 
+								 }
 							 }
 							 break;
 							 
-							 case EV_START_LANDFILLING :
-							 {
-								 //If event is event one
-                  // Execute action function for state one : event one
-                  NextState = LANDFILLING;//Decide what the next state will be
-                  // for internal transitions, skip changing MakeTransition
-                  MakeTransition = true; //mark that we are taking a transition
-                  // if transitioning to a state with history change kind of entry
-                  EntryEventKind.EventType = ES_ENTRY;
-                  // optionally, consume or re-map this event for the upper
-                  // level state machine
-                  ReturnEvent.EventType = ES_NO_EVENT;								 
-							 }
-							 
 							 default:
-							{;
-							}
+							 {;
+							 }
                 // repeat cases as required for relevant events
             }
 
@@ -162,37 +172,41 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-               case EV_START_LANDFILLING :
-							 {
-									
-									NextState = LANDFILLING;
-                  // for internal transitions, skip changing MakeTransition
-                  MakeTransition = true; //mark that we are taking a transition
-                  // if transitioning to a state with history change kind of entry
-                  EntryEventKind.EventType = ES_ENTRY;
-                  // optionally, consume or re-map this event for the upper
-                  // level state machine
-                  ReturnEvent.EventType = ES_NO_EVENT;
+               
+               case EV_RECYCLING_DONE :
+               {
+                  if(QueryLandFillBalls() != 0)
+                  {
+                    NextState = LANDFILLING;
+                    // for internal transitions, skip changing MakeTransition
+                    MakeTransition = true; //mark that we are taking a transition
+                    // if transitioning to a state with history change kind of entry
+                    EntryEventKind.EventType = ES_ENTRY;
+                    // optionally, consume or re-map this event for the upper
+                    // level state machine
+                    ReturnEvent.EventType = ES_NO_EVENT;
+                  }
                   
-							 }
-							 break;
-							 
-							 case EV_START_COLLECTING :
-							 {
-									NextState = COLLECTING_GARBAGE;
-                  // for internal transitions, skip changing MakeTransition
-                  MakeTransition = true; //mark that we are taking a transition
-                  // if transitioning to a state with history change kind of entry
-                  EntryEventKind.EventType = ES_ENTRY;
-                  // optionally, consume or re-map this event for the upper
-                  // level state machine
-                  ReturnEvent.EventType = ES_NO_EVENT;								 
-							 }
-							 
-							 
+                  else
+                  {
+
+                    NextState = COLLECTING_GARBAGE;
+                    // for internal transitions, skip changing MakeTransition
+                    MakeTransition = true; //mark that we are taking a transition
+                    // if transitioning to a state with history change kind of entry
+                    EntryEventKind.EventType = ES_ENTRY;
+                    // optionally, consume or re-map this event for the upper
+                    // level state machine
+                    ReturnEvent.EventType = ES_NO_EVENT;	
+                    //Restart Timer to check for balls
+                    ES_Timer_InitTimer(BALL_COLLECTION_TIMER, BALL_COLLECTION_TIME);
+                  }
+               }
+               break;
+                
 							 default:
-							{;
-							}
+               {;
+							 }
                 // repeat cases as required for relevant events
             }
 
@@ -210,32 +224,39 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-               case EV_START_RECYCLING :
-							 {
-									
-									NextState = RECYCLING;
-                  // for internal transitions, skip changing MakeTransition
-                  MakeTransition = true; //mark that we are taking a transition
-                  // if transitioning to a state with history change kind of entry
-                  EntryEventKind.EventType = ES_ENTRY;
-                  // optionally, consume or re-map this event for the upper
-                  // level state machine
-                  ReturnEvent.EventType = ES_NO_EVENT;
-                  
-							 }
-							 break;
 							 
-							 case EV_START_COLLECTING :
-							 {
-									NextState = COLLECTING_GARBAGE;
-                  // for internal transitions, skip changing MakeTransition
-                  MakeTransition = true; //mark that we are taking a transition
-                  // if transitioning to a state with history change kind of entry
-                  EntryEventKind.EventType = ES_ENTRY;
-                  // optionally, consume or re-map this event for the upper
-                  // level state machine
-                  ReturnEvent.EventType = ES_NO_EVENT;								 
-							 }
+               case EV_LANDFILLING_DONE:
+               {
+                  if(QueryRecycleBalls() != 0)
+                  {
+                    NextState = RECYCLING;
+                    // for internal transitions, skip changing MakeTransition
+                    MakeTransition = true; //mark that we are taking a transition
+                    // if transitioning to a state with history change kind of entry
+                    EntryEventKind.EventType = ES_ENTRY;
+                    // optionally, consume or re-map this event for the upper
+                    // level state machine
+                    ReturnEvent.EventType = ES_NO_EVENT;
+                    
+                  }
+                  
+                  else
+                  {
+
+                    
+                    NextState = COLLECTING_GARBAGE;
+                    // for internal transitions, skip changing MakeTransition
+                    MakeTransition = true; //mark that we are taking a transition
+                    // if transitioning to a state with history change kind of entry
+                    EntryEventKind.EventType = ES_ENTRY;
+                    // optionally, consume or re-map this event for the upper
+                    // level state machine
+                    ReturnEvent.EventType = ES_NO_EVENT;	
+                    //Restart Timer to check for balls
+                    ES_Timer_InitTimer(BALL_COLLECTION_TIMER, BALL_COLLECTION_TIME);
+                  }
+               }
+               break;
 							 
 							 
 							 default:
@@ -365,34 +386,7 @@ static ES_Event_t DuringCollectingGarbage( ES_Event_t Event)
         // repeat for any concurrent lower level machines
       
         // do any activity that is repeated as long as we are in this state
-			if (ReturnEvent.EventType == EV_READY_TO_RECYCLE)
-			{
-				ReturnEvent.EventType = EV_START_RECYCLING;
-			}
-			
-			else if (ReturnEvent.EventType == EV_READY_TO_LANDFILL)
-			{
-				ReturnEvent.EventType = EV_START_LANDFILLING;
-			}
-			else if ((ReturnEvent.EventType == ES_TIMEOUT) && (ReturnEvent.EventParam == BALL_COLLECTION_TIMER))
-			{
-				if (QueryRecycleBalls() != 0)
-				{
-					ReturnEvent.EventType = EV_START_RECYCLING;
-				}
-				
-				else if(QueryLandFillBalls() != 0)
-				{
-					ReturnEvent.EventType = EV_START_LANDFILLING;
-				}
-				else
-				{
-					//This time we only allow for BALL_COLLECTION_TIME/2 seconds to query again
-					ES_Timer_InitTimer(BALL_COLLECTION_TIMER, BALL_COLLECTION_TIME/2);
-				}
-			}
-			
-    }
+		}
     // return either Event, if you don't want to allow the lower level machine
     // to remap the current event, or ReturnEvent if you do want to allow it.
     return(ReturnEvent);
@@ -433,20 +427,6 @@ static ES_Event_t DuringRecycling( ES_Event_t Event)
         // repeat for any concurrent lower level machines
       
         // do any activity that is repeated as long as we are in this state
-			if (ReturnEvent.EventType == EV_RECYCLING_DONE)
-			{
-				if(QueryLandFillBalls() != 0)
-				{
-					ReturnEvent.EventType = EV_START_LANDFILLING;
-				}
-				
-				else
-				{
-					//Restart Timer to check for balls
-					ES_Timer_InitTimer(BALL_COLLECTION_TIMER, BALL_COLLECTION_TIME);
-					ReturnEvent.EventType = EV_START_COLLECTING;
-				}
-			}
     }
     // return either Event, if you don't want to allow the lower level machine
     // to remap the current event, or ReturnEvent if you do want to allow it.
@@ -487,21 +467,6 @@ static ES_Event_t DuringLandfilling( ES_Event_t Event)
         // repeat for any concurrent lower level machines
       
         // do any activity that is repeated as long as we are in this state
-			if (ReturnEvent.EventType == EV_LANDFILLING_DONE)
-			{
-				if(QueryRecycleBalls() != 0)
-				{
-					ReturnEvent.EventType = EV_START_RECYCLING;
-				}
-				
-				else
-				{
-					//Restart Timer to check for balls
-					ES_Timer_InitTimer(BALL_COLLECTION_TIMER, BALL_COLLECTION_TIME);
-					
-					ReturnEvent.EventType = EV_START_COLLECTING;
-				}
-			}
     }
     // return either Event, if you don't want to allow the lower level machine
     // to remap the current event, or ReturnEvent if you do want to allow it.
