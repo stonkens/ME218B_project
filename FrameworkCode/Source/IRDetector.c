@@ -45,7 +45,10 @@
 #include "termio.h"
 
 /*----------------------------- Module Defines -----------------------------*/
-
+#define MAX_PERIOD_us 850
+#define MIN_PERIOD_us 450
+//#define ns_PER_TICK 25
+#define TICKS_PER_us 40
 /*---------------------------- Module Functions ---------------------------*/
 //Function list
 //InitInputCapture: rising edge
@@ -54,6 +57,12 @@
 
 
 /*---------------------------- Module Variables ---------------------------*/
+static uint32_t Validated_LastPeriod_us; //LastPeriod value used for consistant Period reading
+static uint32_t Period_In_Ticks; //The Period of captured IR
+static uint32_t Period_In_us;//
+static uint32_t LastCapture=0; // Time of last rising edge for IR, captured in tick
+static bool FirstEdge=true; // true if it is the first edge
+
 
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
@@ -130,4 +139,125 @@ void InitInputCapture(void)
   HWREG(WTIMER2_BASE + TIMER_O_CTL) |= (TIMER_CTL_TBEN | TIMER_CTL_TBSTALL);
 //global enable: doing it in Initialize Hardware 
   
+}
+
+/****************************************************************************
+ Function
+   IR_ISR(void)
+
+ Parameters
+  nothing
+
+ Returns
+  nothing
+
+ Description
+  clear interrupt of input capture
+ 
+ Notes
+
+ Author
+Hyun Joo Lee 15:33 02/27/2019 Started function
+
+****************************************************************************/
+void IR_ISR(void){
+  uint32_t ThisCapture; //Capture the tick when the interrupt occured
+  //clear interrupt
+  HWREG(WTIMER2_BASE + TIMER_O_ICR)=TIMER_ICR_CBECINT;
+  //grab the captured tick value
+  ThisCapture=HWREG(WTIMER2_BASE + TIMER0_BASE + TIMER_O_TBR);
+  //if firstedge, don't calculate the period
+  if (FirstEdge)
+  {
+    FirstEdge=false;
+  }else
+  {
+    //calculate the period in ticks
+    Period_In_Ticks=ThisCapture-LastCapture;
+      
+    //calculate period in us(microseconds)
+    Period_In_us=Period_In_Ticks/TICKS_PER_us;
+    
+    //if Period is out of range, reset validated period to 0 and put up the FirstEdge flag
+    if((Period_In_us > MAX_PERIOD_us) | (Period_In_us < MIN_PERIOD_us))
+    {
+      FirstEdge=true;
+      Validated_LastPeriod_us=0;
+    }else
+    {
+      Validated_LastPeriod_us=Period_In_us;
+    }
+  }
+  //Update LastCapture value
+  LastCapture=ThisCapture;
+
+}
+
+/****************************************************************************
+ Function
+   IR_getPeriod(void)
+
+ Parameters
+  nothing
+
+ Returns
+  Period in us of IR inputCapture
+
+ Description
+  clear interrupt of input capture
+ 
+ Notes
+
+ Author
+Hyun Joo Lee 15:33 02/27/2019 Started function
+
+****************************************************************************/
+uint32_t IR_getPeriod(void){
+    return Validated_LastPeriod_us;
+}
+
+/****************************************************************************
+ Function
+   IR_disable(void)
+
+ Parameters
+  nothing
+
+ Returns
+  nothing
+
+ Description
+  disables the input capture
+  called when not searching for landfill/recycling centor or navigating  
+ Notes
+
+ Author
+Hyun Joo Lee 16:00 02/27/2019 Started function
+
+****************************************************************************/
+void IR_disable(void){
+    HWREG(WTIMER2_BASE +TIMER_O_IMR) &=~TIMER_IMR_CBEIM;
+}
+
+/****************************************************************************
+ Function
+   IR_enable(void)
+
+ Parameters
+  nothing
+
+ Returns
+  nothing
+
+ Description
+  enables the input capture
+  called when searching for landfill/recycling centor or navigating  
+ Notes
+
+ Author
+Hyun Joo Lee 16:10 02/27/2019 Started function
+
+****************************************************************************/
+void IR_enable(void){
+    HWREG(WTIMER2_BASE +TIMER_O_IMR) |=TIMER_IMR_CBEIM;
 }
