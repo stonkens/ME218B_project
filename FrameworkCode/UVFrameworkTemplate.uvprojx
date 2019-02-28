@@ -472,6 +472,21 @@
               <FileType>1</FileType>
               <FilePath>.\Source\GamePlayHSM.c</FilePath>
             </File>
+            <File>
+              <FileName>CollectingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\CollectingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>LandfillingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\LandfillingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>RecyclingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\RecyclingSM.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -681,6 +696,21 @@
               <FileName>GamePlayHSM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\GamePlayHSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>CollectingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\CollectingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>LandfillingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\LandfillingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>RecyclingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\RecyclingSM.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1362,6 +1392,21 @@
               <FileType>1</FileType>
               <FilePath>.\Source\GamePlayHSM.c</FilePath>
             </File>
+            <File>
+              <FileName>CollectingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\CollectingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>LandfillingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\LandfillingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>RecyclingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\RecyclingSM.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1571,6 +1616,21 @@
               <FileName>GamePlayHSM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\GamePlayHSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>CollectingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\CollectingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>LandfillingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\LandfillingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>RecyclingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\RecyclingSM.h</FilePath>
             </File>
           </Files>
         </Group>

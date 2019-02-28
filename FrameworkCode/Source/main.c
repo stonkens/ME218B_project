@@ -1,17 +1,32 @@
 /****************************************************************************
  Module
-     main.c
+   main.c
+   
+ Revision
+   1.0.1
+
  Description
-     starter main() function for Events and Services Framework applications
+   This is a template file for a main() implementing Hierarchical 
+   State Machines within the Events and Services Framework.
+
  Notes
 
  History
  When           Who     What/Why
  -------------- ---     --------
- 08/21/17 12:53 jec     added this header as part of coding standard and added
-                        code to enable as GPIO the port poins that come out of
-                        reset locked or in an alternate function.
-*****************************************************************************/
+ 11/26/17 14:09 jec     updated with changes from main.c for headers & port 
+                        initialization
+ 02/27/17 12:01 jec     set framework timer rate to 1mS
+ 02/06/15 13:21 jec     minor tweaks to include header files & clock init for 
+                        Tiva
+ 02/08/12 10:32 jec     major re-work for the Events and Services Framework
+                        Gen2
+ 03/03/10 00:36 jec     now that StartTemplateSM takes an event as input
+                        you should pass it something.
+ 03/17/09 10:20 jec     added cast to return from RunTemplateSM() to quiet
+                        warnings because now that function returns Event_t
+ 02/11/05 16:56 jec     Began coding
+****************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -32,22 +47,25 @@
 #define goHome() printf("\x1b[1,1H")
 #define clrLine() printf("\x1b[K")
 
-int main(void)
+int main (void)
 {
   ES_Return_t ErrorType;
-
-  // Set the clock to run at 40MhZ using the PLL and 16MHz external crystal
+    
+// Set the clock to run at 40MhZ using the PLL and 16MHz external crystal
   SysCtlClockSet(SYSCTL_SYSDIV_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN
-      | SYSCTL_XTAL_16MHZ);
+			| SYSCTL_XTAL_16MHZ);
+
+  // Initialize the terminal for puts/printf debugging
   TERMIO_Init();
   clrScrn();
-
-  // When doing testing, it is useful to announce just which program
-  // is running.
-  puts("\rStarting I2C Test Harness for \r");
-  printf( "the 2nd Generation Events & Services Framework V2.4\r\n");
-  printf( "%s %s\n", __TIME__, __DATE__);
-  printf( "\n\r\n");
+   
+// When doing testing, it is useful to announce just which program
+// is running.
+	puts("\rStarting Test Harness for \r");
+	printf("the 2nd Generation Events & Services Framework V2.4\r\n");
+	printf("Template for HSM implementation\r\n");
+	printf("%s %s\n",__TIME__, __DATE__);
+	printf("\n\r\n");
 
   // reprogram the ports that are set as alternate functions or
   // locked coming out of reset. (PA2-5, PB2-3, PD7, PF0)
@@ -58,39 +76,24 @@ int main(void)
 
   // Your hardware initialization function calls go here
   InitializeHardware();
+
   // now initialize the Events and Services Framework and start it running
   ErrorType = ES_Initialize(ES_Timer_RATE_1mS);
-  if (ErrorType == Success)
-  {
+  if ( ErrorType == Success ) {
     ErrorType = ES_Run();
   }
-  //if we got to here, there was an error
-  switch (ErrorType)
-  {
-    case FailedPost:
-    {
-      printf("Failed on attempt to Post\n");
-    }
-    break;
+//if we got to here, there was an error
+  switch (ErrorType){
     case FailedPointer:
-    {
-      printf("Failed on NULL pointer\n");
-    }
-    break;
+      puts("Failed on NULL pointer");
+      break;
     case FailedInit:
-    {
-      printf("Failed Initialization\n");
-    }
-    break;
+      puts("Failed Initialization");
+      break;
     default:
-    {
-      printf("Other Failure\n");
-    }
-    break;
+      puts("Other Failure");
+      break;
   }
-  for ( ; ;)
-  {
+  for(;;)   // hang after reporting error
     ;
-  }
 }
-
