@@ -457,6 +457,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\MasterHSM.c</FilePath>
             </File>
+            <File>
+              <FileName>WaitingForStartHSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\WaitingForStartHSM.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -651,6 +656,11 @@
               <FileName>MasterHSM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\MasterHSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>WaitingForStartHSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\WaitingForStartHSM.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1317,6 +1327,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\MasterHSM.c</FilePath>
             </File>
+            <File>
+              <FileName>WaitingForStartHSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\WaitingForStartHSM.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1511,6 +1526,11 @@
               <FileName>MasterHSM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\MasterHSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>WaitingForStartHSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\WaitingForStartHSM.h</FilePath>
             </File>
           </Files>
         </Group>

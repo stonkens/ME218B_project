@@ -39,10 +39,10 @@
 #include "MasterHSM.h"
 
 // Header files for state machines at the next lower level in the hierarchy
-#include "WaitingForStartSM.h"
-#include "GamePlaySM.h"
-#include "CollisionAvoidanceSM.h"
-#include "GameEndedSM.h"
+#include "WaitingForStartHSM.h"
+#include "GamePlayHSM.h"
+#include "CollisionAvoidanceHSM.h"
+#include "GameEndedHSM.h"
 
 // the headers to access the GPIO subsystem
 #include "inc/hw_memmap.h"
