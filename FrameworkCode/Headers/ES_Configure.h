@@ -275,7 +275,17 @@ typedef enum
   RESPONSE_RECEIVED,
   ES_GAME_OVER,
   ES_CLEANING_UP,
-  ES_BUMPER_HIT
+  ES_BUMPER_HIT,
+	ES_ENTRY,
+	ES_ENTRY_HISTORY,
+	ES_EXIT,
+	EV_START_COLLECTING,
+	EV_START_RECYCLING,
+	EV_START_LANDFILLING,
+	EV_READY_TO_RECYCLE,
+	EV_READY_TO_LANDFILL,
+	EV_RECYCLING_DONE,
+	EV_LANDFILLING_DONE
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -333,7 +343,7 @@ typedef enum
 #define TIMER11_RESP_FUNC TIMER_UNUSED
 #define TIMER12_RESP_FUNC TIMER_UNUSED
 #define TIMER13_RESP_FUNC TIMER_UNUSED
-#define TIMER14_RESP_FUNC TIMER_UNUSED
+#define TIMER14_RESP_FUNC PostMasterHSM
 #define TIMER15_RESP_FUNC PostI2CService
 
 /****************************************************************************/
@@ -347,6 +357,7 @@ typedef enum
 #define SPI_TIMER 1
 #define SPI_REFRESH_TIMER 2
 #define ENCODER_TIMER 3
+#define BALL_COLLECTION_TIMER 14
 #define I2C_TIMER 15
 
 /**************************************************************************/

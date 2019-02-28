@@ -176,6 +176,9 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
                   MakeTransition = true; //mark that we are taking a transition
                   // if transitioning to a state with history change kind of entry
                   EntryEventKind.EventType = ES_ENTRY_HISTORY;
+								 
+								  //Start Timer which periodically checks how many balls have been recycled
+								  ES_Timer_InitTimer(BALL_COLLECTION_TIMER, BALL_COLLECTION_TIME); //Every 20 seconds (To be modified
                   
 							 }
 							 break;
@@ -214,6 +217,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
                   EntryEventKind.EventType = ES_ENTRY;
                   
 							 }
+							 
 							 break;
                 // repeat cases as required for relevant events
 							 default:
@@ -336,17 +340,18 @@ static ES_Event_t DuringWaitingForStart( ES_Event_t Event)
         // repeat the StartxxxSM() functions for concurrent state machines
         // on the lower level
 			
-			//StartWaitingForStartSM(Event);
+			StartWaitingForStartSM(Event);
     }
     else if ( Event.EventType == ES_EXIT )
     {
+			
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
         // now do any local exit functionality
 			
-			//RunWaitingForStartSM(Event);
-      
+			RunWaitingForStartSM(Event);
+      //if NextState
     }
 		
 		else
@@ -355,7 +360,7 @@ static ES_Event_t DuringWaitingForStart( ES_Event_t Event)
         // run any lower level state machine
         // ReturnEvent = RunLowerLevelSM(Event);
       
-			//ReturnEvent = RunWaitingForStartSM(Event);
+			ReturnEvent = RunWaitingForStartSM(Event);
         // repeat for any concurrent lower level machines
       
         // do any activity that is repeated as long as we are in this state
@@ -374,16 +379,16 @@ static ES_Event_t DuringGamePlay(ES_Event_t Event)
       (Event.EventType == ES_ENTRY_HISTORY))
   {
 		
-		//StartGamePlaySM(Event);
+		StartGamePlaySM(Event);
 	}
 	else if (Event.EventType == ES_EXIT)
 	{
-		//RunGamePlaySM(Event);
+		RunGamePlaySM(Event);
 	}
 	//During function for this state
 	else
 	{
-		//ReturnEvent = RunGamePlaySM(Event);
+		ReturnEvent = RunGamePlaySM(Event);
 	}
 	
 	return ReturnEvent;
