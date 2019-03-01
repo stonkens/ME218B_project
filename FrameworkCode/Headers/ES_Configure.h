@@ -33,7 +33,7 @@
 /****************************************************************************/
 // This macro determines that nuber of services that are *actually* used in
 // a particular application. It will vary in value from 1 to MAX_NUM_SERVICES
-#define NUM_SERVICES 6
+#define NUM_SERVICES 5
 
 /****************************************************************************/
 // These are the definitions for Service 0, the lowest priority service.
@@ -275,7 +275,8 @@ typedef enum
   RESPONSE_RECEIVED,
   ES_GAME_OVER,
   ES_CLEANING_UP,
-  ES_BUMPER_HIT
+  ES_BUMPER_HIT,
+  EV_MOVE_COMPLETED
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -322,7 +323,7 @@ typedef enum
 #define TIMER0_RESP_FUNC TIMER_UNUSED//PostTestHarnessI2C
 #define TIMER1_RESP_FUNC PostSPISM
 #define TIMER2_RESP_FUNC PostSPISM
-#define TIMER3_RESP_FUNC PostEncoderService
+#define TIMER3_RESP_FUNC TIMER_UNUSED
 #define TIMER4_RESP_FUNC TIMER_UNUSED
 #define TIMER5_RESP_FUNC TIMER_UNUSED
 #define TIMER6_RESP_FUNC TIMER_UNUSED
@@ -346,7 +347,6 @@ typedef enum
 #define I2C_TEST_TIMER 0
 #define SPI_TIMER 1
 #define SPI_REFRESH_TIMER 2
-#define ENCODER_TIMER 3
 #define I2C_TIMER 15
 
 /**************************************************************************/

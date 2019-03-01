@@ -453,11 +453,6 @@
               <FilePath>.\Source\MotorService.c</FilePath>
             </File>
             <File>
-              <FileName>PWM.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\PWM.c</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\SPISM.c</FilePath>
@@ -473,9 +468,24 @@
               <FilePath>.\Source\DCMotorService.c</FilePath>
             </File>
             <File>
-              <FileName>EncoderService.c</FileName>
+              <FileName>EncoderCapture.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Source\EncoderService.c</FilePath>
+              <FilePath>.\Source\EncoderCapture.c</FilePath>
+            </File>
+            <File>
+              <FileName>MotorSpeedControl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\MotorSpeedControl.c</FilePath>
+            </File>
+            <File>
+              <FileName>DriveMotorPWM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\DriveMotorPWM.c</FilePath>
+            </File>
+            <File>
+              <FileName>DriveCommandModule.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\DriveCommandModule.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -643,11 +653,6 @@
               <FilePath>.\Headers\MotorService.h</FilePath>
             </File>
             <File>
-              <FileName>PWM.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\PWM.h</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\SPISM.h</FilePath>
@@ -663,9 +668,24 @@
               <FilePath>.\Headers\DCMotorService.h</FilePath>
             </File>
             <File>
-              <FileName>EncoderService.h</FileName>
+              <FileName>EncoderCapture.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\Headers\EncoderService.h</FilePath>
+              <FilePath>.\Headers\EncoderCapture.h</FilePath>
+            </File>
+            <File>
+              <FileName>MotorSpeedControl.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\MotorSpeedControl.h</FilePath>
+            </File>
+            <File>
+              <FileName>DriveMotorPWM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\DriveMotorPWM.h</FilePath>
+            </File>
+            <File>
+              <FileName>DriveCommandModule.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\DriveCommandModule.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -825,6 +845,10 @@
       <TargetName>DCTarget</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+<<<<<<< HEAD
+=======
+      <uAC6>0</uAC6>
+>>>>>>> Motor_control
       <TargetOption>
         <TargetCommonOption>
           <Device>TM4C123GH6PM</Device>
@@ -1311,11 +1335,6 @@
               <FilePath>.\Source\MotorService.c</FilePath>
             </File>
             <File>
-              <FileName>PWM.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\PWM.c</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\SPISM.c</FilePath>
@@ -1331,9 +1350,24 @@
               <FilePath>.\Source\DCMotorService.c</FilePath>
             </File>
             <File>
-              <FileName>EncoderService.c</FileName>
+              <FileName>EncoderCapture.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Source\EncoderService.c</FilePath>
+              <FilePath>.\Source\EncoderCapture.c</FilePath>
+            </File>
+            <File>
+              <FileName>MotorSpeedControl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\MotorSpeedControl.c</FilePath>
+            </File>
+            <File>
+              <FileName>DriveMotorPWM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\DriveMotorPWM.c</FilePath>
+            </File>
+            <File>
+              <FileName>DriveCommandModule.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\DriveCommandModule.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1501,11 +1535,6 @@
               <FilePath>.\Headers\MotorService.h</FilePath>
             </File>
             <File>
-              <FileName>PWM.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\PWM.h</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\SPISM.h</FilePath>
@@ -1521,9 +1550,24 @@
               <FilePath>.\Headers\DCMotorService.h</FilePath>
             </File>
             <File>
-              <FileName>EncoderService.h</FileName>
+              <FileName>EncoderCapture.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\Headers\EncoderService.h</FilePath>
+              <FilePath>.\Headers\EncoderCapture.h</FilePath>
+            </File>
+            <File>
+              <FileName>MotorSpeedControl.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\MotorSpeedControl.h</FilePath>
+            </File>
+            <File>
+              <FileName>DriveMotorPWM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\DriveMotorPWM.h</FilePath>
+            </File>
+            <File>
+              <FileName>DriveCommandModule.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\DriveCommandModule.h</FilePath>
             </File>
           </Files>
         </Group>

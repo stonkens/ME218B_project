@@ -32,7 +32,7 @@
 #include "ES_ShortTimer.h"
 
 // Project modules
-#include "PWM.h"
+#include "DriveMotorPWM.h"
 
 // This module
 #include "DCMotorService.h"
@@ -52,9 +52,6 @@ static void setTransportDuty(uint32_t duty);
 static void RestorePickupDC(void); 
 static void RestoreTransportDC(void); 
 
-static uint32_t Startup_Period_ms = 5;
-static uint32_t Period_0; // ticks
-static uint32_t Duty_0;   // percent
 
 
 /*---------------------------- Module Variables ---------------------------*/
