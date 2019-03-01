@@ -463,11 +463,6 @@
               <FilePath>.\Source\EncoderCapture.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\main.c</FilePath>
-            </File>
-            <File>
               <FileName>MotorSpeedControl.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\MotorSpeedControl.c</FilePath>
@@ -487,11 +482,6 @@
         <Group>
           <GroupName>Headers</GroupName>
           <Files>
-            <File>
-              <FileName>uartstdio.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\uartstdio.h</FilePath>
-            </File>
             <File>
               <FileName>Bin_Const.h</FileName>
               <FileType>5</FileType>
@@ -591,11 +581,6 @@
               <FileName>I2CService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\I2CService.h</FilePath>
-            </File>
-            <File>
-              <FileName>TCS3472x.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TCS3472x.h</FilePath>
             </File>
             <File>
               <FileName>KeyMapperService.h</FileName>
@@ -703,24 +688,9 @@
               <FilePath>.\Headers\PickupMotorService.h</FilePath>
             </File>
             <File>
-              <FileName>TemplateFSM.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TemplateFSM.h</FilePath>
-            </File>
-            <File>
-              <FileName>TemplateService.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TemplateService.h</FilePath>
-            </File>
-            <File>
               <FileName>TestHarnessService0.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\TestHarnessService0.h</FilePath>
-            </File>
-            <File>
-              <FileName>TopHSMTemplate.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TopHSMTemplate.h</FilePath>
             </File>
             <File>
               <FileName>TransportMotorService.h</FileName>
@@ -1398,11 +1368,6 @@
               <FilePath>.\Source\EncoderCapture.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\main.c</FilePath>
-            </File>
-            <File>
               <FileName>MotorSpeedControl.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\MotorSpeedControl.c</FilePath>
@@ -1422,11 +1387,6 @@
         <Group>
           <GroupName>Headers</GroupName>
           <Files>
-            <File>
-              <FileName>uartstdio.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\uartstdio.h</FilePath>
-            </File>
             <File>
               <FileName>Bin_Const.h</FileName>
               <FileType>5</FileType>
@@ -1526,11 +1486,6 @@
               <FileName>I2CService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\I2CService.h</FilePath>
-            </File>
-            <File>
-              <FileName>TCS3472x.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TCS3472x.h</FilePath>
             </File>
             <File>
               <FileName>KeyMapperService.h</FileName>
@@ -1638,24 +1593,9 @@
               <FilePath>.\Headers\PickupMotorService.h</FilePath>
             </File>
             <File>
-              <FileName>TemplateFSM.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TemplateFSM.h</FilePath>
-            </File>
-            <File>
-              <FileName>TemplateService.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TemplateService.h</FilePath>
-            </File>
-            <File>
               <FileName>TestHarnessService0.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\TestHarnessService0.h</FilePath>
-            </File>
-            <File>
-              <FileName>TopHSMTemplate.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TopHSMTemplate.h</FilePath>
             </File>
             <File>
               <FileName>TransportMotorService.h</FileName>
