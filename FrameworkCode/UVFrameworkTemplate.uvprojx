@@ -428,11 +428,6 @@
               <FilePath>.\Source\MotorService.c</FilePath>
             </File>
             <File>
-              <FileName>PWM.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\PWM.c</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\SPISM.c</FilePath>
@@ -451,6 +446,41 @@
               <FileName>Triangulation.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\Triangulation.c</FilePath>
+            </File>
+            <File>
+              <FileName>DriveCommandModule.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\DriveCommandModule.c</FilePath>
+            </File>
+            <File>
+              <FileName>DriveMotorPWM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\DriveMotorPWM.c</FilePath>
+            </File>
+            <File>
+              <FileName>EncoderCapture.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\EncoderCapture.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>MotorSpeedControl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\MotorSpeedControl.c</FilePath>
+            </File>
+            <File>
+              <FileName>PickupMotorService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\PickupMotorService.c</FilePath>
+            </File>
+            <File>
+              <FileName>TransportMotorService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\TransportMotorService.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -618,11 +648,6 @@
               <FilePath>.\Headers\MotorService.h</FilePath>
             </File>
             <File>
-              <FileName>PWM.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\PWM.h</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\SPISM.h</FilePath>
@@ -641,6 +666,66 @@
               <FileName>Triangulation.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\Triangulation.h</FilePath>
+            </File>
+            <File>
+              <FileName>DriveCommandModule.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\DriveCommandModule.h</FilePath>
+            </File>
+            <File>
+              <FileName>DriveMotorPWM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\DriveMotorPWM.h</FilePath>
+            </File>
+            <File>
+              <FileName>EnablePA25_PB23_PD7_PF0.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\EnablePA25_PB23_PD7_PF0.h</FilePath>
+            </File>
+            <File>
+              <FileName>EncoderCapture.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\EncoderCapture.h</FilePath>
+            </File>
+            <File>
+              <FileName>HSMTemplate.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\HSMTemplate.h</FilePath>
+            </File>
+            <File>
+              <FileName>MotorSpeedControl.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\MotorSpeedControl.h</FilePath>
+            </File>
+            <File>
+              <FileName>PickupMotorService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\PickupMotorService.h</FilePath>
+            </File>
+            <File>
+              <FileName>TemplateFSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TemplateFSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>TemplateService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TemplateService.h</FilePath>
+            </File>
+            <File>
+              <FileName>TestHarnessService0.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TestHarnessService0.h</FilePath>
+            </File>
+            <File>
+              <FileName>TopHSMTemplate.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TopHSMTemplate.h</FilePath>
+            </File>
+            <File>
+              <FileName>TransportMotorService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TransportMotorService.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1278,11 +1363,6 @@
               <FilePath>.\Source\MotorService.c</FilePath>
             </File>
             <File>
-              <FileName>PWM.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\PWM.c</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\SPISM.c</FilePath>
@@ -1301,6 +1381,41 @@
               <FileName>Triangulation.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\Triangulation.c</FilePath>
+            </File>
+            <File>
+              <FileName>DriveCommandModule.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\DriveCommandModule.c</FilePath>
+            </File>
+            <File>
+              <FileName>DriveMotorPWM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\DriveMotorPWM.c</FilePath>
+            </File>
+            <File>
+              <FileName>EncoderCapture.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\EncoderCapture.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>MotorSpeedControl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\MotorSpeedControl.c</FilePath>
+            </File>
+            <File>
+              <FileName>PickupMotorService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\PickupMotorService.c</FilePath>
+            </File>
+            <File>
+              <FileName>TransportMotorService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\TransportMotorService.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1468,11 +1583,6 @@
               <FilePath>.\Headers\MotorService.h</FilePath>
             </File>
             <File>
-              <FileName>PWM.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\PWM.h</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\SPISM.h</FilePath>
@@ -1491,6 +1601,66 @@
               <FileName>Triangulation.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\Triangulation.h</FilePath>
+            </File>
+            <File>
+              <FileName>DriveCommandModule.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\DriveCommandModule.h</FilePath>
+            </File>
+            <File>
+              <FileName>DriveMotorPWM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\DriveMotorPWM.h</FilePath>
+            </File>
+            <File>
+              <FileName>EnablePA25_PB23_PD7_PF0.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\EnablePA25_PB23_PD7_PF0.h</FilePath>
+            </File>
+            <File>
+              <FileName>EncoderCapture.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\EncoderCapture.h</FilePath>
+            </File>
+            <File>
+              <FileName>HSMTemplate.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\HSMTemplate.h</FilePath>
+            </File>
+            <File>
+              <FileName>MotorSpeedControl.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\MotorSpeedControl.h</FilePath>
+            </File>
+            <File>
+              <FileName>PickupMotorService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\PickupMotorService.h</FilePath>
+            </File>
+            <File>
+              <FileName>TemplateFSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TemplateFSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>TemplateService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TemplateService.h</FilePath>
+            </File>
+            <File>
+              <FileName>TestHarnessService0.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TestHarnessService0.h</FilePath>
+            </File>
+            <File>
+              <FileName>TopHSMTemplate.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TopHSMTemplate.h</FilePath>
+            </File>
+            <File>
+              <FileName>TransportMotorService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TransportMotorService.h</FilePath>
             </File>
           </Files>
         </Group>

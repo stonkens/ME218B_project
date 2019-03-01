@@ -25,13 +25,13 @@ Author
 #include <stdio.h>
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
-#include "inc/hw_gpio.h"
+#include "inc/hw_gPIo.h"
 #include "inc/hw_sysctl.h"
 #include "inc/hw_timer.h"
 #include "inc/hw_nvic.h"
 #include "driverlib/sysctl.h"
-#include "driverlib/pin_map.h"
-#include "driverlib/gpio.h"
+#include "driverlib/PIn_map.h"
+#include "driverlib/gPIo.h"
 #include "driverlib/timer.h"
 #include "driverlib/interrupt.h"
 
@@ -39,7 +39,7 @@ Author
 #include "Triangulation.h"
 /*----------------------------- Module Defines ----------------------------*/
 // Readability defines:
-#define pi 3.14159265358979
+#define PI 3.14159265358979
 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this service.They should be functions
@@ -61,22 +61,27 @@ static float X = 0; //Data to return, coordinates of bot
 static float Y = 0;
 static float Heading = 0;
 
-static float XA; //Data of beacons for calculation
-static float XB;
-static float XC;
-static float YA;
-static float YB;
-static float YC;
+static float X1; //Data of beacons for calculation
+static float X2;
+static float X3;
+static float Y1;
+static float Y2;
+static float Y3;
 
 // Data for angles
-static float AngA; // interior angles of traingle ABC
+static float Angle1; // interior angles of traingle ABC
+static float Angle2;
+static float Angle3;
+static float AngA;
 static float AngB;
 static float AngC;
+static float Alpha;
+static float Beta;
+static float Gamma;
 static float AngAlpha;  // angles from bot perspective, between beacons B,C
 static float AngBeta; // between beacons A,C
 static float AngGamma; // between beacons A,B
-static float Alpha; //IN DEGREES
-static float Gamma;
+
 
 //cotangents of angles
 static float COT_A;
@@ -174,8 +179,8 @@ void Triangulate(float AngleA, float AngleB, float AngleC, float AngleD) {
     K  = KA + KB + KC;
     
     // calculate middle frame coordinates
-    Xf = (KA*XA + KB*XB + KC*XC)/K;
-    Yf = (KA*YA + KB*YB + KC*YC)/K;
+    Xf = (KA*X1 + KB*X2 + KC*X3)/K;
+    Yf = (KA*Y1 + KB*Y2 + KC*Y3)/K;
     
     //Calculate heading
     XRelative = X1 - Xf;
@@ -251,8 +256,8 @@ void Triangulate(float AngleA, float AngleB, float AngleC, float AngleD) {
     K  = KA + KB + KC;
     
     // calculate middle frame coordinates
-    Xf = (KA*XA + KB*XB + KC*XC)/K;
-    Yf = (KA*YA + KB*YB + KC*YC)/K;
+    Xf = (KA*X1 + KB*X2 + KC*X3)/K;
+    Yf = (KA*Y1 + KB*Y2 + KC*Y3)/K;
     
     //Calculate heading
     XRelative = X3 - Xf;
@@ -329,8 +334,8 @@ void Triangulate(float AngleA, float AngleB, float AngleC, float AngleD) {
     K  = KA + KB + KC;
     
     // calculate middle frame coordinates
-    Xf = (KA*XA + KB*XB + KC*XC)/K;
-    Yf = (KA*YA + KB*YB + KC*YC)/K;
+    Xf = (KA*X1 + KB*X2 + KC*X3)/K;
+    Yf = (KA*Y1 + KB*Y2 + KC*Y3)/K;
     
     //Calculate heading
     XRelative = X1 - Xf;
@@ -406,8 +411,8 @@ void Triangulate(float AngleA, float AngleB, float AngleC, float AngleD) {
     K  = KA + KB + KC;
     
     // calculate middle frame coordinates
-    Xf = (KA*XA + KB*XB + KC*XC)/K;
-    Yf = (KA*YA + KB*YB + KC*YC)/K;
+    Xf = (KA*X1 + KB*X2 + KC*X3)/K;
+    Yf = (KA*Y1 + KB*Y2 + KC*Y3)/K;
     
     //Calculate heading
     XRelative = X1 - Xf;

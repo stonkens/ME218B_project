@@ -31,8 +31,6 @@
 #include "ES_DeferRecall.h"
 #include "ES_ShortTimer.h"
 
-// Project modules
-#include "PWM.h"
 
 // This module
 #include "PickupMotorService.h"
@@ -81,7 +79,6 @@ bool InitPickupMotorService(uint8_t Priority)
   MyPriority = Priority;
 
   // Initialize HW for PWM lines will be done in InitializeHardware.c
-  InitPWM();
   ThisEvent.EventType = ES_INIT;
   if (ES_PostToService(MyPriority, ThisEvent) == true)
   {
