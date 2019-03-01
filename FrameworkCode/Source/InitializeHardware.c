@@ -39,6 +39,7 @@
 #include "DCMotorService.h"
 #include "SPISM.h"
 #include "IREmitter.h"
+#include "IRDetector.h"
 
 // This module
 #include "InitializeHardware.h"
@@ -82,7 +83,7 @@ void InitializeHardware(void)
   InitMotorGPIO();
   InitPWM();
   //InitSPI(); //This uses bits xxx and xxx
-  //InitInputCapture();
+  InitInputCapture();
 
   __enable_irq();
   //InitializeADC();

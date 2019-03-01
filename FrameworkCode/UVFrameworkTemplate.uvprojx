@@ -672,6 +672,11 @@
               <FileType>5</FileType>
               <FilePath>.\Headers\EncoderService.h</FilePath>
             </File>
+            <File>
+              <FileName>IRDetector.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\IRDetector.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1534,6 +1539,11 @@
               <FileName>EncoderService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\EncoderService.h</FilePath>
+            </File>
+            <File>
+              <FileName>IRDetector.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\IRDetector.h</FilePath>
             </File>
           </Files>
         </Group>

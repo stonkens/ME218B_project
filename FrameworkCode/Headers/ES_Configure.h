@@ -275,7 +275,12 @@ typedef enum
   RESPONSE_RECEIVED,
   ES_GAME_OVER,
   ES_CLEANING_UP,
-  ES_BUMPER_HIT
+  ES_BUMPER_HIT,
+  ES_WESTRECYCLING_FOUND,
+  ES_EASTRECYCLING_FOUND,
+  ES_SOUTHLANDFILL_FOUND,
+  ES_NORTHLANDFILL_FOUND
+
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -310,7 +315,7 @@ typedef enum
 
 /****************************************************************************/
 // This is the list of event checking functions
-#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished
+#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished, IR_found 
 
 /****************************************************************************/
 // These are the definitions for the post functions to be executed when the

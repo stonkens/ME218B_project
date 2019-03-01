@@ -24,6 +24,7 @@
 #include "ES_Framework.h"
 #include "ES_Port.h"
 #include "ES_Events.h"
+#include "EventCheckers.h"
 
 #include "inc/hw_types.h"
 #include "inc/hw_memmap.h"
@@ -44,17 +45,16 @@
 #include <stdio.h>
 #include "termio.h"
 
+#include "IRDetector.h"
+
+#include "DCMotorService.h"//posts to this for testing
+
 /*----------------------------- Module Defines -----------------------------*/
 #define MAX_PERIOD_us 850
 #define MIN_PERIOD_us 450
 //#define ns_PER_TICK 25
 #define TICKS_PER_us 40
 /*---------------------------- Module Functions ---------------------------*/
-//Function list
-//InitInputCapture: rising edge
-//IR_ISR: clear interrupt
-//
-
 
 /*---------------------------- Module Variables ---------------------------*/
 static uint32_t Validated_LastPeriod_us; //LastPeriod value used for consistant Period reading
@@ -165,7 +165,7 @@ void IR_ISR(void){
   //clear interrupt
   HWREG(WTIMER2_BASE + TIMER_O_ICR)=TIMER_ICR_CBECINT;
   //grab the captured tick value
-  ThisCapture=HWREG(WTIMER2_BASE + TIMER0_BASE + TIMER_O_TBR);
+  ThisCapture=HWREG(WTIMER2_BASE + TIMER_O_TBR);
   //if firstedge, don't calculate the period
   if (FirstEdge)
   {
@@ -260,4 +260,63 @@ Hyun Joo Lee 16:10 02/27/2019 Started function
 ****************************************************************************/
 void IR_enable(void){
     HWREG(WTIMER2_BASE +TIMER_O_IMR) |=TIMER_IMR_CBEIM;
+}
+/****************************************************************************
+ Function
+   IR_found(void)
+
+ Parameters
+  nothing
+
+ Returns
+  true when IR(recylcing center or ) is found 
+
+ Description
+Modular: removable to another location
+    Event checker for
+WestRecycling_Found: 600us
+EastRecycling_Found: 500us
+SouthLandfill_Found: 700us
+NorthLandfill_Found: 800us
+
+ Notes
+
+ Author
+ Hyun Joo Lee 15:18 02/28/2019 Started function
+
+****************************************************************************/
+bool IR_found(void){
+  bool ReturnVal=false;
+  uint32_t FoundPeriod;
+  FoundPeriod=IR_getPeriod();
+  if((FoundPeriod >790)&&(FoundPeriod<810))
+  {
+    ES_Event_t ThisEvent;
+    ThisEvent.EventType=ES_NORTHLANDFILL_FOUND;
+    ReturnVal =true;
+    PostDCMotorService(ThisEvent);
+    printf("\r\n NorthLandfill_Found");
+  }else if((FoundPeriod >690)&&(FoundPeriod<710))
+  {
+    ES_Event_t ThisEvent;
+    ThisEvent.EventType=ES_SOUTHLANDFILL_FOUND;
+    ReturnVal =true;
+    PostDCMotorService(ThisEvent);
+    printf("\r\n SouthLandfill_Found");
+  }else if((FoundPeriod >590)&&(FoundPeriod<610))
+  {
+    ES_Event_t ThisEvent;
+    ThisEvent.EventType=ES_WESTRECYCLING_FOUND;
+    ReturnVal =true;
+    PostDCMotorService(ThisEvent);
+    printf("\r\n WestRecycling_Found");
+  }else if((FoundPeriod >490)&&(FoundPeriod<510))
+  {
+    ES_Event_t ThisEvent;
+    ThisEvent.EventType=ES_EASTRECYCLING_FOUND;
+    ReturnVal =true;
+    PostDCMotorService(ThisEvent);
+    printf("\r\n EastRecycling_Found");
+  }
+  return ReturnVal;
 }

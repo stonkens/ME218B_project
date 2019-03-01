@@ -86,6 +86,7 @@ __heap_limit
 		EXTERN  B1ISR
 		EXTERN  A2ISR
 		EXTERN  B2ISR
+		EXTERN IR_ISR
 ;        EXTERN  UARTStdioIntHandler
 
 ;******************************************************************************
@@ -210,7 +211,7 @@ __Vectors
         DCD     A2ISR			            ; Wide Timer 1 subtimer A
         DCD     B2ISR			            ; Wide Timer 1 subtimer B
         DCD     IntDefaultHandler           ; Wide Timer 2 subtimer A
-        DCD     IntDefaultHandler           ; Wide Timer 2 subtimer B
+        DCD     IR_ISR           ; Wide Timer 2 subtimer B
         DCD     IntDefaultHandler           ; Wide Timer 3 subtimer A
         DCD     IntDefaultHandler           ; Wide Timer 3 subtimer B
         DCD     IntDefaultHandler           ; Wide Timer 4 subtimer A
