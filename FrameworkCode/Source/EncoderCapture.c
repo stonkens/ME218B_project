@@ -441,7 +441,7 @@ static void InitInputCaptureEnc_2(void)
 
 void Enc_1AISR(void)
 {
-  printf("'");
+  //printf("'");
   uint32_t    ThisCapture_1A;
   //start by clearing the source of the interrupt, the input capture event
   HWREG(WTIMER0_BASE + TIMER_O_ICR) = TIMER_ICR_CAECINT;
@@ -479,7 +479,7 @@ void Enc_1AISR(void)
 
 void Enc_1BISR(void)
 {
-  printf("/");
+  //printf("/");
   uint32_t    ThisCapture_1B;
   //start by clearing the source of the interrupt, the input capture event
   HWREG(WTIMER0_BASE + TIMER_O_ICR) = TIMER_ICR_CBECINT;
