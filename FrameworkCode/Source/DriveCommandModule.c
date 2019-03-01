@@ -52,19 +52,18 @@
 #define STRAIGHT	0
 #define TURN			1
 
-#define STRAIGHT_DRIVE_SPEED	300 //Max drive speed
-#define TURNING_SPEED					300 //Max rotation speed
+#define STRAIGHT_DRIVE_SPEED	100 //Max drive speed
+#define TURNING_SPEED					100 //Max rotation speed
 
 #define ROTATION_RADIUS 5.12 //In inches (IF RECALIBRATED UPDATED BELOW)
 
-#define TICKS_PER_INCHx10	606.38 //TO BE RECALIBRATED
-#define TICKS_PER_DEGREEx100	541.87 //TO BE RECALIBRATED
+#define TICKS_PER_INCHx10	606.38/4 //TO BE RECALIBRATED
+#define TICKS_PER_DEGREEx100	541.87/4 //TO BE RECALIBRATED
 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this service.They should be functions
    relevant to the behavior of this service
 */
-
 
 /*---------------------------- Module Variables ---------------------------*/
 // Data private to the module

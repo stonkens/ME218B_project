@@ -46,9 +46,9 @@
 #define TICKS_PER_SECOND	 40000000
 #define TICKS_PER_MS 40000
 #define GEAR_RATIO 50
-#define PULSES_PER_REV 12
+#define PULSES_PER_REV 3
 
-#define MIN_ERROR	5
+#define MIN_ERROR	2
 #define MIN_TICKS	0
 
 #define KPM	2
@@ -60,7 +60,7 @@
 #define RPM_I_GAIN 0.3
 
 
-#define UPDATE_TIME 10			//Adjusted every 2 ms
+#define UPDATE_TIME 2			//Adjusted every 2 ms
 
 /*---------------------------- Module Functions ---------------------------*
   prototypes for private functions for this service.They should be functions
@@ -323,8 +323,8 @@ void Drive_SpeedControlISR(void){
 	//Based on PD controller
 	DistanceError = (DesiredDistance - ((LastTickCount_1+LastTickCount_2)/2)); //taking average of wheel 1 and 2 when driving straight
   //printf("E:%f\r \n", DistanceError);
-	printf("1:%d\r\n", LastTickCount_1);
-  printf("2:%d\r\n", LastTickCount_2);
+	//printf("1:%d\r\n", LastTickCount_1);
+  //printf("2:%d\r\n", LastTickCount_2);
   HeadingError = (DesiredHeading- ((LastTickCount_2-LastTickCount_1)/2)); //Subtracting both to take average when turning
   //printf("HeadingError:%f", HeadingError);
 	DistancePDTerm = KPM*DistanceError + KDM*(DistanceError-LastDistanceError);
