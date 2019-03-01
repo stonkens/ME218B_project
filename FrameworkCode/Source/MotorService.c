@@ -34,8 +34,9 @@
 #include "ES_ShortTimer.h"
 
 // Project modules
-#include "PWM.h"
+#include "DriveMotorPWM.h"
 
+#include "DriveCommandModule.h"
 // This module
 #include "MotorService.h"
 //#include "CommunicationSSI.h"
@@ -90,7 +91,7 @@ bool InitMotorService(uint8_t Priority)
 
 
   //InitializeHardware();
-
+  //Drive_Straight(-1200);
   ThisEvent.EventType = ES_INIT;
   if (ES_PostToService(MyPriority, ThisEvent) == true)
   {
@@ -146,181 +147,41 @@ ES_Event_t RunMotorService(ES_Event_t ThisEvent)
 {
   ES_Event_t ReturnEvent;
   ReturnEvent.EventType = ES_NO_EVENT; // assume no errors
-  printf("\r\n  CurrentMotorState is: %d", CurrentState);
-  switch (CurrentState)
+	if (ThisEvent.EventType == ES_NEW_KEY)
+	{
+		printf("ES_NEW_KEY received with -> %c <- in Service 0\r\n",
+          (char)ThisEvent.EventParam);
+		if('a' == ThisEvent.EventParam)
+		{
+			printf("Commanded Motor to drive forward 1 feet\r\n");
+			Drive_Straight(8400);
+		}
+		else if('s' == ThisEvent.EventParam)
+		{
+			printf("Commanded Motor to drive backward 1 feet \r\n");
+			Drive_Straight(-1200);
+		}
+		else if('d' == ThisEvent.EventParam)
+		{
+			printf("Commanded Motor to turn 90 degrees \r\n");
+			Drive_Turn(900);
+		}
+		else if('f' == ThisEvent.EventParam)
+		{
+			printf("Command Motor to turn -90 degrees \r\n");
+			Drive_Turn(-900);
+		}
+		else if('q' == ThisEvent.EventParam)
+		{
+			printf("Stop MOTOR from moving");
+      StopDrive();
+		}
+	}
+  
+  else if (ThisEvent.EventType == EV_MOVE_COMPLETED)
   {
-    case InitState:
-    {
-      if (ThisEvent.EventType == ES_INIT)
-      {
-        printf("\r\n In init state of MotorService\r\n");
-        //Transitioning to RegularOperation state
-        PWMSetDuty(0, 0, ADVANCE);
-        CurrentState = Forward;
-      }
-    }
-    
-    case Forward:
-    {
-      if (ThisEvent.EventType == ES_CLEANING_UP)
-      {
-        PWMSetDuty(HALF_SPEED_A, HALF_SPEED_B, ADVANCE);
-      
-      /*  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
-        HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI;
-      HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT7HI;
-      printf("set bits 0,1,7 high");      
-      
-        HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT4LO;
-        HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT5LO; */
-      }
-      
-      if(ThisEvent.EventType == ES_GAME_OVER)
-      {
-        PWMSetDuty(0, 0, ADVANCE);
-      }
-      
-      if(ThisEvent.EventType == ES_BUMPER_HIT)
-      {
-        printf("\r\n Changing direction from Forward to Backward");
-        CurrentState = Backward;
-        
-      }break;
-    }
-    case Backward:
-    {
-       PWMSetDuty(HALF_SPEED_A, HALF_SPEED_B, REVERSE);
-     /*   HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT4HI;
-        HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT5HI;
-        
-        HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0LO;
-        HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO;
-    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT7LO;
-    printf("\r\n set bits 0,1,7 low"); */
-    
-      if(ThisEvent.EventType == ES_BUMPER_HIT)
-      {
-        printf("\r\n Changing direction from Backward to Forward");
-        //PWMSetDuty(MAX_SPEED_A, MAX_SPEED_B, ADVANCE);
-        CurrentState = Forward;
-       
-      } break;
-    }
-     
-    
-
-    /*case RegularOperation:
-    {
-      if (ThisEvent.EventType == ES_NEW_COMMAND)
-      {
-        printf("\r\n Received new command in MotorService. Command: %d\r\n", ThisEvent.EventParam);
-        //Make sure old timing events are not generated anymore
-        ES_Timer_StopTimer(RotateTimer);
-        switch (ThisEvent.EventParam)
-        {
-          case 0x00:
-          {
-            PWMSetDuty(0, 0, ADVANCE);
-            break;
-          }
-          case 0x02:
-          {
-            //PWMSetDuty(MAX_SPEED_A, MAX_SPEED_B, CW);
-            PWMSetDuty(HALF_SPEED_A, HALF_SPEED_B, CW);
-            ES_Timer_InitTimer(RotateTimer, QUARTER_TURN);
-            break;
-          }
-          case 0x03:
-          {
-            //PWMSetDuty(MAX_SPEED_A, MAX_SPEED_B, CW);
-            PWMSetDuty(HALF_SPEED_A, HALF_SPEED_B, CW);
-            ES_Timer_InitTimer(RotateTimer, EIGHTH_TURN);
-            break;
-          }
-          case 0x04:
-          {
-            //PWMSetDuty(MAX_SPEED_A, MAX_SPEED_B, CCW);
-            PWMSetDuty(HALF_SPEED_A, HALF_SPEED_B, CCW);
-            ES_Timer_InitTimer(RotateTimer, QUARTER_TURN);
-            break;
-          }
-          case 0x05:
-          {
-            //PWMSetDuty(MAX_SPEED_A, MAX_SPEED_B, CCW);
-            PWMSetDuty(HALF_SPEED_A, HALF_SPEED_B, CCW);
-            ES_Timer_InitTimer(RotateTimer, EIGHTH_TURN);
-            break;
-          }
-          case 0x08:
-          {
-            PWMSetDuty(HALF_SPEED_A, HALF_SPEED_B, ADVANCE);
-            break;
-          }
-          case 0x09:
-          {
-            PWMSetDuty(MAX_SPEED_A, MAX_SPEED_B, ADVANCE);
-            break;
-          }
-          case 0x10:
-          {
-            PWMSetDuty(HALF_SPEED_A, HALF_SPEED_B, REVERSE);
-            break;
-          }
-          case 0x11:
-          {
-            PWMSetDuty(MAX_SPEED_A, MAX_SPEED_B, REVERSE);
-            break;
-          }
-          case 0x20: //Align with beacon
-          {
-            //PWMSetDuty(MAX_SPEED_A, MAX_SPEED_B, CW);
-            clearBeaconAlignedFlag();
-            clearfirstRisingEdgeAlreadySeen();
-            PWMSetDuty(MAX_SPEED_A, MAX_SPEED_B, CCW);
-            CurrentState = AlignBeacon;
-            //Align with beacon, go into new state which checks this
-            break;
-          }
-          case 0x40:
-          {
-            PWMSetDuty(HALF_SPEED_A, HALF_SPEED_B, ADVANCE);
-            CurrentState = FindBoundary;
-            //Drive forward until tape is detected (go into new state which checks this)
-            break;
-          }
-        }
-      }
-      else if ((ThisEvent.EventType == ES_TIMEOUT) && (ThisEvent.EventParam == RotateTimer))
-      {
-        PWMSetDuty(0, 0, ADVANCE);
-      }
-      break;
-    }
-
-    case AlignBeacon:
-    {
-      if (ThisEvent.EventType == ES_BEACON_DETECTED)
-      {
-        PWMSetDuty(0, 0, ADVANCE);
-        setBeaconAlignedFlag();
-        CurrentState = RegularOperation;
-      }
-      break;
-    }
-
-    case FindBoundary:
-    {
-      if (ThisEvent.EventType == ES_TAPE_DETECTED)
-      {
-        PWMSetDuty(0, 0, ADVANCE);
-        CurrentState = RegularOperation;
-      }
-      break;
-    }
-    */
+    StopDrive();
   }
-
-  //printf("\r\n Ran through MotorService\r\n");
   return ReturnEvent;
 }
 
