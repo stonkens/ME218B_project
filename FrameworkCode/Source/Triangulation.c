@@ -17,7 +17,6 @@ Author
 /*----------------------------- Include Files -----------------------------*/
 /* include header files for the framework and this service
 */
-#include "Localization.h"
 
 #include <math.h> //for acos and atan
 
@@ -36,6 +35,8 @@ Author
 #include "driverlib/timer.h"
 #include "driverlib/interrupt.h"
 
+
+#include "Triangulation.h"
 /*----------------------------- Module Defines ----------------------------*/
 // Readability defines:
 #define pi 3.14159265358979
@@ -52,7 +53,9 @@ Author
 static float Xf;
 static float Yf;
 static float theta;
-static float OriginAngle;
+static float XRelative;
+static float YRelative;
+static float RelativeTheta;
 
 static float X = 0; //Data to return, coordinates of bot
 static float Y = 0;
@@ -66,22 +69,22 @@ static float YB;
 static float YC;
 
 // Data for angles
-static float ANG_A; // interior angles of traingle ABC
-static float ANG_B;
-static float ANG_C;
-static float ANG_ALPHA;  // angles from bot perspective, between beacons B,C
-static float ANG_BETA; // between beacons A,C
-static float ANG_GAMMA; // between beacons A,B
-static float ALPHA; //IN DEGREES
-static float GAMMA;
+static float AngA; // interior angles of traingle ABC
+static float AngB;
+static float AngC;
+static float AngAlpha;  // angles from bot perspective, between beacons B,C
+static float AngBeta; // between beacons A,C
+static float AngGamma; // between beacons A,B
+static float Alpha; //IN DEGREES
+static float Gamma;
 
 //cotangents of angles
 static float COT_A;
 static float COT_B;
 static float COT_C;
-static float COT_ALPHA;
-static float COT_BETA;
-static float COT_GAMMA;
+static float COT_Alpha;
+static float COT_Beta;
+static float COT_Gamma;
 
 //Tienstra scalers
 static float KA;
@@ -120,96 +123,313 @@ void Triangulate(float AngleA, float AngleB, float AngleC, float AngleD) {
 	
 	if (AngleA == -1) 
 	{	
-		//theta = 90;
-		firstAngle = AngleB;
-		secondAngle = AngleC;
-		thirdAngle = AngleD;
-		XA = -48;
-		YA = -24;
-		XB = -30;
-		YB = -58.8;
-		XC = 30;
-		YC = 58.8;
-		//Define ANG_A, ANG_B, ANG_C
-		//Repeat for others
+    
+    //Not using Angle to West Recycling Center
+    Angle1 = AngleB;
+    Angle2 = AngleC;
+    Angle3 = AngleD;
+    X1 = 48;
+    Y1 = -12;
+    X2 = -30;
+    Y2 = -58.8;
+    X3 = 30;
+    Y3 = 58.8;
+    
+    AngA = 1.862253121;
+    AngB = 0.558599315;
+    AngC = 0.720740217;
+    Alpha = Angle3 - Angle2;
+    if (Alpha <0)
+    {
+      Alpha += 360; 
+    }
+    Beta = Angle1 - Angle3;
+    if (Beta < 0)
+    {
+      Beta += 360;
+    }
+    Gamma = Angle2 - Angle1;
+    if (Gamma < 0)
+    {
+      Gamma += 360;
+    }
+    AngAlpha = Alpha*PI/180;
+    AngBeta = Beta*PI/180;
+    AngGamma = Gamma*PI/180;
+    
+    //Application of Tienstra's algorithm
+
+    //COTANGENTS
+    COT_A = 1/tan(AngA);
+    COT_B = 1/tan(AngB);
+    COT_C = 1/tan(AngC);
+    COT_Alpha = 1/tan(AngAlpha);
+    COT_Beta = 1/tan(AngBeta);
+    COT_Gamma = 1/tan(AngGamma);
+    
+    // calculate scalers
+    KA = 1/(COT_A - COT_Alpha);
+    KB = 1/(COT_B - COT_Beta);
+    KC = 1/(COT_C - COT_Gamma);
+    K  = KA + KB + KC;
+    
+    // calculate middle frame coordinates
+    Xf = (KA*XA + KB*XB + KC*XC)/K;
+    Yf = (KA*YA + KB*YB + KC*YC)/K;
+    
+    //Calculate heading
+    XRelative = X1 - Xf;
+    YRelative = Y1 - Yf;
+    
+    
+    RelativeTheta = atan2((YRelative), (XRelative));
+    
+    if(((AngleB - RelativeTheta) >= 0))
+    {
+      Heading = (AngleB - RelativeTheta)*180/PI;
+      
+      if (Heading < 0) 
+      {
+        Heading = - Heading;
+      }
+    }
+    else
+    {
+      Heading = (AngleB - RelativeTheta + 2*PI) * 180/PI;
+    }
 	} 
 
 	else if (AngleB == -1) //
-	{	
-		//theta = 180;
-		firstAngle = AngleC;
-		secondAngle = AngleD;
-		thirdAngle = AngleA;	
+	{
+    //Not using Angle to East Recycling Center
+    Angle1 = AngleC;
+    Angle2 = AngleD;
+    Angle3 = AngleA;
+    X1 = -30;
+    Y1 = -58.8;
+    X2 = 30;
+    Y2 = 58.8;
+    X3 = -48;
+    Y3 = 12;
+    
+    AngA = 0.720740217;
+    AngB = 0.558599315;
+    AngC = 1.862253121;
+    Alpha = Angle3 - Angle2;
+    if (Alpha <0)
+    {
+      Alpha += 360; 
+    }
+    Beta = Angle1 - Angle3;
+    if (Beta < 0)
+    {
+      Beta += 360;
+    }
+    Gamma = Angle2 - Angle1;
+    if (Gamma < 0)
+    {
+      Gamma += 360;
+    }
+    AngAlpha = Alpha*PI/180;
+    AngBeta = Beta*PI/180;
+    AngGamma = Gamma*PI/180;
+    
+    //Application of Tienstra's algorithm
 
-	}
+    //COTANGENTS
+    COT_A = 1/tan(AngA);
+    COT_B = 1/tan(AngB);
+    COT_C = 1/tan(AngC);
+    COT_Alpha = 1/tan(AngAlpha);
+    COT_Beta = 1/tan(AngBeta);
+    COT_Gamma = 1/tan(AngGamma);
+    
+    // calculate scalers
+    KA = 1/(COT_A - COT_Alpha);
+    KB = 1/(COT_B - COT_Beta);
+    KC = 1/(COT_C - COT_Gamma);
+    K  = KA + KB + KC;
+    
+    // calculate middle frame coordinates
+    Xf = (KA*XA + KB*XB + KC*XC)/K;
+    Yf = (KA*YA + KB*YB + KC*YC)/K;
+    
+    //Calculate heading
+    XRelative = X3 - Xf;
+    YRelative = Y3 - Yf;
+    
+    //HEADING POSSIBLY TO BE UPDATED
+    RelativeTheta = atan2((YRelative), (XRelative));
+    
+    if(((AngleA - RelativeTheta) >= 0))
+    {
+      Heading = (AngleA - RelativeTheta)*180/PI;
+      
+      if (Heading < 0) 
+      {
+        Heading = - Heading;
+      }
+    }
+    else
+    {
+      Heading = (AngleA - RelativeTheta + 2*PI) * 180/PI;
+    }
+	} 
 
 	else if (AngleC == -1) 
 	{	
-		//theta = 270;
-		firstAngle = AngleD;
-		secondAngle = AngleA;
-		thirdAngle = AngleB;
-	} 
+    
+    //Not using Angle to South Landfill
+    Angle1 = AngleD;
+    Angle2 = AngleA;
+    Angle3 = AngleB;
+    X1 = 30;
+    Y1 = 58.8;
+    X2 = -48;
+    Y2 = 12;
+    X3 = 48;
+    Y3 = -12;
+    
+    AngA = 1.279339532;
+    AngB = 0.785398163;
+    AngC = 1.076854958;
+    Alpha = Angle3 - Angle2;
+    if (Alpha <0)
+    {
+      Alpha += 360; 
+    }
+    Beta = Angle1 - Angle3;
+    if (Beta < 0)
+    {
+      Beta += 360;
+    }
+    Gamma = Angle2 - Angle1;
+    if (Gamma < 0)
+    {
+      Gamma += 360;
+    }
+    AngAlpha = Alpha*PI/180;
+    AngBeta = Beta*PI/180;
+    AngGamma = Gamma*PI/180;
+    
+    //Application of Tienstra's algorithm
+
+    //COTANGENTS
+    COT_A = 1/tan(AngA);
+    COT_B = 1/tan(AngB);
+    COT_C = 1/tan(AngC);
+    COT_Alpha = 1/tan(AngAlpha);
+    COT_Beta = 1/tan(AngBeta);
+    COT_Gamma = 1/tan(AngGamma);
+    
+    // calculate scalers
+    KA = 1/(COT_A - COT_Alpha);
+    KB = 1/(COT_B - COT_Beta);
+    KC = 1/(COT_C - COT_Gamma);
+    K  = KA + KB + KC;
+    
+    // calculate middle frame coordinates
+    Xf = (KA*XA + KB*XB + KC*XC)/K;
+    Yf = (KA*YA + KB*YB + KC*YC)/K;
+    
+    //Calculate heading
+    XRelative = X1 - Xf;
+    YRelative = Y1 - Yf;
+    
+    
+    RelativeTheta = atan2((YRelative), (XRelative));
+    
+    if(((AngleB - RelativeTheta) >= 0))
+    {
+      Heading = (AngleB - RelativeTheta)*180/PI;
+      
+      if (Heading < 0) 
+      {
+        Heading = - Heading;
+      }
+    }
+    else
+    {
+      Heading = (AngleB - RelativeTheta + 2*PI) * 180/PI;
+    }
+	}
 
 	else //AngleD is not considered
 	{	
-		//theta = 0;
-		firstAngle = AngleA;
-		secondAngle = AngleB;
-		thirdAngle = AngleC;
-	}
-	
-	 //define beacon locations
-	//XA = -48;
-	//YA = -48;
-	//XB = 48;
-	//YB = -48;
-	//XC = 48;
-	//YC = 48;
-	
+    //Not using Angle to North Landfill
+    Angle1 = AngleA;
+    Angle2 = AngleB;
+    Angle3 = AngleC;
+    X1 = -48;
+    Y1 = 12;
+    X2 = 48;
+    Y2 = -12;
+    X3 = -30;
+    Y3 = -58.8;
+    
+    AngA = 1.076854958;
+    AngB = 0.785398163;
+    AngC = 1.279339532;
+    Alpha = Angle3 - Angle2;
+    if (Alpha <0)
+    {
+      Alpha += 360; 
+    }
+    Beta = Angle1 - Angle3;
+    if (Beta < 0)
+    {
+      Beta += 360;
+    }
+    Gamma = Angle2 - Angle1;
+    if (Gamma < 0)
+    {
+      Gamma += 360;
+    }
+    AngAlpha = Alpha*PI/180;
+    AngBeta = Beta*PI/180;
+    AngGamma = Gamma*PI/180;
+    
+    //Application of Tienstra's algorithm
 
-	ALPHA = thirdAngle - secondAngle + 360; //angles between beacons ASSUMES AngleA < AngleB AND
-	GAMMA = secondAngle - firstAngle + 360; //WELL BEHAVED ANGLES!!!!!!!!!
-	ANG_ALPHA = ALPHA*pi/180;
-	ANG_GAMMA = GAMMA*pi/180;
-	ANG_BETA=2*pi - ANG_ALPHA - ANG_GAMMA; //Alpha + Beta + Gamma = 360 degrees (ensures correct behaviour)
-	ANG_A = pi/4;
-	ANG_B = pi/2;
-	ANG_C = pi/4;
-	
-	//Application of Tienstra's algorithm
-
-	//COTANGENTS
-	COT_A = 1/tan(ANG_A);
-	COT_B = 1/tan(ANG_B);
-	COT_C = 1/tan(ANG_C);
-	COT_ALPHA = 1/tan(ANG_ALPHA);
-	COT_BETA = 1/tan(ANG_BETA);
-	COT_GAMMA = 1/tan(ANG_GAMMA);
-	
-	// calculate scalers
-	KA = 1/(COT_A - COT_ALPHA);
-	KB = 1/(COT_B - COT_BETA);
-	KC = 1/(COT_C - COT_GAMMA);
-	K  = KA + KB + KC;
-	
-	// calculate middle frame coordinates
-	Xf = (KA*XA + KB*XB + KC*XC)/K;
-	Yf = (KA*YA + KB*YB + KC*YC)/K;
-	
-	// calculate bot's position: Not required if using the actual location of the sensors
-	//X = cos(theta*pi/180)*Xf - sin(theta*pi/180)*Yf + 48;
-	//Y = sin(theta*pi/180)*Xf + cos(theta*pi/180)*Yf + 48;
-	
-	//CALCULATE direction
-	OriginAngle = atan(Y/X)*180/pi;
-	if(AngleA == -1){
-		Heading = (360 - AngleB - atan(Y/(96-X))*180/pi)+360;
+    //COTANGENTS
+    COT_A = 1/tan(AngA);
+    COT_B = 1/tan(AngB);
+    COT_C = 1/tan(AngC);
+    COT_Alpha = 1/tan(AngAlpha);
+    COT_Beta = 1/tan(AngBeta);
+    COT_Gamma = 1/tan(AngGamma);
+    
+    // calculate scalers
+    KA = 1/(COT_A - COT_Alpha);
+    KB = 1/(COT_B - COT_Beta);
+    KC = 1/(COT_C - COT_Gamma);
+    K  = KA + KB + KC;
+    
+    // calculate middle frame coordinates
+    Xf = (KA*XA + KB*XB + KC*XC)/K;
+    Yf = (KA*YA + KB*YB + KC*YC)/K;
+    
+    //Calculate heading
+    XRelative = X1 - Xf;
+    YRelative = Y1 - Yf;
+    
+    
+    RelativeTheta = atan2((YRelative), (XRelative));
+    
+    if(((AngleB - RelativeTheta) >= 0))
+    {
+      Heading = (AngleB - RelativeTheta)*180/PI;
+      
+      if (Heading < 0) 
+      {
+        Heading = - Heading;
+      }
+    }
+    else
+    {
+      Heading = (AngleB - RelativeTheta + 2*PI) * 180/PI;
+    }
 	}
-	else{
-		Heading = (180 - AngleA + OriginAngle)+360;
-	}
-	
 }
 
 /****************************************************************************
@@ -227,18 +447,15 @@ void Triangulate(float AngleA, float AngleB, float AngleC, float AngleD) {
    Get Funct.
    
  Author
-   John Alsterda
+   Sander Tonkens
 ****************************************************************************/
 
-float Get_X( void ) {
+float QueryXCoordinate( void ) {
 	return X;
 }
-float Get_Y( void ) {
+float QueryYCoordinate( void ) {
 	return Y;
 }
-float Get_Heading( void ) {
+float QueryHeading( void ) {
 	return Heading;
-}
-float Get_OriginAngle( void ) {
-	return OriginAngle;
 }
