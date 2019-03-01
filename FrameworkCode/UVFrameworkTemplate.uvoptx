@@ -561,8 +561,13 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
+<<<<<<< HEAD
       <PathWithFileName>.\Source\DriveCommandModule.c</PathWithFileName>
       <FilenameWithoutPath>DriveCommandModule.c</FilenameWithoutPath>
+=======
+      <PathWithFileName>.\Source\Triangulation.c</PathWithFileName>
+      <FilenameWithoutPath>Triangulation.c</FilenameWithoutPath>
+>>>>>>> Localization
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1050,6 +1055,7 @@
       <Focus>1</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
+<<<<<<< HEAD
       <PathWithFileName>.\Headers\MotorSpeedControl.h</PathWithFileName>
       <FilenameWithoutPath>MotorSpeedControl.h</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
@@ -1076,6 +1082,10 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\Headers\DriveCommandModule.h</PathWithFileName>
       <FilenameWithoutPath>DriveCommandModule.h</FilenameWithoutPath>
+=======
+      <PathWithFileName>.\Headers\Triangulation.h</PathWithFileName>
+      <FilenameWithoutPath>Triangulation.h</FilenameWithoutPath>
+>>>>>>> Localization
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

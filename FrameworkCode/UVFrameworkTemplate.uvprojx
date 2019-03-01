@@ -468,6 +468,7 @@
               <FilePath>.\Source\DCMotorService.c</FilePath>
             </File>
             <File>
+<<<<<<< HEAD
               <FileName>EncoderCapture.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\EncoderCapture.c</FilePath>
@@ -486,6 +487,11 @@
               <FileName>DriveCommandModule.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\DriveCommandModule.c</FilePath>
+=======
+              <FileName>Triangulation.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\Triangulation.c</FilePath>
+>>>>>>> Localization
             </File>
           </Files>
         </Group>
@@ -668,6 +674,7 @@
               <FilePath>.\Headers\DCMotorService.h</FilePath>
             </File>
             <File>
+<<<<<<< HEAD
               <FileName>EncoderCapture.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\EncoderCapture.h</FilePath>
@@ -686,6 +693,11 @@
               <FileName>DriveCommandModule.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\DriveCommandModule.h</FilePath>
+=======
+              <FileName>Triangulation.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\Triangulation.h</FilePath>
+>>>>>>> Localization
             </File>
           </Files>
         </Group>
@@ -1350,6 +1362,7 @@
               <FilePath>.\Source\DCMotorService.c</FilePath>
             </File>
             <File>
+<<<<<<< HEAD
               <FileName>EncoderCapture.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\EncoderCapture.c</FilePath>
@@ -1368,6 +1381,11 @@
               <FileName>DriveCommandModule.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\DriveCommandModule.c</FilePath>
+=======
+              <FileName>Triangulation.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\Triangulation.c</FilePath>
+>>>>>>> Localization
             </File>
           </Files>
         </Group>
@@ -1550,6 +1568,7 @@
               <FilePath>.\Headers\DCMotorService.h</FilePath>
             </File>
             <File>
+<<<<<<< HEAD
               <FileName>EncoderCapture.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\EncoderCapture.h</FilePath>
@@ -1568,6 +1587,11 @@
               <FileName>DriveCommandModule.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\DriveCommandModule.h</FilePath>
+=======
+              <FileName>Triangulation.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\Triangulation.h</FilePath>
+>>>>>>> Localization
             </File>
           </Files>
         </Group>
