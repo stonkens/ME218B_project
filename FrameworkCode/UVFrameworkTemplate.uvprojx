@@ -481,6 +481,46 @@
               <FileType>1</FileType>
               <FilePath>.\Source\IRDetector.c</FilePath>
             </File>
+            <File>
+              <FileName>CollectingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\CollectingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>CollisionAvoidanceHSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\CollisionAvoidanceHSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>GamePlayHSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\GamePlayHSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>LandfillingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\LandfillingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>MasterHSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\MasterHSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>OrientingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\OrientingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>RecyclingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\RecyclingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>WaitingForStartHSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\WaitingForStartHSM.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -705,6 +745,46 @@
               <FileName>IRDetector.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\IRDetector.h</FilePath>
+            </File>
+            <File>
+              <FileName>CollectingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\CollectingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>CollisionAvoidanceHSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\CollisionAvoidanceHSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>GamePlayHSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\GamePlayHSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>LandfillingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\LandfillingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>MasterHSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\MasterHSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>OrientingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\OrientingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>RecyclingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\RecyclingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>WaitingForStartHSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\WaitingForStartHSM.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1393,6 +1473,46 @@
               <FileType>1</FileType>
               <FilePath>.\Source\IRDetector.c</FilePath>
             </File>
+            <File>
+              <FileName>CollectingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\CollectingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>CollisionAvoidanceHSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\CollisionAvoidanceHSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>GamePlayHSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\GamePlayHSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>LandfillingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\LandfillingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>MasterHSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\MasterHSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>OrientingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\OrientingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>RecyclingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\RecyclingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>WaitingForStartHSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\WaitingForStartHSM.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1617,6 +1737,46 @@
               <FileName>IRDetector.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\IRDetector.h</FilePath>
+            </File>
+            <File>
+              <FileName>CollectingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\CollectingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>CollisionAvoidanceHSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\CollisionAvoidanceHSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>GamePlayHSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\GamePlayHSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>LandfillingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\LandfillingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>MasterHSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\MasterHSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>OrientingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\OrientingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>RecyclingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\RecyclingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>WaitingForStartHSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\WaitingForStartHSM.h</FilePath>
             </File>
           </Files>
         </Group>
