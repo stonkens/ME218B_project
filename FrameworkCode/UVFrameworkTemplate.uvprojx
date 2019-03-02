@@ -502,6 +502,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\TransportMotorService.c</FilePath>
             </File>
+            <File>
+              <FileName>IRDetector.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\IRDetector.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -721,6 +726,11 @@
               <FileName>TransportMotorService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\TransportMotorService.h</FilePath>
+            </File>
+            <File>
+              <FileName>IRDetector.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\IRDetector.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1415,6 +1425,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\TransportMotorService.c</FilePath>
             </File>
+            <File>
+              <FileName>IRDetector.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\IRDetector.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1634,6 +1649,11 @@
               <FileName>TransportMotorService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\TransportMotorService.h</FilePath>
+            </File>
+            <File>
+              <FileName>IRDetector.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\IRDetector.h</FilePath>
             </File>
           </Files>
         </Group>

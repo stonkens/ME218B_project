@@ -35,12 +35,11 @@
 // Project modules
 #include "ADMulti.h"
 //#include "CommunicationSSI.h"
-#include "DriveMotorPWM.h"
+#include "PWM.h"
 #include "DCMotorService.h"
 #include "SPISM.h"
 #include "IREmitter.h"
-#include "EncoderCapture.h"
-#include "DriveCommandModule.h"
+#include "IRDetector.h"
 
 // This module
 #include "InitializeHardware.h"
@@ -81,12 +80,10 @@ void InitializeHardware(void)
 	InitSPI();
   InitEmitterPWM();
 	InitDCPWM();
-  InitDriveMotor();
-  //InitDriveMotorPWM();
-	Enc_Init();
-  Drive_Control_Init();
+  InitMotorGPIO();
+  InitPWM();
   //InitSPI(); //This uses bits xxx and xxx
-  //InitInputCapture();
+  InitInputCapture();
 
   __enable_irq();
   //InitializeADC();
