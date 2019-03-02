@@ -72,6 +72,7 @@
 static ES_Event_t DuringOrienting2Landfill( ES_Event_t Event);
 static ES_Event_t DuringDriving2Landfill(ES_Event_t Event);
 static ES_Event_t DuringApproachingLandfill( ES_Event_t Event);
+static ES_Event_t DuringPreparing4Landfill(ES_Event_t Event);
 static ES_Event_t DuringDumpingLandfill (ES_Event_t Event);
 
 /*---------------------------- Module Variables ---------------------------*/
@@ -113,10 +114,24 @@ ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-							 
-							 default:
-							 {;
-							 }
+              case EV_ALIGNED2BEACON:
+              {
+                //Stop driving motors
+                
+                // Execute action function for state one : event one
+                NextState = Driving2Landfill;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Select new move to start up (Idea: Start from one point and go to others)
+                ReturnEvent.EventType = ES_NO_EVENT;
+              }
+							break; 				 
+							
+              default:
+							{;
+							}
                 // repeat cases as required for relevant events
             }
 
@@ -134,10 +149,29 @@ ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-               
-							 default:
-               {;
-							 }
+              case EV_MOVE_COMPLETED:
+              {
+                //Turn around to align with beacon
+                
+         
+                // Execute action function for state one : event one
+                NextState = ApproachingLandfill;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;
+                
+                //GamePlaySM does not need to be aware of this change
+                ReturnEvent.EventType = ES_NO_EVENT;
+              }
+              break; 
+              
+              
+              //Improvement: Add in case for ES_BUMPER_HIT
+              //This would then depend on the position we are on the field              
+							default:
+              {;
+							}
                 // repeat cases as required for relevant events
             }
 
@@ -155,10 +189,23 @@ ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
+              case ES_BUMPER_HIT:
+              {
+                // Execute action function for state one : event one
+                NextState = Preparing4Landfill;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Consume event 
+                ReturnEvent.EventType = ES_NO_EVENT;
+                
+              }
+              break;  
  
-							 default:
-               {;
-							 }
+							default:
+              {;
+							}
                 // repeat cases as required for relevant events
             }
 
@@ -167,7 +214,40 @@ ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
       // repeat state pattern as required for other states
 		}
 		break;
-		
+    
+		case Preparing4Landfill:
+		{
+         ReturnEvent = CurrentEvent = DuringPreparing4Landfill(CurrentEvent);
+         //process any events
+         if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
+         {
+            switch (CurrentEvent.EventType)
+            {
+              case EV_MOVE_COMPLETED:
+              {
+                // Execute action function for state one : event one
+                NextState = DumpingLandfill;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Consume event 
+                ReturnEvent.EventType = ES_NO_EVENT;
+                
+              }
+              break;							 
+														 
+							default:
+							{;
+							}
+                // repeat cases as required for relevant events
+            }
+
+         }
+       
+      // repeat state pattern as required for other states
+		}
+		break;		
 		case DumpingLandfill:
 		{
          ReturnEvent = CurrentEvent = DuringDumpingLandfill(CurrentEvent);
@@ -176,8 +256,16 @@ ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-							 
-							 default:
+              case EV_LANDFILLING_DONE:
+              {
+                //Close the Landfill Door
+                //Post an event to close the Landfill door
+                //Process event at a higher level
+                ReturnEvent = CurrentEvent;
+							}
+              break;
+              
+							default:
 							{;
 							}
                 // repeat cases as required for relevant events
@@ -274,25 +362,28 @@ static ES_Event_t DuringOrienting2Landfill( ES_Event_t Event)
     {
         // implement any entry actions required for this state machine
         
-			  // Start turning DC Motors connected to pin PB6 & PB7
-	
+      // Set frequency to detect for IR 
+      // Set Posting possibility of IR to true
+      // Enable IR interrupts
+      
+      // Start rotating (360 degrees but can be interferred)
+      DriveTurn(LOCALIZATION_SPEED, 3600);
+      
 							
-				// StartCollectingGarbageSM(Event);
 			
 				
-        // after that start any lower level machines that run in this state
-        //StartLowerLevelSM( Event );
-        // repeat the StartxxxSM() functions for concurrent state machines
-        // on the lower level
+      // after that start any lower level machines that run in this state
+      //StartLowerLevelSM( Event );
+      // repeat the StartxxxSM() functions for concurrent state machines
+      // on the lower level
     }
     else if ( Event.EventType == ES_EXIT )
     {
-        // on exit, give the lower levels a chance to clean up first
-        //RunLowerLevelSM(Event);
-        // repeat for any concurrently running state machines
-        // now do any local exit functionality
+      //Disable IR interrupts
+      
+      //Stop Motors (should already be the case but to be sure)
 			
-			// Stop turning DC Motors connected to pin PB6 & PB7
+
 			
       
     }else
@@ -321,6 +412,37 @@ static ES_Event_t DuringDriving2Landfill( ES_Event_t Event)
     {
         // implement any entry actions required for this state machine
         
+      DriveStraight(STRAIGHT_SPEED, 10000);
+      
+		
+    }
+    else if ( Event.EventType == ES_EXIT )
+    {
+      
+      //Stop Motors
+			
+      
+    }else
+    // do the 'during' function for this state
+    {
+
+    }
+    // return either Event, if you don't want to allow the lower level machine
+    // to remap the current event, or ReturnEvent if you do want to allow it.
+    return(ReturnEvent);
+}
+
+static ES_Event_t DuringApproachingLandfill( ES_Event_t Event)
+{
+   ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
+
+    // process ES_ENTRY, ES_ENTRY_HISTORY & ES_EXIT events
+    if ( (Event.EventType == ES_ENTRY) ||
+         (Event.EventType == ES_ENTRY_HISTORY) )
+    {
+        // implement any entry actions required for this state machine
+      //Turns 360 degrees but gets interrupted when the other limit switch is triggered 
+      DriveTurn(APPROACH_SPEED, 3600);
 			
 				
         // after that start any lower level machines that run in this state
@@ -330,6 +452,7 @@ static ES_Event_t DuringDriving2Landfill( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
+      //Stop Motors
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
@@ -351,7 +474,7 @@ static ES_Event_t DuringDriving2Landfill( ES_Event_t Event)
     return(ReturnEvent);
 }
 
-static ES_Event_t DuringApproachingLandfill( ES_Event_t Event)
+static ES_Event_t DuringPreparing4Landfill( ES_Event_t Event)
 {
    ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
 
@@ -361,6 +484,7 @@ static ES_Event_t DuringApproachingLandfill( ES_Event_t Event)
     {
         // implement any entry actions required for this state machine
         
+      //Go back a little bit
 			
 				
         // after that start any lower level machines that run in this state
@@ -370,6 +494,7 @@ static ES_Event_t DuringApproachingLandfill( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
+      //Stop Motors
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
@@ -400,6 +525,7 @@ static ES_Event_t DuringDumpingLandfill( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      
         // implement any entry actions required for this state machine
         
 			

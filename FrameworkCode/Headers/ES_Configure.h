@@ -285,7 +285,9 @@ typedef enum
 	EV_MOVE_COMPLETED,
 	EV_COMPASS_CLEANING_UP,
 	EV_RECEIVED_COMPASS_ACK,
-  EV_COMPASS_RECYCLE_CHANGE
+  EV_COMPASS_RECYCLE_CHANGE,  
+  EV_TAPE_DETECTED,
+  EV_ALIGNED2BEACON
 }ES_EventType_t;
 
 /****************************************************************************/

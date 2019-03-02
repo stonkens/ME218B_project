@@ -224,6 +224,7 @@ static ES_Event_t DuringMovingBackwards( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      //Determine which side of the bot got hit by querying the BumperService.c function
         // implement any entry actions required for this state machine
         
 			
