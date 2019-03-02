@@ -18,7 +18,7 @@
  Notes
    you should pass it a block that is at least sizeof(ES_Queue_t) larger than
    the number of entries that you want in the queue. Since the size of an
-   ES_Event (at 4 bytes; 2 enum, 2 param) is greater than the
+   ES_Event_t (at 4 bytes; 2 enum, 2 param) is greater than the
    sizeof(ES_Queue_t), you only need to declare an array of ES_Event
    with 1 more element than you need for the actual queue.
 ****************************************************************************/
@@ -29,8 +29,8 @@
    ES_DeferEvent  (wrapper for ES_EnQueueLIFO)
    this is a straight re-naming to aid readability
  Parameters
-   ES_Event * pBlock : pointer to the block of memory in use as the Queue
-   ES_Event Event2Add : event to be added to the Queue
+   ES_Event_t * pBlock : pointer to the block of memory in use as the Queue
+   ES_Event_t Event2Add : event to be added to the Queue
  Returns
    bool : true if the add was successful, false if not
  Description
@@ -43,7 +43,7 @@
      ES_RecallEvents
  Parameters
       uint8_t WhichService, number of the service to post Recalled event to
-      ES_Event * pBlock, pointer to the block of memory that implements the
+      ES_Event_t * pBlock, pointer to the block of memory that implements the
         Defer/Recall queue
  Returns
      bool true if an event was recalled, false if no event was left in queue

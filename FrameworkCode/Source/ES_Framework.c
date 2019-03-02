@@ -344,7 +344,7 @@ ES_Return_t ES_Run(void)
  Function
    ES_PostAll
  Parameters
-   ES_Event : The Event to be posted
+   ES_Event_t : The Event to be posted
  Returns
    boolean : False if any of the post functions failed during execution
  Description
@@ -384,7 +384,7 @@ bool ES_PostAll(ES_Event_t ThisEvent)
    ES_PostToService
  Parameters
    uint8_t : Which service to post to (index into ServDescList)
-   ES_Event : The Event to be posted
+   ES_Event_t : The Event to be posted
  Returns
    boolean : False if the post function failed during execution
  Description
@@ -414,7 +414,7 @@ bool ES_PostToService(uint8_t WhichService, ES_Event_t TheEvent)
    ES_PostToServiceLIFO
  Parameters
    uint8_t : Which service to post to (index into ServDescList)
-   ES_Event : The Event to be posted
+   ES_Event_t : The Event to be posted
  Returns
    boolean : False if the post function failed during execution
  Description
@@ -462,7 +462,7 @@ static bool CheckSystemEvents(void)
 {
   if (kbhit() != 0)   // new key waiting?
   {
-    ES_Event ThisEvent;
+    ES_Event_t ThisEvent;
     ThisEvent.EventType   = ES_NEW_KEY;
     ThisEvent.EventParam  = getchar();
     (*pPostKeyFunc)(ThisEvent);

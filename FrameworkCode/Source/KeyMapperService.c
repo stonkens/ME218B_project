@@ -105,7 +105,7 @@ bool PostKeyMapperService( ES_Event_t ThisEvent )
     RunKeyMapperService
 
  Parameters
-   ES_Event : the event to process
+   ES_Event_t : the event to process
 
  Returns
    ES_Event, ES_NO_EVENT if no error ES_ERROR otherwise

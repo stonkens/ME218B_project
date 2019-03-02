@@ -39,6 +39,7 @@
 #include "inc/hw_nvic.h"
 
 #include "MotorService.h"
+#include "MasterHSM.h"
 /*----------------------------- Module Defines ----------------------------*/
 #define SSI_PRESCALE 0x00000014
 #define SCR_VALUE    0x0000C800
@@ -68,11 +69,10 @@
 #define TEAM_NORTH 1
 #define TEAM_SOUTH 0
 
-#define WEST_RECYCLE_FREQUENCY 1667
-#define EAST_RECYCLE_FREQUENCY 2000
+#define EAST_RECYCLE 2
+#define WEST_RECYCLE 3
 
-#define LEFT_RECYCLE 1
-#define RIGHT_RECYCLE 0
+
 
 #define ZERO_BYTE 0x00
 
@@ -113,9 +113,13 @@ static uint8_t ExpectedAckByte;
 
 static uint8_t LastGameState;
 static uint8_t CurrentGameState;
+static uint8_t CurrentRecyclingCenter;
+static uint8_t LastRecyclingCenter;                                       
 static uint16_t LeftRecycleFrequency;
 static uint16_t RightRecycleFrequency;
 static uint8_t AssignedColor;
+static uint8_t EastRecycleColor;
+static uint8_t WestRecycleColor;                                       
 																			 
 static uint16_t AssignedFrequency;																			 
 
@@ -160,6 +164,8 @@ bool InitSPISM(uint8_t Priority)
   AssignedColor = 0xFF;
   LastGameState = 0xFF;
   CurrentGameState = 0xFF;
+  LastRecyclingCenter = 0xFF;
+  CurrentRecyclingCenter = 0xFF;
 	
   AssignedFrequency = 0xFFFF;
 
@@ -333,24 +339,46 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
       {
 				GameStatusByte = ThisEvent.EventParam;
 				CurrentGameState = (GameStatusByte & (BIT0HI|BIT1HI));
+        EastRecycleColor = (GameStatusByte & (BIT2HI | BIT3HI | BIT4HI)) >> 2;
+        WestRecycleColor = (GameStatusByte & (BIT5HI | BIT6HI | BIT7HI)) >> 5;
 				//printf("Current Game State: %d\n\r", CurrentGameState);
-				
+				if (EastRecycleColor == AssignedColor)
+        {
+          CurrentRecyclingCenter = EAST_RECYCLE;
+        }
+        else
+        {
+          CurrentRecyclingCenter = WEST_RECYCLE;
+        }
 				if ((CurrentGameState == RECYCLING) && 
           (LastGameState == WAITING_FOR_START))
         {
           printf("Game Started; event not posted\n\r");
           CommunicationEvent.EventType = ES_CLEANING_UP;
-          PostMotorService(CommunicationEvent);
+          //Change To Master SM
+          PostMasterSM(CommunicationEvent);
+          
+          //Set recycling center we orient to in the RecyclingSM
+          
         }
         else if ((CurrentGameState == GAME_OVER) && 
           (LastGameState == RECYCLING))
         {
           printf("Game Over; event not posted\n\r");
           CommunicationEvent.EventType = ES_GAME_OVER;
-          PostMotorService(CommunicationEvent);
+          PostMasterSM(CommunicationEvent);
         }
+        
+        if (CurrentRecyclingCenter != LastRecyclingCenter)
+        {
+          printf("New recycling center: %d \n\r", CurrentRecyclingCenter);
+          //Set recycling center we orient to in the RecyclingSM
+          CommunicationEvent.EventType = EV_COMPASS_RECYCLE_CHANGE;
+          PostMasterSM(CommunicationEvent);
+        }
+        
         LastGameState = CurrentGameState;
-				
+				LastRecyclingCenter = CurrentRecyclingCenter;
 				//Initialize timer and disable SSI interrupt
 				//in preparation for move to next state
 		    ES_Timer_InitTimer(SPI_TIMER, SPI_QUERYTIME);
@@ -556,28 +584,7 @@ uint8_t GetGameState(void)
 ****************************************************************************/
 uint8_t QueryWhichRecycle(void)
 {
-  uint8_t LeftAcceptedColor;
-  uint8_t WhichRecycle;
-  
-  if (TeamSwitchValue == TEAM_NORTH)
-  {
-    LeftAcceptedColor = (GetGameStatusByte() & (BIT2HI | BIT3HI | BIT4HI)) >> 2;
-  }
-  else
-  {
-    LeftAcceptedColor = (GetGameStatusByte() & (BIT7HI | BIT6HI | BIT5HI)) >> 2;
-  }
-  
-  if (LeftAcceptedColor == GetAssignedColor())
-  {
-    WhichRecycle = LEFT_RECYCLE;
-  }
-  else
-  {
-    WhichRecycle = RIGHT_RECYCLE;
-  }
-  
-  return WhichRecycle;
+  return CurrentRecyclingCenter;
 }
 
 /****************************************************************************

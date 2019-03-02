@@ -11,6 +11,7 @@
 // Event Definitions
 #include "ES_Configure.h" /* gets us event definitions */
 #include "ES_Types.h"     /* gets bool type for returns */
+#include "ES_Events.h"
 
 //Symbolic Constants
 #define WAITING_FOR_START 0x00
@@ -23,6 +24,12 @@
 #define GREEN             0x03
 #define BLUE              0x04
 #define PINK              0x05
+
+
+#define WEST_RECYCLE_FREQUENCY    1667
+#define EAST_RECYCLE_FREQUENCY    2000
+#define NORTH_LANDFILL_FREQUENCY  2000
+#define SOUTH_LANDFILL_FREQUENCY  2000
 
 // typedefs for the states
 // State definitions for use with the query function

@@ -104,7 +104,7 @@ bool InitTestHarnessI2C(uint8_t Priority)
      PostTestHarnessI2C
 
  Parameters
-     ES_Event ThisEvent ,the event to post to the queue
+     ES_Event_t ThisEvent ,the event to post to the queue
 
  Returns
      bool false if the Enqueue operation failed, true otherwise
@@ -126,7 +126,7 @@ bool PostTestHarnessI2C(ES_Event_t ThisEvent)
     RunTestHarnessI2C
 
  Parameters
-   ES_Event : the event to process
+   ES_Event_t : the event to process
 
  Returns
    ES_Event, ES_NO_EVENT if no error ES_ERROR otherwise
