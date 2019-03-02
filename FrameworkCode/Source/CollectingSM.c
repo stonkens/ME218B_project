@@ -56,7 +56,7 @@
 /* include header files for this state machine as well as any machines at the
    next lower level in the hierarchy that are sub-machines to this machine
 */
-#include "GamePlayHSM.h"
+#include "CollectingSM.h"
 
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
@@ -71,7 +71,6 @@
 */
 static ES_Event_t DuringOrienting( ES_Event_t Event);
 static ES_Event_t DuringRoaming(ES_Event_t Event);
-static ES_Event_t DuringLandfilling( ES_Event_t Event);
 
 /*---------------------------- Module Variables ---------------------------*/
 // everybody needs a state variable, you may need others as well

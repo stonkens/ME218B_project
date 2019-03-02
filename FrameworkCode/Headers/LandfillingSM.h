@@ -4,23 +4,22 @@
  3/17/09  Fixed prototpyes to use Event_t
  ****************************************************************************/
 
-#ifndef GamePlayHSM_H
-#define GamePlayHSM_H
+#ifndef LandFilling_H
+#define LandFilling_H
 
 #include <stdbool.h>
 #include "ES_Events.h"
-#define BALL_COLLECTION_TIME 20000
 
 // typedefs for the states
 // State definitions for use with the query function
-typedef enum { COLLECTING_GARBAGE, RECYCLING, LANDFILLING } GamePlayState_t ;
+typedef enum { ORIENTING2LANDFILL, DRIVING2LANDFILL, APPROACHINGLANDFILL, DUMPINGLANDFILL } LandfillingState_t ;
 
 
 // Public Function Prototypes
 
-ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent );
-void StartGamePlaySM ( ES_Event_t CurrentEvent );
-GamePlayState_t QueryGamePlaySM ( void );
+ES_Event_t RunLandFilling( ES_Event_t CurrentEvent );
+void StartLandFilling ( ES_Event_t CurrentEvent );
+LandfillingState_t QueryLandFilling ( void );
 
-#endif /*GamePlayHSM_H */
+#endif /*LandFilling_H */
 

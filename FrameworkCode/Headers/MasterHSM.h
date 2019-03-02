@@ -8,7 +8,7 @@
 
 #include <stdbool.h>
 #include "ES_Events.h"
-
+#include "ES_Framework.h"
 // State definitions for use with the query function
 typedef enum { WAITING_FOR_START, GAME_PLAY, GAME_ENDED, COLLISION_AVOIDANCE } MasterState_t ;
 

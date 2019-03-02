@@ -109,11 +109,11 @@
 // These are the definitions for Service 5
 #if NUM_SERVICES > 5
 // the header file with the public function prototypes
-#define SERV_5_HEADER "EncoderService.h"
+#define SERV_5_HEADER "MasterHSM.h"
 // the name of the Init function
-#define SERV_5_INIT InitEncoderService
+#define SERV_5_INIT InitMasterSM
 // the name of the run function
-#define SERV_5_RUN RunEncoderService
+#define SERV_5_RUN RunMasterSM
 // How big should this services Queue be?
 #define SERV_5_QUEUE_SIZE 5
 #endif

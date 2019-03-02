@@ -218,7 +218,7 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
 		
 		case LANDFILLING:
 		{
-         ReturnEvent = CurrentEvent = DuringRecycling(CurrentEvent);
+         ReturnEvent = CurrentEvent = DuringLandfilling(CurrentEvent);
          //process any events
          if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
          {

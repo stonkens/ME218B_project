@@ -4,8 +4,8 @@
  3/17/09  Fixed prototpyes to use Event_t
  ****************************************************************************/
 
-#ifndef GamePlayHSM_H
-#define GamePlayHSM_H
+#ifndef RecyclingSM_H
+#define RecyclingSM_H
 
 #include <stdbool.h>
 #include "ES_Events.h"
@@ -13,14 +13,14 @@
 
 // typedefs for the states
 // State definitions for use with the query function
-typedef enum { COLLECTING_GARBAGE, RECYCLING, LANDFILLING } GamePlayState_t ;
+typedef enum { ORIENTING2RECYCLE, DRIVING2RECYCLE, APPROACHINGRECYCLE, DUMPINGRECYCLE } RecyclingState_t ;
 
 
 // Public Function Prototypes
 
-ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent );
-void StartGamePlaySM ( ES_Event_t CurrentEvent );
-GamePlayState_t QueryGamePlaySM ( void );
+ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent );
+void StartRecyclingSM ( ES_Event_t CurrentEvent );
+RecyclingState_t QueryRecyclingSM ( void );
 
-#endif /*GamePlayHSM_H */
+#endif /*RecyclingSM_H */
 
