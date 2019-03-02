@@ -58,6 +58,8 @@
 */
 #include "RecyclingSM.h"
 
+//Enabling it to drive
+#include "DriveCommandModule.h"
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
 // and any other local defines
@@ -383,7 +385,7 @@ static ES_Event_t DuringOrienting2Recycle( ES_Event_t Event)
       // Enable IR interrupts
       
       // Start rotating (360 degrees but can be interferred)
-      DriveTurn(LOCALIZATION_SPEED, 3600);			
+      DriveRotate(LOCALIZATION_SPEED, 3600);			
 				
       // after that start any lower level machines that run in this state
       //StartLowerLevelSM( Event );

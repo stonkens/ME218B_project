@@ -29,7 +29,7 @@
 #include "EncoderCapture.h"
 #include "DriveMotorPWM.h"
 
-#include "MotorService.h"
+#include "MasterHSM.h"
 
 #include <math.h>
 #include "inc/hw_timer.h"
@@ -384,7 +384,7 @@ void Drive_SpeedControlISR(void){
 		//post event to Master SM indicating that target has been reached
 		ES_Event_t doneEvent;
 		doneEvent.EventType = EV_MOVE_COMPLETED;
-		PostMotorService(doneEvent);
+		PostMasterSM(doneEvent);
 	}
 	
 }

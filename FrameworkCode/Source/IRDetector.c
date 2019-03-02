@@ -62,8 +62,9 @@ static uint32_t Period_In_Ticks; //The Period of captured IR
 static uint32_t Period_In_us;//
 static uint32_t LastCapture=0; // Time of last rising edge for IR, captured in tick
 static bool FirstEdge=true; // true if it is the first edge
-static uint32_t SamePeriodRunCount=0;//counts up whenever it sees a valid period
-
+static uint32_t RunCount=0;//counts up whenever it sees a valid period
+static bool SpecificBeaconFinder = false;
+static uint32_t BeaconPeriod;
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
  Function
@@ -83,9 +84,9 @@ static uint32_t SamePeriodRunCount=0;//counts up whenever it sees a valid period
  Author
   Hyun Joo Lee 03/01/2019
 ****************************************************************************/
-uint32_t IR_getSamePeriodRunCount(void)
+uint32_t IRGetRunCount(void)
 {
-  return SamePeriodRunCount;
+  return RunCount;
 }
 /****************************************************************************
  Function
@@ -105,13 +106,13 @@ uint32_t IR_getSamePeriodRunCount(void)
  Author
   Hyun Joo Lee 03/01/2019
 ****************************************************************************/
-void IR_resetSamePeriodRunCount(void)
+void IRResetRunCount(void)
 {
-  SamePeriodRunCount=0;
+  RunCount=0;
 }
 /****************************************************************************
  Function
-   InitInputCapture(void)
+   IRInitInputCapture(void)
 
  Parameters
   nothing
@@ -127,7 +128,7 @@ void IR_resetSamePeriodRunCount(void)
  Author
   Hyun Joo Lee 02/27/2019
 ****************************************************************************/
-void InitInputCapture(void)
+void IRInitInputCapture(void)
 {
 // start by enabling the clock to the timer (Wide Timer 2)
   HWREG(SYSCTL_RCGCWTIMER) |= SYSCTL_RCGCWTIMER_R2; 
@@ -211,10 +212,14 @@ void IR_ISR(void){
   //grab the captured tick value
   ThisCapture=HWREG(WTIMER2_BASE + TIMER_O_TBR);
   //if firstedge, don't calculate the period
+  
+  RunCount++;
+  
   if (FirstEdge)
   {
     FirstEdge=false;
-  }else
+  }
+  else
   {
     //calculate the period in ticks
     Period_In_Ticks=ThisCapture-LastCapture;
@@ -223,11 +228,12 @@ void IR_ISR(void){
     Period_In_us=Period_In_Ticks/TICKS_PER_us;
     
     //if Period is out of range, reset validated period to 0 and put up the FirstEdge flag
-    if((Period_In_us > MAX_PERIOD_us) | (Period_In_us < MIN_PERIOD_us))
+    if((Period_In_us >= MAX_PERIOD_us) | (Period_In_us <= MIN_PERIOD_us))
     {
       FirstEdge=true;
       Validated_LastPeriod_us=0;
-    }else
+    }
+    else
     {
       Validated_LastPeriod_us=Period_In_us;
     }
@@ -279,7 +285,7 @@ uint32_t IR_getPeriod(void){
 Hyun Joo Lee 16:00 02/27/2019 Started function
 
 ****************************************************************************/
-void IR_disable(void){
+void IRDisableInterrupt(void){
     HWREG(WTIMER2_BASE +TIMER_O_IMR) &=~TIMER_IMR_CBEIM;
 }
 
@@ -302,69 +308,85 @@ void IR_disable(void){
 Hyun Joo Lee 16:10 02/27/2019 Started function
 
 ****************************************************************************/
-void IR_enable(void){
-    HWREG(WTIMER2_BASE +TIMER_O_IMR) |=TIMER_IMR_CBEIM;
+void IREnableInterrupt(void){
+  //Clear source of interrupt
+  HWREG(WTIMER2_BASE+TIMER_O_ICR) = TIMER_ICR_CBECINT;
+  //Enable interrupts
+  HWREG(WTIMER2_BASE +TIMER_O_IMR) |=TIMER_IMR_CBEIM;
 }
-/****************************************************************************
- Function
-   IR_found(void)
+///****************************************************************************
+// Function
+//   IR_found(void)
 
- Parameters
-  nothing
+// Parameters
+//  nothing
 
- Returns
-  true when IR(recylcing center or ) is found 
+// Returns
+//  true when IR(recylcing center or ) is found 
 
- Description
-Modular: removable to another location
-    Event checker for
-WestRecycling_Found: 600us
-EastRecycling_Found: 500us
-SouthLandfill_Found: 700us
-NorthLandfill_Found: 800us
+// Description
+//Modular: removable to another location
+//    Event checker for
+//WestRecycling_Found: 600us
+//EastRecycling_Found: 500us
+//SouthLandfill_Found: 700us
+//NorthLandfill_Found: 800us
 
- Notes
+// Notes
 
- Author
- Hyun Joo Lee 15:18 02/28/2019 Started function
+// Author
+// Hyun Joo Lee 15:18 02/28/2019 Started function
 
-****************************************************************************/
-bool IR_found(void){
-  bool ReturnVal=false;
-  uint32_t FoundPeriod;
-  FoundPeriod=IR_getPeriod();
-  if((FoundPeriod >790)&&(FoundPeriod<810))
-  {
-    ES_Event_t ThisEvent;
-    ThisEvent.EventType=ES_NORTHLANDFILL_FOUND;
-    ReturnVal =true;
-    PostDCMotorService(ThisEvent);
-    SamePeriodRunCount++;
-    printf("\r\n NorthLandfill_Found");
-  }else if((FoundPeriod >690)&&(FoundPeriod<710))
-  {
-    ES_Event_t ThisEvent;
-    ThisEvent.EventType=ES_SOUTHLANDFILL_FOUND;
-    ReturnVal =true;
-    PostDCMotorService(ThisEvent);
-    SamePeriodRunCount++;
-    printf("\r\n SouthLandfill_Found");
-  }else if((FoundPeriod >590)&&(FoundPeriod<610))
-  {
-    ES_Event_t ThisEvent;
-    ThisEvent.EventType=ES_WESTRECYCLING_FOUND;
-    ReturnVal =true;
-    PostDCMotorService(ThisEvent);
-    SamePeriodRunCount++;
-    printf("\r\n WestRecycling_Found");
-  }else if((FoundPeriod >490)&&(FoundPeriod<510))
-  {
-    ES_Event_t ThisEvent;
-    ThisEvent.EventType=ES_EASTRECYCLING_FOUND;
-    ReturnVal =true;
-    PostDCMotorService(ThisEvent);
-    SamePeriodRunCount++;
-    printf("\r\n EastRecycling_Found");
-  }
-  return ReturnVal;
+//****************************************************************************/
+//bool IR_found(void){
+//  bool ReturnVal=false;
+//  uint32_t FoundPeriod;
+//  FoundPeriod=IR_getPeriod();
+//  if((FoundPeriod >790)&&(FoundPeriod<810))
+//  {
+//    ES_Event_t ThisEvent;
+//    ThisEvent.EventType=ES_NORTHLANDFILL_FOUND;
+//    ReturnVal =true;
+//    PostDCMotorService(ThisEvent);
+//    SamePeriodRunCount++;
+//    printf("\r\n NorthLandfill_Found");
+//  }else if((FoundPeriod >690)&&(FoundPeriod<710))
+//  {
+//    ES_Event_t ThisEvent;
+//    ThisEvent.EventType=ES_SOUTHLANDFILL_FOUND;
+//    ReturnVal =true;
+//    PostDCMotorService(ThisEvent);
+//    SamePeriodRunCount++;
+//    printf("\r\n SouthLandfill_Found");
+//  }else if((FoundPeriod >590)&&(FoundPeriod<610))
+//  {
+//    ES_Event_t ThisEvent;
+//    ThisEvent.EventType=ES_WESTRECYCLING_FOUND;
+//    ReturnVal =true;
+//    PostDCMotorService(ThisEvent);
+//    SamePeriodRunCount++;
+//    printf("\r\n WestRecycling_Found");
+//  }else if((FoundPeriod >490)&&(FoundPeriod<510))
+//  {
+//    ES_Event_t ThisEvent;
+//    ThisEvent.EventType=ES_EASTRECYCLING_FOUND;
+//    ReturnVal =true;
+//    PostDCMotorService(ThisEvent);
+//    SamePeriodRunCount++;
+//    printf("\r\n EastRecycling_Found");
+//  }
+//  return ReturnVal;
+//}
+
+
+void ActivateBeaconFinder(uint32_t Period)
+{
+  SpecificBeaconFinder = true;
+  BeaconPeriod = Period;
+}
+
+void DisableBeaconFinder(void)
+{
+  SpecificBeaconFinder = false;
+  BeaconPeriod = 0;
 }

@@ -34,7 +34,7 @@
 #include "EventCheckers.h"
 
 // Project modules
-#include "MotorService.h"
+#include "MasterHSM.h"
 
 // This module
 #include "BumperChecker.h"
@@ -97,7 +97,7 @@ bool Check4Bump(void)
       printf("\r\nHit the front bumper");
       ThisEvent.EventType = ES_BUMPER_HIT;
 			ThisEvent.EventParam = 1; //was 1, change to 4
-      PostMotorService(ThisEvent); //don't know what service to post to yet 
+      PostMasterSM(ThisEvent); //don't know what service to post to yet 
     }
   }
 	
@@ -109,7 +109,7 @@ bool Check4Bump(void)
       printf("Hit the right bumper\r\n");
       ThisEvent.EventType = ES_BUMPER_HIT;
 			ThisEvent.EventParam = 2; 
-      PostMotorService(ThisEvent); //don't know what service to post to yet 
+      PostMasterSM(ThisEvent); //don't know what service to post to yet 
     }
   }
 	
@@ -121,7 +121,7 @@ bool Check4Bump(void)
       printf("Hit the back bumper\r\n");
       ThisEvent.EventType = ES_BUMPER_HIT;
 			ThisEvent.EventParam = 3; 
-      PostMotorService(ThisEvent); //don't know what service to post to yet 
+      PostMasterSM(ThisEvent); //don't know what service to post to yet 
     }
   }
 	
@@ -133,7 +133,7 @@ bool Check4Bump(void)
       printf("Hit the left bumper\r\n");
       ThisEvent.EventType = ES_BUMPER_HIT;
 			ThisEvent.EventParam = 4; 
-      PostMotorService(ThisEvent); //don't know what service to post to yet 
+      PostMasterSM(ThisEvent); //don't know what service to post to yet 
     }
   }
   LastFrontSwitchState = CurrentFrontSwitchState;

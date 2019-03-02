@@ -58,6 +58,8 @@
 */
 #include "LandFillingSM.h"
 
+#include "DriveCommandModule.h"
+
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
 // and any other local defines
@@ -367,7 +369,7 @@ static ES_Event_t DuringOrienting2Landfill( ES_Event_t Event)
       // Enable IR interrupts
       
       // Start rotating (360 degrees but can be interferred)
-      DriveTurn(LOCALIZATION_SPEED, 3600);
+      DriveRotate(LOCALIZATION_SPEED, 3600);
       
 							
 			
@@ -442,7 +444,7 @@ static ES_Event_t DuringApproachingLandfill( ES_Event_t Event)
     {
         // implement any entry actions required for this state machine
       //Turns 360 degrees but gets interrupted when the other limit switch is triggered 
-      DriveTurn(APPROACH_SPEED, 3600);
+      DriveRotate(APPROACH_SPEED, 3600);
 			
 				
         // after that start any lower level machines that run in this state

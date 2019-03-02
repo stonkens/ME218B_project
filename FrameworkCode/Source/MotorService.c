@@ -91,7 +91,7 @@ bool InitMotorService(uint8_t Priority)
 
 
   //InitializeHardware();
-  //Drive_Straight(-1200);
+  //DriveStraight(-1200);
   ThisEvent.EventType = ES_INIT;
   if (ES_PostToService(MyPriority, ThisEvent) == true)
   {
@@ -154,22 +154,22 @@ ES_Event_t RunMotorService(ES_Event_t ThisEvent)
 		if('a' == ThisEvent.EventParam)
 		{
 			printf("Commanded Motor to drive forward 1 feet\r\n");
-			Drive_Straight(8400);
+			DriveStraight(8400);
 		}
 		else if('s' == ThisEvent.EventParam)
 		{
 			printf("Commanded Motor to drive backward 1 feet \r\n");
-			Drive_Straight(-1200);
+			DriveStraight(-1200);
 		}
 		else if('d' == ThisEvent.EventParam)
 		{
 			printf("Commanded Motor to turn 90 degrees \r\n");
-			Drive_Turn(900);
+			DriveRotate(900);
 		}
 		else if('f' == ThisEvent.EventParam)
 		{
 			printf("Command Motor to turn -90 degrees \r\n");
-			Drive_Turn(-900);
+			DriveRotate(-900);
 		}
 		else if('q' == ThisEvent.EventParam)
 		{

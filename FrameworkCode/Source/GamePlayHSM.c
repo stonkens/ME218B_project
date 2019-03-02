@@ -205,7 +205,6 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
                }
                break;
                
-               case EV_COMPASS_
                 
 							 default:
                {;

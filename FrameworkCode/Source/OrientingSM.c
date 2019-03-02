@@ -47,8 +47,14 @@
 //#include "IR_Sense.h"
 //#include "Enc_Sense.h"
 #include "Triangulation.h"
+#include "CollectingSM.h"
+#include "IRDetector.h"
+#include "IRDetector.h"
 
+#include "EncoderCapture.h"
 #include "OrientingSM.h"
+
+#include <math.h> //for acos and atan
 
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
@@ -79,9 +85,9 @@ static void CalculatePosition(void);
 /*---------------------------- Module Variables ---------------------------*/
 // everybody needs a state variable, you may need others as well
 static OrientingState_t CurrentState;
-static float Current_X;
-static float Current_Y;
-static float Current_Heading;
+static float CurrentXPosition;
+static float CurrentYPosition;
+static float CurrentHeading;
 static uint32_t LastRunCount;
 
 static float Angle_Measurements[4][4] = {
@@ -98,21 +104,21 @@ static uint8_t	MissedBeacons;
 /***************************************************************************
  getters and/or setters for module variables
  ***************************************************************************/
-float GetCurrent_X(void){
-	return Current_X;
+float GetCurrentXPosition(void){
+	return CurrentXPosition;
 }
 
-float GetCurrent_Y(void){
-	return Current_Y;
+float GetCurrentYPosition(void){
+	return CurrentYPosition;
 }
 
-float GetCurrent_Heading(void){
-	return Current_Heading;
+float GetCurrentHeading(void){
+	return CurrentHeading;
 }
 
 void ResetOrientingRunCount(void){
 	LastRunCount = 0;
-	IR_ResetRunCount();
+	IRResetRunCount();
 }
 
 void ClearMeasurements(void){
@@ -167,25 +173,29 @@ ES_Event_t RunOrientingSM( ES_Event_t CurrentEvent )
                //restart measurement delay timer
               ES_Timer_InitTimer(LOCALIZE_TIMER,IR_MEASURE_DELAY);
                //record found frequency
-              LastFrequency = IR_GetFrequency();
+              LastFrequency = IR_getPeriod();
                //if non-zero, record measurement at current angle
-              if( LastRunCount != IR_GetRunCount() )
+              if( LastRunCount != IRGetRunCount() )
               {
                 CaptureAngle(LastFrequency);
               }
                //store last run count
-              LastRunCount = IR_GetRunCount();
+              LastRunCount = IRGetRunCount();
             }
           }
 					break;
 							
 					 //if event is ES_MOVE_COMPLETE
-					case ES_MOVE_COMPLETE:
+					case EV_MOVE_COMPLETED:
           {
             //calculate current Position on the field: X, Y, Orientation/Heading
 						CalculatePosition();
           }
 					break;
+          
+          default:
+          {;
+          }
 				}
 			}
 		break;
@@ -270,7 +280,7 @@ OrientingState_t QueryOrientingSM ( void )
 static void CaptureAngle(uint32_t frequency){
 	uint8_t index;
 	 //The angle measured is the average of both encoders (absolute values)
-	float measuredAngle = ( ((float)abs(Enc_GetTickCount(1)))*135.5/100 + ((float)abs(Enc_GetTickCount(2)))*135.5/100)/2;
+	float measuredAngle = ((fabsf(QueryEncoderTickCount(1)))*135.5/100 + (fabsf(QueryEncoderTickCount(2)))*135.5/100)/2;
 	 //for every beacon in Angle_Measurements[]
 	for(int i=0;i < 4;i++){
 		 //if frequency is the same (within bounds) as current position's contents in Angle_Measurements[]
@@ -315,7 +325,7 @@ static void CalculatePosition(void){
 	
 	//Check which angle should be ignored
 	for(int i=0;i <= 3;i++){
-		BeaconSpread = abs(Angle_Measurements[i][LAST_EDGE] - Angle_Measurements[i][FIRST_EDGE]);
+		BeaconSpread = fabsf(Angle_Measurements[i][LAST_EDGE] - Angle_Measurements[i][FIRST_EDGE]);
 		if(BeaconSpread < MinAngleWidth){
 			ExcludedAngle = i;
 			MinAngleWidth = BeaconSpread;
@@ -332,11 +342,11 @@ static void CalculatePosition(void){
 	 //if more than 1 beacon has been missed
 	if(MissedBeacons > 1){
 		 //Robot has to do another turn to relocalize
-		SetPositionKnownStatus(false);
+		SetPositionAwareness(false);
 	}
 	else{
 		 //do next objective
-		SetPositionKnownStatus(true);
+		SetPositionAwareness(true);
 	}
 	
 	 //Ignore angle that has most potential error
@@ -344,7 +354,8 @@ static void CalculatePosition(void){
 	
 	 //triangulate current position
 	Triangulate(Angle_Measurements[0][AVE_EDGE],Angle_Measurements[1][AVE_EDGE],Angle_Measurements[2][AVE_EDGE],Angle_Measurements[3][AVE_EDGE]);
-	Current_X = Get_X();
-	Current_Y = Get_Y();
-	Current_Heading = Get_Heading();
+	CurrentXPosition = QueryXCoordinate();
+	CurrentYPosition = QueryYCoordinate();
+	CurrentHeading = QueryHeading();
 }
+

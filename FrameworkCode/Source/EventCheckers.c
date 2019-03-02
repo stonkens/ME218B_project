@@ -114,7 +114,7 @@ bool Check4Keystroke(void)
     ThisEvent.EventParam  = GetNewKey();
     // test distribution list functionality by sending the 'L' key out via
     // a distribution list.
-    PostMotorService(ThisEvent);
+    //PostMotorService(ThisEvent);
 
     return true;
   }else

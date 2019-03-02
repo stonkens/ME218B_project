@@ -40,7 +40,7 @@
 #include "SPISM.h"
 #include "IREmitter.h"
 #include "EncoderCapture.h"
-#include "DrvieCommandModule.h"
+#include "DriveCommandModule.h"
 #include "IRDetector.h"
 
 // This module
@@ -85,9 +85,9 @@ void InitializeHardware(void)
   InitDriveMotor();
   //InitDrvieMotorPWM();
   Enc_Init();
-  Drvie_Control_Init();
+  Drive_Control_Init();
   //InitSPI(); //This uses bits xxx and xxx
-  InitInputCapture();
+  IRInitInputCapture();
 
   __enable_irq();
   //InitializeADC();

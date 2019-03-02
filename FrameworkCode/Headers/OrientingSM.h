@@ -17,9 +17,9 @@ ES_Event_t RunOrientingSM ( ES_Event_t CurrentEvent );
 void StartOrientingSM ( ES_Event_t CurrentEvent );
 OrientingState_t QueryOrientingSM(void);
 
-float GetCurrent_X(void);
-float GetCurrent_Y(void);
-float GetCurrent_Heading(void);
+float GetCurrentXPosition(void);
+float GetCurrentYPosition(void);
+float GetCurrentHeading(void);
 void ClearMeasurements(void);
 void ResetOrientingRunCount(void);
 

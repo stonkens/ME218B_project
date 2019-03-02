@@ -10,6 +10,7 @@
       <TargetName>BaseFrameworkTarget</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -422,11 +423,6 @@
               <FilePath>.\Source\InitializeHardware.c</FilePath>
             </File>
             <File>
-              <FileName>MotorService.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\MotorService.c</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\SPISM.c</FilePath>
@@ -670,11 +666,6 @@
               <FileName>InitializeHardware.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\InitializeHardware.h</FilePath>
-            </File>
-            <File>
-              <FileName>MotorService.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\MotorService.h</FilePath>
             </File>
             <File>
               <FileName>SPISM.h</FileName>
@@ -1414,11 +1405,6 @@
               <FilePath>.\Source\InitializeHardware.c</FilePath>
             </File>
             <File>
-              <FileName>MotorService.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\MotorService.c</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\SPISM.c</FilePath>
@@ -1662,11 +1648,6 @@
               <FileName>InitializeHardware.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\InitializeHardware.h</FilePath>
-            </File>
-            <File>
-              <FileName>MotorService.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\MotorService.h</FilePath>
             </File>
             <File>
               <FileName>SPISM.h</FileName>

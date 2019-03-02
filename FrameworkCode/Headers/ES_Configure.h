@@ -93,29 +93,30 @@
 #endif
 
 /****************************************************************************/
-// These are the definitions for Service 4
+// These are the definitions for Service 5
 #if NUM_SERVICES > 4
 // the header file with the public function prototypes
-#define SERV_4_HEADER "MotorService.h"
+#define SERV_4_HEADER "MasterHSM.h"
 // the name of the Init function
-#define SERV_4_INIT InitMotorService
+#define SERV_4_INIT InitMasterSM
 // the name of the run function
-#define SERV_4_RUN RunMotorService
+#define SERV_4_RUN RunMasterSM
 // How big should this services Queue be?
-#define SERV_4_QUEUE_SIZE 3
+#define SERV_4_QUEUE_SIZE 5
 #endif
 
+
 /****************************************************************************/
-// These are the definitions for Service 5
+// These are the definitions for Service 4
 #if NUM_SERVICES > 5
 // the header file with the public function prototypes
-#define SERV_5_HEADER "EncoderService.h"
+#define SERV_5_HEADER "MotorService.h"
 // the name of the Init function
-#define SERV_5_INIT InitEncoderService
+#define SERV_5_INIT InitMotorService
 // the name of the run function
-#define SERV_5_RUN RunEncoderService
+#define SERV_5_RUN RunMotorService
 // How big should this services Queue be?
-#define SERV_5_QUEUE_SIZE 5
+#define SERV_5_QUEUE_SIZE 3
 #endif
 
 /****************************************************************************/
@@ -276,15 +277,18 @@ typedef enum
   ES_GAME_OVER,
   ES_CLEANING_UP,
   ES_BUMPER_HIT,
-<<<<<<< HEAD
-  EV_MOVE_COMPLETED
-=======
-  ES_WESTRECYCLING_FOUND,
-  ES_EASTRECYCLING_FOUND,
-  ES_SOUTHLANDFILL_FOUND,
-  ES_NORTHLANDFILL_FOUND
-
->>>>>>> IR
+	ES_ENTRY,
+	ES_ENTRY_HISTORY,
+	ES_EXIT,
+	EV_RECYCLING_DONE,
+	EV_LANDFILLING_DONE,
+	EV_MOVED_BACK,
+	EV_MOVE_COMPLETED,
+	EV_COMPASS_CLEANING_UP,
+	EV_RECEIVED_COMPASS_ACK,
+  EV_COMPASS_RECYCLE_CHANGE,
+  EV_TAPE_DETECTED,
+  EV_ALIGNED2BEACON
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -319,7 +323,7 @@ typedef enum
 
 /****************************************************************************/
 // This is the list of event checking functions
-#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished, IR_found 
+#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished
 
 /****************************************************************************/
 // These are the definitions for the post functions to be executed when the
@@ -341,8 +345,8 @@ typedef enum
 #define TIMER10_RESP_FUNC TIMER_UNUSED
 #define TIMER11_RESP_FUNC TIMER_UNUSED
 #define TIMER12_RESP_FUNC TIMER_UNUSED
-#define TIMER13_RESP_FUNC TIMER_UNUSED
-#define TIMER14_RESP_FUNC TIMER_UNUSED
+#define TIMER13_RESP_FUNC PostMasterSM
+#define TIMER14_RESP_FUNC PostMasterSM
 #define TIMER15_RESP_FUNC PostI2CService
 
 /****************************************************************************/
@@ -355,6 +359,8 @@ typedef enum
 #define I2C_TEST_TIMER 0
 #define SPI_TIMER 1
 #define SPI_REFRESH_TIMER 2
+#define LOCALIZE_TIMER 13
+#define BALL_COLLECTION_TIMER 14
 #define I2C_TIMER 15
 
 /**************************************************************************/

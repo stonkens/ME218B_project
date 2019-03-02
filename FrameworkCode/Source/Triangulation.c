@@ -97,10 +97,6 @@ static float KB;
 static float KC;
 static float K;
 
-//intermediate angles
-static float firstAngle;
-static float secondAngle;
-static float thirdAngle;
 
 /*------------------------------ Module Code ------------------------------*/
 

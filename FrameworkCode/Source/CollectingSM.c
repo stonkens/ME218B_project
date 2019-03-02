@@ -59,7 +59,11 @@
 #include "OrientingSM.h"
 
 #include "CollectingSM.h"
+#include "DriveCommandModule.h"
 
+#include "IRDetector.h"
+
+#include <math.h> //for acos and atan
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
 // and any other local defines
@@ -67,6 +71,8 @@
 #define ENTRY_STATE Orienting
 #define IR_FIRST_DELAY 100
 #define LOCALIZATIONSPEED 100
+
+#define QUARTER_TURN 900
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
    functions, entry & exit functions.They should be functions relevant to the
@@ -76,10 +82,26 @@ static ES_Event_t DuringOrienting( ES_Event_t Event);
 static ES_Event_t DuringRoaming(ES_Event_t Event);
 static ES_Event_t DuringDriving2Target(ES_Event_t Event);
 
+
+
 /*---------------------------- Module Variables ---------------------------*/
 // everybody needs a state variable, you may need others as well
 static CollectingState_t CurrentState;
+static bool PositionAwareness = false;
+static float XPosition;
+static float YPosition;
+static float Heading;
 
+static float DriveDistance;
+static bool RotatedFlag;
+static uint8_t TargetPoint;
+static float TargetDistance;
+
+static float TargetPoints[4][2] = {
+	{XTARGET,	YTARGET},
+	{-XTARGET, YTARGET},
+	{-XTARGET,	-YTARGET},
+	{XTARGET,	-YTARGET}};
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
  Function
@@ -117,12 +139,24 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
             {
               case EV_MOVE_COMPLETED:
               {
+                if (PositionAwareness == true)
+                {
                   // Execute action function for state one : event one
                   NextState = Driving2Target;//Decide what the next state will be
                   // for internal transitions, skip changing MakeTransition
                   MakeTransition = true; //mark that we are taking a transition
                   // if transitioning to a state with history change kind of entry
                   EntryEventKind.EventType = ES_ENTRY;
+                }
+                else
+                {
+                  // Execute action function for state one : event one
+                  NextState = Orienting;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;                
+                }
                 
               }
 							break;
@@ -148,26 +182,28 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-              case EV_TURN_COMPLETED:
-              {
-                //Ready to drive to Target point
-                //DriveStraight(STRAIGHT_SPEED, TargetDistance)
-                
-              }
-              break;
+              
               
               case EV_MOVE_COMPLETED:
               {
+                if (RotatedFlag == true)
+                {
+                  DriveStraight(STRAIGHT_SPEED, TargetDistance);
+                  RotatedFlag = false;
+                }
+                else
+                {
+                  // Execute action function for state one : event one
+                  NextState = Roaming;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;                              
+                  //Select new move to start up (Idea: Start from one point and go to others)
                   
-                
-                // Execute action function for state one : event one
-                NextState = Roaming;//Decide what the next state will be
-                // for internal transitions, skip changing MakeTransition
-                MakeTransition = true; //mark that we are taking a transition
-                // if transitioning to a state with history change kind of entry
-                EntryEventKind.EventType = ES_ENTRY;                              
-                //Select new move to start up (Idea: Start from one point and go to others)
-                
+                }
+                  
+                    
               }
               break;
                
@@ -191,17 +227,24 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-              case EV_TURN_COMPLETED:
-              {
-                //DriveDistance = X[1]-X[0];
-                //SetDrive(STRAIGHT_SPEED, DriveDistance);
-              }
-              break;
-              
               case EV_MOVE_COMPLETED:
               {
-                //Rotate 90 degrees
-                //SetTurn(TURN_SPEED, 90)
+                if(RotatedFlag == true)
+                {
+                  DriveDistance = -fabsf(TargetPoints[TargetPoint+1][0]-TargetPoints[TargetPoint][0]);
+                  DriveStraight(STRAIGHT_SPEED, DriveDistance);
+                  RotatedFlag = false;
+                  TargetPoint++;
+                  if (TargetPoint>3)
+                  {
+                    TargetPoint=0;
+                  }
+                }
+                else //if RotatedFlag == False
+                {
+                  DriveRotate(TURNING_SPEED, QUARTER_TURN);
+                  RotatedFlag = true;
+                }
               }
               break;
                
@@ -310,7 +353,7 @@ static ES_Event_t DuringOrienting( ES_Event_t Event)
       //Enable IR readings
       IREnableInterrupt();
       //Rotate 360 degrees
-      DriveTurn(LOCALIZATIONSPEED, 360);
+      DriveRotate(LOCALIZATIONSPEED, 360);
       
       //Start any lower level machines that run in this state
       StartOrientingSM(Event);
@@ -351,21 +394,21 @@ static ES_Event_t DuringDriving2Target(ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
       //Determine to which target point we are closest
-      XPosition = QueryXPosition();
-      YPosition = QueryYPosition();
-      Heading = QueryHeading();
+      XPosition = GetCurrentXPosition();
+      YPosition = GetCurrentYPosition();
+      Heading = GetCurrentHeading();
       if(XPosition>=0)
       {
         if(YPosition>=0)
         {
-          //Drive to XTarget, YTarget
-          TargetDistance = sqrt((XPosition - XTarget[0])^2 + (YPosition - YTarget[0])^2);
+          //Drive to TargetPoints, TargetPoints
+          TargetDistance = sqrtf((XPosition - TargetPoints[0][0])*(XPosition - TargetPoints[0][0]) + (YPosition - TargetPoints[0][1])*(YPosition - TargetPoints[0][1]));
           //Find angle to rotate
         }
         else
         {
-          //Drive to XTarget, -YTarget
-          TargetDistance = sqrt((XPosition - XTarget[1])^2 + (YPosition - YTarget[1])^2);
+          //Drive to TargetPoints, -TargetPoints
+          TargetDistance = sqrtf((XPosition - TargetPoints[1][0])*(XPosition - TargetPoints[1][0]) + (YPosition - TargetPoints[1][1])*(YPosition - TargetPoints[1][1]));
           //Find angle to rotate
         }
       }
@@ -373,14 +416,14 @@ static ES_Event_t DuringDriving2Target(ES_Event_t Event)
       {
         if(YPosition>=0)
         {
-          //Drive to -XTarget, YTarget
-          TargetDistance = sqrt((XPosition - XTarget[2])^2 + (YPosition - YTarget[2])^2);
+          //Drive to -TargetPoints, TargetPoints
+          TargetDistance = sqrtf((XPosition - TargetPoints[2][0])*(XPosition - TargetPoints[2][0]) + (YPosition - TargetPoints[2][1])*(YPosition - TargetPoints[2][1]));
           //Find angle to rotate
         }
         else
         {
-          //Drive to -XTarget, -YTarget
-          TargetDistance = sqrt((XPosition - XTarget[3])^2 + (YPosition - YTarget[3])^2);
+          //Drive to -TargetPoints, -TargetPoints
+          TargetDistance = sqrtf((XPosition - TargetPoints[3][0])*(XPosition - TargetPoints[3][0]) + (YPosition - TargetPoints[3][1])*(YPosition - TargetPoints[3][1]));
           //Find angle to rotate
         }
       }
@@ -428,7 +471,7 @@ static ES_Event_t DuringRoaming( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
       //Based on the target we drove and our heading towards it, determine by what angle to turn
-      //DriveTurn(TURN_SPEED, Angle);
+      //DriveRotate(TURN_SPEED, Angle);
         // implement any entry actions required for this state machine
         
 			
@@ -460,5 +503,13 @@ static ES_Event_t DuringRoaming( ES_Event_t Event)
     // to remap the current event, or ReturnEvent if you do want to allow it.
     return(ReturnEvent);
 }
+
+void SetPositionAwareness(bool PositionStatus)
+{
+  PositionAwareness = PositionStatus;
+}
+
+
+
 
 

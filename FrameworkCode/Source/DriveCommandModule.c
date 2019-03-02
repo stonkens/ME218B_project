@@ -52,9 +52,6 @@
 #define STRAIGHT	0
 #define TURN			1
 
-#define STRAIGHT_DRIVE_SPEED	100 //Max drive speed
-#define TURNING_SPEED					100 //Max rotation speed
-
 #define ROTATION_RADIUS 5.12 //In inches (IF RECALIBRATED UPDATED BELOW)
 
 #define TICKS_PER_INCHx10	606.38/4 //TO BE RECALIBRATED
@@ -99,7 +96,7 @@ void Drive_Control_Init(void){
 
 /****************************************************************************
  Function
-   Drive_Straight
+   DriveStraight
 
  Parameters
 	float : desired distance (in inches*100)
@@ -114,14 +111,14 @@ void Drive_Control_Init(void){
  Author
    Sander Tonkens
 ****************************************************************************/
-void Drive_Straight(float distancex100){
-	Drive_SetClampRPM(STRAIGHT_DRIVE_SPEED);
+void DriveStraight(float MaxRPM, float distancex100){
+	Drive_SetClampRPM(MaxRPM);
 	Drive_SetDistance(distancex100*TICKS_PER_INCHx10/1000);
 }
 
 /****************************************************************************
  Function
-   Drive_Turn
+   DriveRotate
 
  Parameters
 	float : desired angle (in degrees * 10)
@@ -136,8 +133,8 @@ void Drive_Straight(float distancex100){
  Author
    Sander Tonkens
 ****************************************************************************/
-void Drive_Turn(float degreesx10){
-	Drive_SetClampRPM(TURNING_SPEED);
+void DriveRotate(float MaxRPM, float degreesx10){
+	Drive_SetClampRPM(MaxRPM);
 	Drive_SetHeading(degreesx10*TICKS_PER_DEGREEx100/1000);
 }
 

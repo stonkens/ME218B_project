@@ -13,9 +13,15 @@
 #include "ES_Types.h"
 #include "ES_Configure.h"
 
+#define STRAIGHT_SPEED	      200 //Max drive speed
+#define TURNING_SPEED					200 //Max rotation speed
+#define LOCALIZATION_SPEED		100 //Rotation speed when detecting IR
+#define APPROACH_SPEED        20  //Approaching dumping station speed
+
+
 void Drive_Control_Init(void);
-void Drive_Straight(float distancex100);
-void Drive_Turn(float degreesx10);
+void DriveStraight(float MaxRPM, float distancex100);
+void DriveRotate(float MaxRPM, float degreesx10);
 void StopDrive(void);
 
 #endif //DriveCommandModule_H
