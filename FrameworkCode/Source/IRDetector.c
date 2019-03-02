@@ -62,9 +62,53 @@ static uint32_t Period_In_Ticks; //The Period of captured IR
 static uint32_t Period_In_us;//
 static uint32_t LastCapture=0; // Time of last rising edge for IR, captured in tick
 static bool FirstEdge=true; // true if it is the first edge
-
+static uint32_t SamePeriodRunCount=0;//counts up whenever it sees a valid period
 
 /*------------------------------ Module Code ------------------------------*/
+/****************************************************************************
+ Function
+   IR_getSamePeriodRunCount(void)
+
+ Parameters
+  nothing
+
+ Returns
+  nothing
+
+ Description
+  grab the SamePeriodRunCount
+ 
+ Notes
+
+ Author
+  Hyun Joo Lee 03/01/2019
+****************************************************************************/
+uint32_t IR_getSamePeriodRunCount(void)
+{
+  return SamePeriodRunCount;
+}
+/****************************************************************************
+ Function
+   IR_resetSamePeriodRunCount(void)
+
+ Parameters
+  nothing
+
+ Returns
+  nothing
+
+ Description
+  resets the SamePeriodRunCount to 0
+ 
+ Notes
+
+ Author
+  Hyun Joo Lee 03/01/2019
+****************************************************************************/
+void IR_resetSamePeriodRunCount(void)
+{
+  SamePeriodRunCount=0;
+}
 /****************************************************************************
  Function
    InitInputCapture(void)
@@ -295,6 +339,7 @@ bool IR_found(void){
     ThisEvent.EventType=ES_NORTHLANDFILL_FOUND;
     ReturnVal =true;
     PostDCMotorService(ThisEvent);
+    SamePeriodRunCount++;
     printf("\r\n NorthLandfill_Found");
   }else if((FoundPeriod >690)&&(FoundPeriod<710))
   {
@@ -302,6 +347,7 @@ bool IR_found(void){
     ThisEvent.EventType=ES_SOUTHLANDFILL_FOUND;
     ReturnVal =true;
     PostDCMotorService(ThisEvent);
+    SamePeriodRunCount++;
     printf("\r\n SouthLandfill_Found");
   }else if((FoundPeriod >590)&&(FoundPeriod<610))
   {
@@ -309,6 +355,7 @@ bool IR_found(void){
     ThisEvent.EventType=ES_WESTRECYCLING_FOUND;
     ReturnVal =true;
     PostDCMotorService(ThisEvent);
+    SamePeriodRunCount++;
     printf("\r\n WestRecycling_Found");
   }else if((FoundPeriod >490)&&(FoundPeriod<510))
   {
@@ -316,6 +363,7 @@ bool IR_found(void){
     ThisEvent.EventType=ES_EASTRECYCLING_FOUND;
     ReturnVal =true;
     PostDCMotorService(ThisEvent);
+    SamePeriodRunCount++;
     printf("\r\n EastRecycling_Found");
   }
   return ReturnVal;
