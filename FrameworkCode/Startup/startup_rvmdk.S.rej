@@ -1,0 +1,13 @@
+diff a/FrameworkCode/Startup/startup_rvmdk.S b/FrameworkCode/Startup/startup_rvmdk.S	(rejected hunks)
+@@ -82,11 +82,6 @@
+         EXTERN  ShortTimerAHandler
+         EXTERN  ShortTimerBHandler
+ 		EXTERN  SPIISRResponse
+-		EXTERN  Enc_1AISR
+-		EXTERN  Enc_1BISR
+-		EXTERN  Enc_2AISR
+-		EXTERN  Enc_2BISR
+-		EXTERN  Drive_SpeedControlISR
+ 		EXTERN  A1ISR
+ 		EXTERN  B1ISR
+ 		EXTERN  A2ISR
