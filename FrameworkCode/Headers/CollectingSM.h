@@ -13,7 +13,7 @@
 
 // typedefs for the states
 // State definitions for use with the query function
-typedef enum { ORIENTING, ROAMING} CollectingState_t ;
+typedef enum { Orienting, Roaming} CollectingState_t ;
 
 
 // Public Function Prototypes

@@ -13,7 +13,7 @@
 
 // typedefs for the states
 // State definitions for use with the query function
-typedef enum { COLLECTING_GARBAGE, RECYCLING, LANDFILLING } GamePlayState_t ;
+typedef enum { CollectingGarbage, Recycling, Landfilling } GamePlayState_t ;
 
 
 // Public Function Prototypes

@@ -62,7 +62,7 @@
 // define constants for the states for this machine
 // and any other local defines
 
-#define ENTRY_STATE ORIENTING2LANDFILL
+#define ENTRY_STATE Orienting2Landfill
 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
@@ -105,7 +105,7 @@ ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
 
    switch ( CurrentState )
    {
-       case ORIENTING2LANDFILL :      
+       case Orienting2Landfill :      
 			 {
          ReturnEvent = CurrentEvent = DuringOrienting2Landfill(CurrentEvent);
          //process any events
@@ -126,7 +126,7 @@ ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
     }
 		break;
 		
-		case DRIVING2LANDFILL:
+		case Driving2Landfill:
 		{
          ReturnEvent = CurrentEvent = DuringDriving2Landfill(CurrentEvent);
          //process any events
@@ -147,7 +147,7 @@ ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
 		}
 		break;
     
-		case APPROACHINGLANDFILL:
+		case ApproachingLandfill:
 		{
          ReturnEvent = CurrentEvent = DuringApproachingLandfill(CurrentEvent);
          //process any events
@@ -168,7 +168,7 @@ ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
 		}
 		break;
 		
-		case DUMPINGLANDFILL:
+		case DumpingLandfill:
 		{
          ReturnEvent = CurrentEvent = DuringDumpingLandfill(CurrentEvent);
          //process any events

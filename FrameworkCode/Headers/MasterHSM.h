@@ -9,9 +9,12 @@
 #include <stdbool.h>
 #include "ES_Events.h"
 #include "ES_Framework.h"
-// State definitions for use with the query function
-typedef enum { WAITING_FOR_START, GAME_PLAY, GAME_ENDED, COLLISION_AVOIDANCE } MasterState_t ;
 
+// State definitions for use with the query function
+typedef enum
+{
+  WaitingForStart, GamePlay, GameEnded, CollisionAvoidance
+}MasterState_t;
 // Public Function Prototypes
 
 ES_Event_t RunMasterSM( ES_Event_t CurrentEvent );

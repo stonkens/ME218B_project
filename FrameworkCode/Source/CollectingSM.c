@@ -62,7 +62,7 @@
 // define constants for the states for this machine
 // and any other local defines
 
-#define ENTRY_STATE ORIENTING
+#define ENTRY_STATE Orienting
 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
@@ -103,7 +103,7 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
 
    switch ( CurrentState )
    {
-       case ORIENTING :      
+       case Orienting :      
 			 {
          ReturnEvent = CurrentEvent = DuringOrienting(CurrentEvent);
          //process any events
@@ -125,7 +125,7 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
     }
 		break;
 		
-		case ROAMING:
+		case Roaming:
 		{
          ReturnEvent = CurrentEvent = DuringRoaming(CurrentEvent);
          //process any events

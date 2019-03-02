@@ -62,7 +62,7 @@
 // define constants for the states for this machine
 // and any other local defines
 
-#define ENTRY_STATE COLLECTING_GARBAGE
+#define ENTRY_STATE CollectingGarbage
 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
@@ -104,7 +104,7 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
 
    switch ( CurrentState )
    {
-       case COLLECTING_GARBAGE :      
+       case CollectingGarbage :      
 			 {
          ReturnEvent = CurrentEvent = DuringCollectingGarbage(CurrentEvent);
          //process any events
@@ -120,7 +120,7 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
                   if (QueryRecycleBalls() != 0)
                   {
                     // Execute action function for state one : event one
-                    NextState = RECYCLING;//Decide what the next state will be
+                    NextState = Recycling;//Decide what the next state will be
                     // for internal transitions, skip changing MakeTransition
                     MakeTransition = true; //mark that we are taking a transition
                     // if transitioning to a state with history change kind of entry
@@ -133,7 +133,7 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
                   else if(QueryLandFillBalls() != 0)
                   {
                     // Execute action function for state one : event one
-                    NextState = LANDFILLING;//Decide what the next state will be
+                    NextState = Landfilling;//Decide what the next state will be
                     // for internal transitions, skip changing MakeTransition
                     MakeTransition = true; //mark that we are taking a transition
                     // if transitioning to a state with history change kind of entry
@@ -164,7 +164,7 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
     }
 		break;
 		
-		case RECYCLING:
+		case Recycling:
 		{
          ReturnEvent = CurrentEvent = DuringRecycling(CurrentEvent);
          //process any events
@@ -173,11 +173,11 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
             switch (CurrentEvent.EventType)
             {
                
-               case EV_RECYCLING_DONE :
+               case EV_Recycling_DONE :
                {
                   if(QueryLandFillBalls() != 0)
                   {
-                    NextState = LANDFILLING;
+                    NextState = Landfilling;
                     // for internal transitions, skip changing MakeTransition
                     MakeTransition = true; //mark that we are taking a transition
                     // if transitioning to a state with history change kind of entry
@@ -190,7 +190,7 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
                   else
                   {
 
-                    NextState = COLLECTING_GARBAGE;
+                    NextState = CollectingGarbage;
                     // for internal transitions, skip changing MakeTransition
                     MakeTransition = true; //mark that we are taking a transition
                     // if transitioning to a state with history change kind of entry
@@ -216,7 +216,7 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
 		}
 		break;
 		
-		case LANDFILLING:
+		case Landfilling:
 		{
          ReturnEvent = CurrentEvent = DuringLandfilling(CurrentEvent);
          //process any events
@@ -225,11 +225,11 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
             switch (CurrentEvent.EventType)
             {
 							 
-               case EV_LANDFILLING_DONE:
+               case EV_Landfilling_DONE:
                {
                   if(QueryRecycleBalls() != 0)
                   {
-                    NextState = RECYCLING;
+                    NextState = Recycling;
                     // for internal transitions, skip changing MakeTransition
                     MakeTransition = true; //mark that we are taking a transition
                     // if transitioning to a state with history change kind of entry
@@ -244,7 +244,7 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
                   {
 
                     
-                    NextState = COLLECTING_GARBAGE;
+                    NextState = CollectingGarbage;
                     // for internal transitions, skip changing MakeTransition
                     MakeTransition = true; //mark that we are taking a transition
                     // if transitioning to a state with history change kind of entry

@@ -156,7 +156,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
 
     switch ( CurrentState )
    {
-       case WAITING_FOR_START :       // If current state is state one
+       case WaitingForStart :       // If current state is state one
 			 {
          // Execute During function for state one. ES_ENTRY & ES_EXIT are
          // processed here allow the lowere level state machines to re-map
@@ -170,7 +170,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
                case EV_COMPASS_CLEANING_UP : //If event is event one
 							 {
                   // Execute action function for state one : event one
-                  NextState = GAME_PLAY;//Decide what the next state will be
+                  NextState = GamePlay;//Decide what the next state will be
                   // for internal transitions, skip changing MakeTransition
                   MakeTransition = true; //mark that we are taking a transition
                   // if transitioning to a state with history change kind of entry
@@ -184,7 +184,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
 							 
 							 case ES_GAME_OVER:
 							 {
-								 NextState = GAME_ENDED;
+								 NextState = GameEnded;
 								 MakeTransition = true;
 								 EntryEventKind.EventType = ES_ENTRY;
 							 }
@@ -198,7 +198,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
 			 }
        break;
       
-			 case GAME_PLAY:
+			 case GamePlay:
 			 {
 				 CurrentEvent = DuringGamePlay(CurrentEvent);
 				 
@@ -209,7 +209,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
                case ES_BUMPER_HIT : //If event is event one
 							 {
                   // Execute action function for state one : event one
-                  NextState = COLLISION_AVOIDANCE;//Decide what the next state will be
+                  NextState = CollisionAvoidance;//Decide what the next state will be
                   // for internal transitions, skip changing MakeTransition
                   MakeTransition = true; //mark that we are taking a transition
                   // if transitioning to a state with history change kind of entry
@@ -227,13 +227,13 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
 			 }
        break;
 			 
-			 case GAME_ENDED:
+			 case GameEnded:
 			 {
 				 CurrentEvent = DuringGameEnded(CurrentEvent);
 			 }
        break;	
 
-			 case COLLISION_AVOIDANCE:
+			 case CollisionAvoidance:
 			 {
 				 CurrentEvent = DuringCollisionAvoidance(CurrentEvent);
 				 
@@ -244,7 +244,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
                case EV_MOVED_BACK : //If event is event one
 							 {
                   // Execute action function for state one : event one
-                  NextState = GAME_PLAY;//Decide what the next state will be
+                  NextState = GamePlay;//Decide what the next state will be
                   // for internal transitions, skip changing MakeTransition
                   MakeTransition = true; //mark that we are taking a transition
                   // if transitioning to a state with history change kind of entry
@@ -255,7 +255,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
 							 
 							 case ES_GAME_OVER :
 							 {
-								 NextState = GAME_ENDED;
+								 NextState = GameEnded;
 								 MakeTransition = true;
 								 EntryEventKind.EventType = ES_ENTRY;
 							 }
@@ -312,7 +312,7 @@ void StartMasterSM ( ES_Event_t CurrentEvent )
 {
   // if there is more than 1 state to the top level machine you will need 
   // to initialize the state variable
-  CurrentState = WAITING_FOR_START;
+  CurrentState = WaitingForStart;
   // now we need to let the Run function init the lower level state machines
   // use LocalEvent to keep the compiler from complaining about unused var
   RunMasterSM(CurrentEvent);

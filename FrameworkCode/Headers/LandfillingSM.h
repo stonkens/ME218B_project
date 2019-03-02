@@ -12,7 +12,7 @@
 
 // typedefs for the states
 // State definitions for use with the query function
-typedef enum { ORIENTING2LANDFILL, DRIVING2LANDFILL, APPROACHINGLANDFILL, DUMPINGLANDFILL } LandfillingState_t ;
+typedef enum { Orienting2Landfill, Driving2Landfill, ApproachingLandfill, DumpingLandfill } LandfillingState_t ;
 
 
 // Public Function Prototypes

@@ -12,7 +12,7 @@
 
 // typedefs for the states
 // State definitions for use with the query function
-typedef enum { WAITING_FOR_COMPASS_ACK, WAITING_FOR_COMPASS_START } WaitingForStartState_t ;
+typedef enum { WaitingForCompassAck, WaitingForCompassStart } WaitingForStartState_t ;
 
 
 // Public Function Prototypes

@@ -62,7 +62,7 @@
 // define constants for the states for this machine
 // and any other local defines
 
-#define ENTRY_STATE ORIENTING2RECYCLE
+#define ENTRY_STATE Orienting2Recycle
 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
@@ -104,7 +104,7 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
 
    switch ( CurrentState )
    {
-       case ORIENTING2RECYCLE :      
+       case Orienting2Recycle :      
 			 {
          ReturnEvent = CurrentEvent = DuringOrienting2Recycle(CurrentEvent);
          //process any events
@@ -125,7 +125,7 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
     }
 		break;
 		
-		case DRIVING2RECYCLE:
+		case Driving2Recycle:
 		{
          ReturnEvent = CurrentEvent = DuringDriving2Recycle(CurrentEvent);
          //process any events
@@ -146,7 +146,7 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
 		}
 		break;
 		
-		case APPROACHINGRECYCLE:
+		case ApproachingRecycle:
 		{
          ReturnEvent = CurrentEvent = DuringApproachingRecycle(CurrentEvent);
          //process any events
@@ -167,7 +167,7 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
 		}
 		break;
     
-		case DUMPINGRECYCLE:
+		case DumpingRecycle:
 		{
          ReturnEvent = CurrentEvent = DuringDumpingRecycle(CurrentEvent);
          //process any events

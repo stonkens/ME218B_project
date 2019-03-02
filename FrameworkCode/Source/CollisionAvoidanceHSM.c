@@ -62,7 +62,7 @@
 // define constants for the states for this machine
 // and any other local defines
 
-#define ENTRY_STATE MOVING_BACKWARDS
+#define ENTRY_STATE MovingBackwards
 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
@@ -102,7 +102,7 @@ ES_Event_t RunCollisionAvoidanceHSM( ES_Event_t CurrentEvent )
 
    switch ( CurrentState )
    {
-       case MOVING_BACKWARDS :      
+       case MovingBackwards :      
 			 {
          ReturnEvent = CurrentEvent = DuringMovingBackwards(CurrentEvent);
          //process any events
@@ -116,7 +116,7 @@ ES_Event_t RunCollisionAvoidanceHSM( ES_Event_t CurrentEvent )
 //							 {
 //								 //If event is event one
 //                  // Execute action function for state one : event one
-//                  NextState = WAITING_FOR_COMPASS_START;//Decide what the next state will be
+//                  NextState = WaitingForCompassStart;//Decide what the next state will be
 //                  // for internal transitions, skip changing MakeTransition
 //                  MakeTransition = true; //mark that we are taking a transition
 //                  // if transitioning to a state with history change kind of entry

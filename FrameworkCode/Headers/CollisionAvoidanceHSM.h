@@ -12,7 +12,7 @@
 
 // typedefs for the states
 // State definitions for use with the query function
-typedef enum { MOVING_BACKWARDS} CollisionAvoidanceState_t ;
+typedef enum { MovingBackwards} CollisionAvoidanceState_t ;
 
 
 // Public Function Prototypes

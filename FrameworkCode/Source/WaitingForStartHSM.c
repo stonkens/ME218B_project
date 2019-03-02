@@ -62,7 +62,7 @@
 // define constants for the states for this machine
 // and any other local defines
 
-#define ENTRY_STATE WAITING_FOR_COMPASS_ACK
+#define ENTRY_STATE WaitingForCompassAck
 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
@@ -103,7 +103,7 @@ ES_Event_t RunWaitingForStartSM( ES_Event_t CurrentEvent )
 
    switch ( CurrentState )
    {
-       case WAITING_FOR_COMPASS_ACK :      
+       case WaitingForCompassAck :      
 			 {
          ReturnEvent = CurrentEvent = DuringWaitingForCompassAck(CurrentEvent);
          //process any events
@@ -115,7 +115,7 @@ ES_Event_t RunWaitingForStartSM( ES_Event_t CurrentEvent )
 							 {
 								 //If event is event one
                   // Execute action function for state one : event one
-                  NextState = WAITING_FOR_COMPASS_START;//Decide what the next state will be
+                  NextState = WaitingForCompassStart;//Decide what the next state will be
                   // for internal transitions, skip changing MakeTransition
                   MakeTransition = true; //mark that we are taking a transition
                   // if transitioning to a state with history change kind of entry
@@ -139,7 +139,7 @@ ES_Event_t RunWaitingForStartSM( ES_Event_t CurrentEvent )
     }
 		break;
 		
-		case WAITING_FOR_COMPASS_START:
+		case WaitingForCompassStart:
 		{
          ReturnEvent = CurrentEvent = DuringWaitingForCompassStart(CurrentEvent);
          //process any events
