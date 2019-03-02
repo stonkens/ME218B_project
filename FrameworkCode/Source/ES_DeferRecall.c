@@ -40,7 +40,7 @@
      ES_RecallEvents
  Parameters
       uint8_t WhichService, number of the service to post Recalled event to
-      ES_Event * pBlock, pointer to the block of memory that implements the
+      ES_Event_t * pBlock, pointer to the block of memory that implements the
         Defer/Recall queue
  Returns
      bool true if an event was recalled, false if no event was left in queue

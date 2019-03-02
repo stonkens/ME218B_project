@@ -49,7 +49,7 @@ typedef ES_Queue_t *pQueue_t;
  Notes
    you should pass it a block that is at least sizeof(ES_Queue_t) larger than
    the number of entries that you want in the queue. Since the size of an
-   ES_Event (at 4 bytes; 2 enum, 2 param) is greater than the
+   ES_Event_t (at 4 bytes; 2 enum, 2 param) is greater than the
    sizeof(ES_Queue_t), you only need to declare an array of ES_Event
    with 1 more element than you need for the actual queue.
  Author
@@ -71,8 +71,8 @@ uint8_t ES_InitQueue(ES_Event_t *pBlock, uint8_t BlockSize)
  Function
    ES_EnQueueFIFO
  Parameters
-   ES_Event * pBlock : pointer to the block of memory in use as the Queue
-   ES_Event Event2Add : event to be added to the Queue
+   ES_Event_t * pBlock : pointer to the block of memory in use as the Queue
+   ES_Event_t Event2Add : event to be added to the Queue
  Returns
    bool : true if the add was successful, false if not
  Description
@@ -108,8 +108,8 @@ bool ES_EnQueueFIFO(ES_Event_t *pBlock, ES_Event_t Event2Add)
  Function
    ES_EnQueueLIFO
  Parameters
-   ES_Event * pBlock : pointer to the block of memory in use as the Queue
-   ES_Event Event2Add : event to be added to the Queue
+   ES_Event_t * pBlock : pointer to the block of memory in use as the Queue
+   ES_Event_t Event2Add : event to be added to the Queue
  Returns
    bool : true if the add was successful, false if not
  Description
@@ -155,7 +155,7 @@ bool ES_EnQueueLIFO(ES_Event_t *pBlock, ES_Event_t Event2Add)
    ES_DeQueue
  Parameters
    unsigned char * pBlock : pointer to the block of memory in use as the Queue
-   ES_Event * pReturnEvent : used to return the event pulled from the queue
+   ES_Event_t * pReturnEvent : used to return the event pulled from the queue
  Returns
    The number of entries remaining in the Queue
  Description
@@ -253,12 +253,12 @@ void QueueFlushQueue(uint8_t *pBlock)
 #include <stdio.h>
 #include "ES_General.h"
 
-static ES_Event   TestQueue[3 + 1];
+static ES_Event_t   TestQueue[3 + 1];
 volatile uint8_t  NumLeft; // for debugging visibility
 
 void main(void)
 {
-  ES_Event  MyEvent;
+  ES_Event_t  MyEvent;
   bool      bReturn;
 
   ES_InitQueue(TestQueue, ARRAY_SIZE(TestQueue));

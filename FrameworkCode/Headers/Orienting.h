@@ -4,23 +4,20 @@
  3/17/09  Fixed prototpyes to use Event_t
  ****************************************************************************/
 
-#ifndef CollectingSM_H
-#define CollectingSM_H
-
-#include <stdbool.h>
-#include "ES_Events.h"
+#ifndef HSMTemplate_H
+#define HSMTemplate_H
 
 
 // typedefs for the states
 // State definitions for use with the query function
-typedef enum { Orienting, Driving2Target, Roaming} CollectingState_t ;
+typedef enum { STATE_ZERO, STATE_ONE, STATE_TWO } TemplateState_t ;
 
 
 // Public Function Prototypes
 
-ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent );
-void StartCollectingSM ( ES_Event_t CurrentEvent );
-CollectingState_t QueryCollectingSM ( void );
+ES_Event_t RunTemplateSM( ES_Event_t CurrentEvent );
+void StartTemplateSM ( ES_Event_t CurrentEvent );
+TemplateState_t QueryTemplateSM ( void );
 
-#endif /*CollectingSM_H */
+#endif /*SHMTemplate_H */
 

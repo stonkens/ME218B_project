@@ -152,6 +152,7 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
 							 }
 							 break;
 							 
+               
 							 default:
 							 {;
 							 }
@@ -173,7 +174,7 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
             switch (CurrentEvent.EventType)
             {
                
-               case EV_Recycling_DONE :
+               case EV_RECYCLING_DONE :
                {
                   if(QueryLandFillBalls() != 0)
                   {

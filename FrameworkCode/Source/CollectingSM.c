@@ -56,6 +56,8 @@
 /* include header files for this state machine as well as any machines at the
    next lower level in the hierarchy that are sub-machines to this machine
 */
+#include "OrientingSM.h"
+
 #include "CollectingSM.h"
 
 /*----------------------------- Module Defines ----------------------------*/
@@ -63,7 +65,8 @@
 // and any other local defines
 
 #define ENTRY_STATE Orienting
-
+#define IR_FIRST_DELAY 100
+#define LOCALIZATIONSPEED 100
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
    functions, entry & exit functions.They should be functions relevant to the
@@ -71,6 +74,7 @@
 */
 static ES_Event_t DuringOrienting( ES_Event_t Event);
 static ES_Event_t DuringRoaming(ES_Event_t Event);
+static ES_Event_t DuringDriving2Target(ES_Event_t Event);
 
 /*---------------------------- Module Variables ---------------------------*/
 // everybody needs a state variable, you may need others as well
@@ -111,11 +115,21 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
+              case EV_MOVE_COMPLETED:
+              {
+                  // Execute action function for state one : event one
+                  NextState = Driving2Target;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;
+                
+              }
+							break;
 							 
-							 
-							 default:
-							 {;
-							 }
+              default:
+              {;
+              }
                 // repeat cases as required for relevant events
             }
 
@@ -124,7 +138,51 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
       // repeat state pattern as required for other states
     }
 		break;
-		
+    
+    
+		case Driving2Target:
+		{
+         ReturnEvent = CurrentEvent = DuringDriving2Target(CurrentEvent);
+         //process any events
+         if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
+         {
+            switch (CurrentEvent.EventType)
+            {
+              case EV_TURN_COMPLETED:
+              {
+                //Ready to drive to Target point
+                //DriveStraight(STRAIGHT_SPEED, TargetDistance)
+                
+              }
+              break;
+              
+              case EV_MOVE_COMPLETED:
+              {
+                  
+                
+                // Execute action function for state one : event one
+                NextState = Roaming;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Select new move to start up (Idea: Start from one point and go to others)
+                
+              }
+              break;
+               
+              default:
+              {;
+              }
+                // repeat cases as required for relevant events
+            }
+
+         }
+       
+      // repeat state pattern as required for other states
+		}
+		break;
+				
 		case Roaming:
 		{
          ReturnEvent = CurrentEvent = DuringRoaming(CurrentEvent);
@@ -133,10 +191,23 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
+              case EV_TURN_COMPLETED:
+              {
+                //DriveDistance = X[1]-X[0];
+                //SetDrive(STRAIGHT_SPEED, DriveDistance);
+              }
+              break;
+              
+              case EV_MOVE_COMPLETED:
+              {
+                //Rotate 90 degrees
+                //SetTurn(TURN_SPEED, 90)
+              }
+              break;
                
-							 default:
-               {;
-							 }
+              default:
+              {;
+              }
                 // repeat cases as required for relevant events
             }
 
@@ -230,22 +301,26 @@ static ES_Event_t DuringOrienting( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
-        // implement any entry actions required for this state machine
+      // implement any entry actions required for this state machine
+
+      ES_Timer_InitTimer(LOCALIZE_TIMER,IR_FIRST_DELAY);
+      
+      //Clear previous IR measurements that have been made
+      ClearMeasurements();
+      //Enable IR readings
+      IREnableInterrupt();
+      //Rotate 360 degrees
+      DriveTurn(LOCALIZATIONSPEED, 360);
+      
+      //Start any lower level machines that run in this state
+      StartOrientingSM(Event);
         
-			  // Start turning DC Motors connected to pin PB6 & PB7
-	
-							
-				// StartCollectingGarbageSM(Event);
-			
-				
-        // after that start any lower level machines that run in this state
-        //StartLowerLevelSM( Event );
-        // repeat the StartxxxSM() functions for concurrent state machines
-        // on the lower level
+        
     }
     else if ( Event.EventType == ES_EXIT )
     {
         // on exit, give the lower levels a chance to clean up first
+        RunOrientingSM(Event);
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
         // now do any local exit functionality
@@ -258,16 +333,91 @@ static ES_Event_t DuringOrienting( ES_Event_t Event)
     {
         // run any lower level state machine
         // ReturnEvent = RunLowerLevelSM(Event);
-      
+        ReturnEvent = RunOrientingSM(Event);
         // repeat for any concurrent lower level machines
-      
+        
         // do any activity that is repeated as long as we are in this state
 		}
     // return either Event, if you don't want to allow the lower level machine
     // to remap the current event, or ReturnEvent if you do want to allow it.
     return(ReturnEvent);
 }
+static ES_Event_t DuringDriving2Target(ES_Event_t Event)
+{
+   ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
 
+    // process ES_ENTRY, ES_ENTRY_HISTORY & ES_EXIT events
+    if ( (Event.EventType == ES_ENTRY) ||
+         (Event.EventType == ES_ENTRY_HISTORY) )
+    {
+      //Determine to which target point we are closest
+      XPosition = QueryXPosition();
+      YPosition = QueryYPosition();
+      Heading = QueryHeading();
+      if(XPosition>=0)
+      {
+        if(YPosition>=0)
+        {
+          //Drive to XTarget, YTarget
+          TargetDistance = sqrt((XPosition - XTarget[0])^2 + (YPosition - YTarget[0])^2);
+          //Find angle to rotate
+        }
+        else
+        {
+          //Drive to XTarget, -YTarget
+          TargetDistance = sqrt((XPosition - XTarget[1])^2 + (YPosition - YTarget[1])^2);
+          //Find angle to rotate
+        }
+      }
+      else
+      {
+        if(YPosition>=0)
+        {
+          //Drive to -XTarget, YTarget
+          TargetDistance = sqrt((XPosition - XTarget[2])^2 + (YPosition - YTarget[2])^2);
+          //Find angle to rotate
+        }
+        else
+        {
+          //Drive to -XTarget, -YTarget
+          TargetDistance = sqrt((XPosition - XTarget[3])^2 + (YPosition - YTarget[3])^2);
+          //Find angle to rotate
+        }
+      }
+      
+      //Set rotation equal to angle that we need to rotate
+      
+          
+        
+			
+				
+        // after that start any lower level machines that run in this state
+        //StartLowerLevelSM( Event );
+        // repeat the StartxxxSM() functions for concurrent state machines
+        // on the lower level
+    }
+    else if ( Event.EventType == ES_EXIT )
+    {
+        // on exit, give the lower levels a chance to clean up first
+        //RunLowerLevelSM(Event);
+        // repeat for any concurrently running state machines
+        // now do any local exit functionality
+			
+      
+    }else
+    // do the 'during' function for this state
+    {
+        // run any lower level state machine
+        // ReturnEvent = RunLowerLevelSM(Event);
+      
+        // repeat for any concurrent lower level machines
+      
+        // do any activity that is repeated as long as we are in this state
+    }
+    // return either Event, if you don't want to allow the lower level machine
+    // to remap the current event, or ReturnEvent if you do want to allow it.
+    return(ReturnEvent);
+}  
 
 static ES_Event_t DuringRoaming( ES_Event_t Event)
 {
@@ -277,6 +427,8 @@ static ES_Event_t DuringRoaming( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      //Based on the target we drove and our heading towards it, determine by what angle to turn
+      //DriveTurn(TURN_SPEED, Angle);
         // implement any entry actions required for this state machine
         
 			
@@ -308,3 +460,5 @@ static ES_Event_t DuringRoaming( ES_Event_t Event)
     // to remap the current event, or ReturnEvent if you do want to allow it.
     return(ReturnEvent);
 }
+
+

@@ -296,7 +296,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
      StartMasterSM
 
  Parameters
-     ES_Event CurrentEvent
+     ES_Event_t CurrentEvent
 
  Returns
      nothing

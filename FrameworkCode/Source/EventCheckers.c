@@ -69,7 +69,7 @@ bool Check4Lock(void)
   if ((CurrentPinState != LastPinState) &&
       (CurrentPinState == LOCK_PIN_HI)) // event detected, so post detected event
   {
-    ES_Event ThisEvent;
+    ES_Event_t ThisEvent;
     ThisEvent.EventType   = ES_LOCK;
     ThisEvent.EventParam  = 1;
     // this could be any of the service post function, ES_PostListx or
