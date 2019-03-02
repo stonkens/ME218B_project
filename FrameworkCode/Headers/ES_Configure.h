@@ -284,7 +284,8 @@ typedef enum
 	EV_MOVED_BACK,
 	EV_MOVE_COMPLETED,
 	EV_COMPASS_CLEANING_UP,
-	EV_RECEIVED_COMPASS_ACK
+	EV_RECEIVED_COMPASS_ACK,
+  EV_COMPASS_RECYCLE_CHANGE
 }ES_EventType_t;
 
 /****************************************************************************/

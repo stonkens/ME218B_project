@@ -112,7 +112,20 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-							 
+              case EV_ALIGNED2BEACON:
+              {
+                //Stop driving motors
+                
+                // Execute action function for state one : event one
+                NextState = Driving2Recycle;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Select new move to start up (Idea: Start from one point and go to others)
+                
+              }
+							break; 
 							 default:
 							 {;
 							 }
@@ -133,6 +146,20 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
+              case EV_TAPE_DETECTED:
+              {
+                //Turn around to align with beacon
+                
+         
+                // Execute action function for state one : event one
+                NextState = Driving2Recycle;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Select new move to start up (Idea: Start from one point and go to others)
+              }
+              break;
                
 							 default:
                {;
@@ -272,18 +299,15 @@ static ES_Event_t DuringOrienting2Recycle( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
-        // implement any entry actions required for this state machine
+      // implement any entry actions required for this state machine
         
-			  // Start turning DC Motors connected to pin PB6 & PB7
-	
-							
-				// StartCollectingGarbageSM(Event);
-			
+      // Start rotating (360 degrees but can be interferred)
+      DriveTurn(LOCALIZATION_SPEED, 3600);			
 				
-        // after that start any lower level machines that run in this state
-        //StartLowerLevelSM( Event );
-        // repeat the StartxxxSM() functions for concurrent state machines
-        // on the lower level
+      // after that start any lower level machines that run in this state
+      //StartLowerLevelSM( Event );
+      // repeat the StartxxxSM() functions for concurrent state machines
+      // on the lower level
     }
     else if ( Event.EventType == ES_EXIT )
     {
@@ -320,7 +344,7 @@ static ES_Event_t DuringDriving2Recycle( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
         // implement any entry actions required for this state machine
-        
+        DriveStraight(STRAIGHT_SPEED, 10000);
 			
 				
         // after that start any lower level machines that run in this state

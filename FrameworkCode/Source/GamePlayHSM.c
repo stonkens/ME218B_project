@@ -204,6 +204,8 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
                   }
                }
                break;
+               
+               case EV_COMPASS_
                 
 							 default:
                {;
@@ -226,7 +228,7 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
             switch (CurrentEvent.EventType)
             {
 							 
-               case EV_Landfilling_DONE:
+               case EV_LANDFILLING_DONE:
                {
                   if(QueryRecycleBalls() != 0)
                   {
