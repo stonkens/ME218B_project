@@ -751,7 +751,7 @@ void InitSPI(void)
 	HWREG(NVIC_EN0) |= BIT7HI;
 
 	// Enable interrupts globally
-	__enable_irq();
+	//__enable_irq();
 
 	printf("SSI Initialization Complete \n\r");
 }

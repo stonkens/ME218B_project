@@ -11,6 +11,7 @@
 
 #include "ES_Types.h"
 #include "ES_Configure.h"
+#include "ES_Events.h"
 
 void InitInputCapture(void);
 void IR_ISR(void);

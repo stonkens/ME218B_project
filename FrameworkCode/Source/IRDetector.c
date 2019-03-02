@@ -50,8 +50,8 @@
 #include "DCMotorService.h"//posts to this for testing
 
 /*----------------------------- Module Defines -----------------------------*/
-#define MAX_PERIOD_us 850
-#define MIN_PERIOD_us 450
+#define MAX_PERIOD_us 820
+#define MIN_PERIOD_us 480
 //#define ns_PER_TICK 25
 #define TICKS_PER_us 40
 /*---------------------------- Module Functions ---------------------------*/
@@ -118,9 +118,9 @@ void InitInputCapture(void)
     
 // Then, map bit 1's alternate function to WT2CCP1
 // 7 is the mux value to select WT2CCP1, 16 to shift it over to the
-// right nibble for bit 4 (4 bits/nibble * 4 bits)
+// right nibble for bit 1 (4 bits/nibble * 1 bits)
   HWREG(GPIO_PORTD_BASE + GPIO_O_PCTL) =
-      (HWREG(GPIO_PORTD_BASE + GPIO_O_PCTL) & 0xfff0ffff) + (7 << 16);
+      (HWREG(GPIO_PORTD_BASE + GPIO_O_PCTL) & 0xffffff0f) + (7 << 4);
 // Enable pin 1 on Port D for digital I/O
   HWREG(GPIO_PORTD_BASE + GPIO_O_DEN) |= BIT1HI;
 // make pin 1 on Port D into an input
@@ -138,7 +138,7 @@ void InitInputCapture(void)
 // stall while stopped by the debugger
   HWREG(WTIMER2_BASE + TIMER_O_CTL) |= (TIMER_CTL_TBEN | TIMER_CTL_TBSTALL);
 //global enable: doing it in Initialize Hardware 
-  
+	printf("\r\n InitInputCapture for IR complete");
 }
 
 /****************************************************************************

@@ -165,7 +165,7 @@ ES_Event_t RunEncoderService(ES_Event_t ThisEvent)
       ENCODER_TIMER))
   {
     //printf("\r\n A1_period: %d B1_period: %d",periodInTicks_A1,periodInTicks_B1);
-    printf("\r\n A2_period: %d B2_period: %d",periodInTicks_A2,periodInTicks_B2);
+    //printf("\r\n A2_period: %d B2_period: %d",periodInTicks_A2,periodInTicks_B2);
     ES_Timer_InitTimer(ENCODER_TIMER, ENCODER_TIME);
   }
   //printf("Right before the return\r\n");
