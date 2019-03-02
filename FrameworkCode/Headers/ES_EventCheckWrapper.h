@@ -19,7 +19,7 @@
 #include "EventCheckers.h"
 #include "I2CService.h"
 #include "TestHarnessI2C.h"
-
+//#include "ColorChecker.h"
 // Here you would #include the header files for any other modules that
 // contained event checking functions
 
