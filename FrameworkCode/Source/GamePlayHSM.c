@@ -61,6 +61,7 @@
 #include "CollectingSM.h"
 #include "RecyclingSM.h"
 #include "LandfillingSM.h"
+#include "KeyMapperService.h"
 
 #include "DriveCommandModule.h"
 

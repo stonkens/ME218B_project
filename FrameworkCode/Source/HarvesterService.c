@@ -35,7 +35,7 @@
 #include "DriveMotorPWM.h"
 
 // This module
-#include "DCMotorService.h"
+#include "HarvesterService.h"
 
 /*----------------------------- Module Defines ----------------------------*/
 
@@ -47,7 +47,6 @@
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine.
 */ 
-static void setPickupDuty(uint32_t duty); 
 static void SetHarvesterMotorDutycycle(uint32_t duty); 
 static void RestorePickupDC(void); 
 static void RestoreHarvesterMotorDC(void); 
@@ -55,90 +54,8 @@ static void RestoreHarvesterMotorDC(void);
 
 
 /*---------------------------- Module Variables ---------------------------*/
-static uint8_t    MyPriority;
 /*------------------------------ Module Code ------------------------------*/
-/****************************************************************************
- Function
-     InitDCMotorService
 
- Parameters
-     uint8_t: the priority of this service
-
- Returns
-     bool, false if error in initialization, true otherwise
-
- Description
-     Saves away the priority, sets up the initial transition and determines
-     Drive type. Initializes PWM lines and sets enable lines as output.
- Notes
-
- Author
-
-****************************************************************************/
-bool InitDCMotorService(uint8_t Priority)
-{
-  ES_Event_t ThisEvent;
-
-  MyPriority = Priority;
-
-  // Initialize HW for PWM lines will be done in InitializeHardware.c
-  //InitHarvesterMotor();
-  ThisEvent.EventType = ES_INIT;
-  if (ES_PostToService(MyPriority, ThisEvent) == true)
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
-/****************************************************************************
- Function
-     PostDCMotorService
-
- Parameters
-     EF_Event ThisEvent , the event to post to the queue
-
- Returns
-     boolean False if the Enqueue operation failed, True otherwise
-
- Description
-     Posts an event to this state machine's queue
- Notes
-
- Author
-
-****************************************************************************/
-
-bool PostDCMotorService(ES_Event_t ThisEvent)
-{
-  return ES_PostToService(MyPriority, ThisEvent);
-}
-
-/****************************************************************************
- Function
-    RunDCMotorService
-
- Parameters
-   ES_Event: the event to process
-
- Returns
-   ES_Event, ES_NO_EVENT if no error ES_ERROR otherwise
-
- Description
-   Regulates commands, and sets motors accordingly
- Notes
-
- Author
-****************************************************************************/
-ES_Event_t RunDCMotorService(ES_Event_t ThisEvent)
-{
-  ES_Event_t ReturnEvent;
-  ReturnEvent.EventType = ES_NO_EVENT; // assume no errors
-  return ReturnEvent;
-}
 
 /****************************************************************************
  Function
@@ -156,13 +73,13 @@ ES_Event_t RunDCMotorService(ES_Event_t ThisEvent)
 
  Author
 ****************************************************************************/
-void startPickupMotor(uint32_t DutyCycle){
-  setPickupDuty(DutyCycle); 
-}
+//void startPickupMotor(uint32_t DutyCycle){
+//  setPickupDuty(DutyCycle); 
+//}
 
-void stopPickupMotor(){
-  setPickupDuty(0); 
-} 
+//void stopPickupMotor(){
+//  setPickupDuty(0); 
+//} 
 
 void StartHarvesterMotor(uint32_t DutyCycle){
   SetHarvesterMotorDutycycle(DutyCycle); 

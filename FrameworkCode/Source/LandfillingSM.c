@@ -56,7 +56,7 @@
 /* include header files for this state machine as well as any machines at the
    next lower level in the hierarchy that are sub-machines to this machine
 */
-#include "LandfillingSMSM.h"
+#include "LandfillingSM.h"
 
 #include "DriveCommandModule.h"
 

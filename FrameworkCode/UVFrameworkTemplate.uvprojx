@@ -502,6 +502,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\HarvesterService.c</FilePath>
             </File>
+            <File>
+              <FileName>GP_Display.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\GP_Display.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -746,6 +751,11 @@
               <FileName>HarvesterService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\HarvesterService.h</FilePath>
+            </File>
+            <File>
+              <FileName>GP_Display.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\GP_Display.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1454,6 +1464,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\HarvesterService.c</FilePath>
             </File>
+            <File>
+              <FileName>GP_Display.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\GP_Display.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1698,6 +1713,11 @@
               <FileName>HarvesterService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\HarvesterService.h</FilePath>
+            </File>
+            <File>
+              <FileName>GP_Display.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\GP_Display.h</FilePath>
             </File>
           </Files>
         </Group>
