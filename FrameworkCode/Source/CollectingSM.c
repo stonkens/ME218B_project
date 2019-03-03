@@ -430,7 +430,7 @@ static ES_Event_t DuringDriving2Target(ES_Event_t Event)
       }
       
       //Set rotation equal to angle that we need to rotate
-      
+      DriveRotate(TURNING_SPEED, PLACEHOLDER_ANGLE);
           
         
 			
@@ -496,6 +496,7 @@ static ES_Event_t DuringRoaming( ES_Event_t Event)
     }else
     // do the 'during' function for this state
     {
+
         // run any lower level state machine
         // ReturnEvent = RunLowerLevelSM(Event);
       

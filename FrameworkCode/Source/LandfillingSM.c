@@ -1,6 +1,6 @@
 /****************************************************************************
  Module
-   LandFilling.c
+   LandfillingSM.c
 
  Revision
    2.0.1
@@ -56,7 +56,7 @@
 /* include header files for this state machine as well as any machines at the
    next lower level in the hierarchy that are sub-machines to this machine
 */
-#include "LandFillingSM.h"
+#include "LandfillingSMSM.h"
 
 #include "DriveCommandModule.h"
 
@@ -84,7 +84,7 @@ static LandfillingState_t CurrentState;
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
  Function
-    RunLandFilling
+    RunLandfillingSM
 
  Parameters
    ES_Event_t: the event to process
@@ -99,7 +99,7 @@ static LandfillingState_t CurrentState;
  Author
    J. Edward Carryer, 2/11/05, 10:45AM
 ****************************************************************************/
-ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
+ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent )
 {
    bool MakeTransition = false;/* are we making a state transition? */
    LandfillingState_t NextState = CurrentState;
@@ -287,19 +287,19 @@ ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
     {
        //   Execute exit function for current state
        CurrentEvent.EventType = ES_EXIT;
-       RunLandFilling(CurrentEvent);
+       RunLandfillingSM(CurrentEvent);
 
        CurrentState = NextState; //Modify state variable
 
        //   Execute entry function for new state
        // this defaults to ES_ENTRY
-       RunLandFilling(EntryEventKind);
+       RunLandfillingSM(EntryEventKind);
      }
      return(ReturnEvent);
 }
 /****************************************************************************
  Function
-     StartLandFilling
+     StartLandfillingSM
 
  Parameters
      None
@@ -314,7 +314,7 @@ ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
  Author
      J. Edward Carryer, 2/18/99, 10:38AM
 ****************************************************************************/
-void StartLandFilling ( ES_Event_t CurrentEvent )
+void StartLandfillingSM ( ES_Event_t CurrentEvent )
 {
    // to implement entry to a history state or directly to a substate
    // you can modify the initialization of the CurrentState variable
@@ -325,7 +325,7 @@ void StartLandFilling ( ES_Event_t CurrentEvent )
         CurrentState = ENTRY_STATE;
    }
    // call the entry function (if any) for the ENTRY_STATE
-   RunLandFilling(CurrentEvent);
+   RunLandfillingSM(CurrentEvent);
 }
 
 /****************************************************************************
@@ -345,7 +345,7 @@ void StartLandFilling ( ES_Event_t CurrentEvent )
  Author
      J. Edward Carryer, 2/11/05, 10:38AM
 ****************************************************************************/
-LandfillingState_t QueryLandFilling(void)
+LandfillingState_t QueryLandfillingSM(void)
 {
    return CurrentState;
 }

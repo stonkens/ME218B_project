@@ -23,6 +23,7 @@
 
 
 #define QUARTER_TURN            900
+#define PLACEHOLDER_ANGLE       900
 
 void Drive_Control_Init(void);
 void DriveStraight(float MaxRPM, float distancex100);

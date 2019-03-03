@@ -58,6 +58,12 @@
 */
 #include "GamePlayHSM.h"
 
+#include "CollectingSM.h"
+#include "RecyclingSM.h"
+#include "LandfillingSM.h"
+
+#include "DriveCommandModule.h"
+
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
 // and any other local defines
@@ -358,6 +364,7 @@ static ES_Event_t DuringCollectingGarbage( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      StartCollectingSM(Event);
         // implement any entry actions required for this state machine
         
 			  // Start turning DC Motors connected to pin PB6 & PB7
@@ -373,6 +380,8 @@ static ES_Event_t DuringCollectingGarbage( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
+      RunCollectingSM(Event);
+      StopDrive();
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
@@ -384,6 +393,7 @@ static ES_Event_t DuringCollectingGarbage( ES_Event_t Event)
     }else
     // do the 'during' function for this state
     {
+      ReturnEvent = RunCollectingSM(Event);
         // run any lower level state machine
         // ReturnEvent = RunLowerLevelSM(Event);
       
@@ -405,6 +415,7 @@ static ES_Event_t DuringRecycling( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      StartRecyclingSM(Event);
         // implement any entry actions required for this state machine
         
 			
@@ -416,6 +427,9 @@ static ES_Event_t DuringRecycling( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
+      RunRecyclingSM(Event);
+      StopDrive();
+      
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
@@ -425,6 +439,7 @@ static ES_Event_t DuringRecycling( ES_Event_t Event)
     }else
     // do the 'during' function for this state
     {
+      ReturnEvent = RunRecyclingSM(Event);
         // run any lower level state machine
         // ReturnEvent = RunLowerLevelSM(Event);
       
@@ -445,6 +460,7 @@ static ES_Event_t DuringLandfilling( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      StartLandfillingSM(Event);
         // implement any entry actions required for this state machine
         
 			
@@ -456,8 +472,9 @@ static ES_Event_t DuringLandfilling( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
+      StopDrive();
         // on exit, give the lower levels a chance to clean up first
-        //RunLowerLevelSM(Event);
+      RunLandfillingSM(Event);
         // repeat for any concurrently running state machines
         // now do any local exit functionality
 			
@@ -465,6 +482,7 @@ static ES_Event_t DuringLandfilling( ES_Event_t Event)
     }else
     // do the 'during' function for this state
     {
+      ReturnEvent = RunLandfillingSM(Event);
         // run any lower level state machine
         // ReturnEvent = RunLowerLevelSM(Event);
       

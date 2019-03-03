@@ -4,8 +4,8 @@
  3/17/09  Fixed prototpyes to use Event_t
  ****************************************************************************/
 
-#ifndef LandFilling_H
-#define LandFilling_H
+#ifndef LandfillingSM_H
+#define LandfillingSM_H
 
 #include <stdbool.h>
 #include "ES_Events.h"
@@ -17,9 +17,9 @@ typedef enum { Orienting2Landfill, Driving2Landfill, ApproachingLandfill, Prepar
 
 // Public Function Prototypes
 
-ES_Event_t RunLandFilling( ES_Event_t CurrentEvent );
-void StartLandFilling ( ES_Event_t CurrentEvent );
-LandfillingState_t QueryLandFilling ( void );
+ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent );
+void StartLandfillingSM ( ES_Event_t CurrentEvent );
+LandfillingState_t QueryLandfillingSM ( void );
 
 #endif /*LandFilling_H */
 
