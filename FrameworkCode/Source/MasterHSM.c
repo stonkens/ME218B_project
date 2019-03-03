@@ -36,12 +36,16 @@
 */
 #include "ES_Configure.h"
 #include "ES_Framework.h"
+#include "InitializeHardware.h"
 #include "MasterHSM.h"
 
+#include "SPISM.h"
+
 // Header files for state machines at the next lower level in the hierarchy
-#include "WaitingForStartHSM.h"
 #include "GamePlayHSM.h"
 #include "CollisionAvoidanceHSM.h"
+
+
 
 // the headers to access the GPIO subsystem
 #include "inc/hw_memmap.h"
@@ -68,7 +72,7 @@ static ES_Event_t DuringCollisionAvoidance (ES_Event_t Event);
 static MasterState_t CurrentState;
 // with the introduction of Gen2, we need a module level Priority var as well
 static uint8_t MyPriority;
-
+static uint8_t OurTeam;
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
  Function
@@ -98,11 +102,25 @@ bool InitMasterSM ( uint8_t Priority )
   // Start the Master State machine
 
 	//Initialize North/South team designation
-	
+	OurTeam = HWREG(GPIO_PORTE_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT3HI;
+  
+  if (OurTeam == TEAM_NORTH)
+  {
+    printf("\r\n Go Team North\r\n");
+  }
+  else
+  {
+    printf("\r\n Go Team South\r\n");
+  }
+  
+  //The SSI communication service can start
+  SetReady2Communicate(true);
+  
 	//Stop all motors
+	StopAllMovingParts();
+	//"Close" all servos: TO BE DONE
 	
-	//"Close" all servos
-	
+  
   StartMasterSM( ThisEvent );
 
   return true;
@@ -169,6 +187,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
             {
                case EV_COMPASS_CLEANING_UP : //If event is event one
 							 {
+                 printf("\r\n Master Acknowledges Start of Game\r\n");
                   // Execute action function for state one : event one
                   NextState = GamePlay;//Decide what the next state will be
                   // for internal transitions, skip changing MakeTransition
@@ -182,7 +201,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
 							 }
 							 break;
 							 
-							 case ES_GAME_OVER:
+							 case EV_COMPASS_GAME_OVER:
 							 {
 								 NextState = GameEnded;
 								 MakeTransition = true;
@@ -206,7 +225,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-               case ES_BUMPER_HIT : //If event is event one
+               case EV_BUMPER_HIT : //If event is event one
 							 {
                   // Execute action function for state one : event one
                   NextState = CollisionAvoidance;//Decide what the next state will be
@@ -253,7 +272,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
 							 }
 							 break;
 							 
-							 case ES_GAME_OVER :
+							 case EV_COMPASS_GAME_OVER :
 							 {
 								 NextState = GameEnded;
 								 MakeTransition = true;
@@ -339,7 +358,6 @@ static ES_Event_t DuringWaitingForStart( ES_Event_t Event)
         // repeat the StartxxxSM() functions for concurrent state machines
         // on the lower level
 			
-			StartWaitingForStartSM(Event);
     }
     else if ( Event.EventType == ES_EXIT )
     {
@@ -349,7 +367,6 @@ static ES_Event_t DuringWaitingForStart( ES_Event_t Event)
         // repeat for any concurrently running state machines
         // now do any local exit functionality
 			
-			RunWaitingForStartSM(Event);
       //if NextState
     }
 		
@@ -358,8 +375,6 @@ static ES_Event_t DuringWaitingForStart( ES_Event_t Event)
     {
         // run any lower level state machine
         // ReturnEvent = RunLowerLevelSM(Event);
-      
-			ReturnEvent = RunWaitingForStartSM(Event);
         // repeat for any concurrent lower level machines
       
         // do any activity that is repeated as long as we are in this state
@@ -402,16 +417,16 @@ static ES_Event_t DuringCollisionAvoidance(ES_Event_t Event)
       (Event.EventType == ES_ENTRY_HISTORY))
   {
 		
-		//StartCollisionAvoidanceSM(Event);
+		StartCollisionAvoidanceSM(Event);
 	}
 	else if (Event.EventType == ES_EXIT)
 	{
-		//RunCollisionAvoidanceSM(Event);
+		RunCollisionAvoidanceSM(Event);
 	}
 	//During function for this state
 	else
 	{
-		//ReturnEvent = RunCollisionAvoidanceSM(Event);
+		ReturnEvent = RunCollisionAvoidanceSM(Event);
 	}
 	return ReturnEvent;
 	
@@ -425,25 +440,29 @@ static ES_Event_t DuringGameEnded (ES_Event_t Event)
   if ((Event.EventType == ES_ENTRY) ||
       (Event.EventType == ES_ENTRY_HISTORY))
   {
-		
-		//Stop moving all parts (set all moving parts down)
-		//Disable all interrupts
-		
+    //Stop moving all parts (set all moving parts down)	
+    StopAllMovingParts();
+    
 		//Turn off all LEDs
-		
-		//StartGameEndedSM(Event);
+    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0HI;
+    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1HI;  
 	}
 	else if (Event.EventType == ES_EXIT)
 	{
-		//RunGameEndedSM(Event);
 	}
 	//During function for this state
 	else
 	{
-		//ReturnEvent = RunGameEndedSM(Event);
 	}
 	
 	return ReturnEvent;
 		
 }
+
+
+uint8_t QueryTeam(void)
+{
+  return OurTeam;
+}
+
 

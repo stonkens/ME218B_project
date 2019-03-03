@@ -66,8 +66,6 @@
 
 #define SPI_INITIALIZING 0xFF
 
-#define TEAM_NORTH 1
-#define TEAM_SOUTH 0
 
 #define EAST_RECYCLE 2
 #define WEST_RECYCLE 3
@@ -125,8 +123,23 @@ static uint16_t AssignedFrequency;
 
 static uint8_t TeamSwitchValue;
 
+static bool Ready2Communicate = false;
 
 /*------------------------------ Module Code ------------------------------*/
+
+void SetReady2Communicate(bool CommunicateReady)
+{
+  if (CommunicateReady == true)
+  {
+    Ready2Communicate = true;
+  }
+  else
+  {
+    Ready2Communicate = false;
+  }
+}  
+                                       
+                                       
 /****************************************************************************
  Function
      InitSPISM
@@ -169,33 +182,7 @@ bool InitSPISM(uint8_t Priority)
 	
   AssignedFrequency = 0xFFFF;
 
-  TeamSwitchValue = TEAM_SOUTH;
-  printf("Go Team:%d \r\n", TeamSwitchValue);
-	
-  if (TeamSwitchValue == TEAM_NORTH)
-  {
-    //Set REG byte and expected ACK byte accordingly
-    RegistrationByte = REG_NORTH;
-		//RegCmd = REG_NORTH;
-    ExpectedAckByte = ACK_NORTH;
-
-    LeftRecycleFrequency = EAST_RECYCLE_FREQUENCY;
-    RightRecycleFrequency = WEST_RECYCLE_FREQUENCY;
-  }
-
-  else if (TeamSwitchValue == TEAM_SOUTH)
-  {
-    //Set REG byte and expected ACK byte accordingly
-    RegistrationByte = REG_SOUTH;
-		//RegCmd = REG_SOUTH;
-    ExpectedAckByte = ACK_SOUTH; 
-
-    LeftRecycleFrequency = WEST_RECYCLE_FREQUENCY;
-    RightRecycleFrequency = EAST_RECYCLE_FREQUENCY;
-  }
-
   //Start Timer to start sending messages to COMPASS
-	
 	ES_Timer_InitTimer(SPI_TIMER, SPI_QUERYTIME);
   //disable interrupt
   HWREG(SSI0_BASE + SSI_O_IM) &= ~SSI_IM_TXIM;
@@ -271,11 +258,38 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
       if((ThisEvent.EventType == ES_TIMEOUT) && 
         (ThisEvent.EventParam == SPI_TIMER))
       {
-				printf("Writing to SPI \r\n");
-        WriteToSPI(RegistrationByte);
+        if(Ready2Communicate == true)
+        {
+          if (QueryTeam() == TEAM_NORTH)
+          {
+            //Set REG byte and expected ACK byte accordingly
+            RegistrationByte = REG_NORTH;
+            //RegCmd = REG_NORTH;
+            ExpectedAckByte = ACK_NORTH;
 
-      }
-      else if (ThisEvent.EventType == RESPONSE_RECEIVED)
+            LeftRecycleFrequency = EAST_RECYCLE_FREQUENCY;
+            RightRecycleFrequency = WEST_RECYCLE_FREQUENCY;
+          }
+
+          else if (QueryTeam() == TEAM_SOUTH)
+          {
+            //Set REG byte and expected ACK byte accordingly
+            RegistrationByte = REG_SOUTH;
+            //RegCmd = REG_SOUTH;
+            ExpectedAckByte = ACK_SOUTH; 
+
+            LeftRecycleFrequency = WEST_RECYCLE_FREQUENCY;
+            RightRecycleFrequency = EAST_RECYCLE_FREQUENCY;
+          }         
+            printf("Writing to SPI \r\n");
+            WriteToSPI(RegistrationByte);
+          }
+        else 
+        {
+          ES_Timer_InitTimer(SPI_TIMER, SPI_QUERYTIME);
+        }
+      }          
+      else if (ThisEvent.EventType == EV_COMPASS_RESPONSE_RECEIVED)
       {
 				printf("Response received \r\n");
         //Bits 2&3 have to be masked, as ACK byte is unknown
@@ -302,13 +316,13 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
     }
     break;
     
-	case QueryTeamInfo:
+    case QueryTeamInfo:
     {
       if ((ThisEvent.EventType == ES_TIMEOUT) && (ThisEvent.EventParam == SPI_TIMER))
       {
         WriteToSPI(TeamInfoTxByte);
 	    }
-	    else if (ThisEvent.EventType == RESPONSE_RECEIVED)
+	    else if (ThisEvent.EventType == EV_COMPASS_RESPONSE_RECEIVED)
       {
 				TeamStatusByte = ThisEvent.EventParam;
 				
@@ -328,14 +342,14 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
     }
     break;
 	
-	case QueryingStatus:
+    case QueryingStatus:
     {
       if ((ThisEvent.EventType == ES_TIMEOUT) && 
         (ThisEvent.EventParam == SPI_TIMER))
       {
         WriteToSPI(GameStatusTxByte);
 	    }
-	    else if (ThisEvent.EventType == RESPONSE_RECEIVED)
+	    else if (ThisEvent.EventType == EV_COMPASS_RESPONSE_RECEIVED)
       {
 				GameStatusByte = ThisEvent.EventParam;
 				CurrentGameState = (GameStatusByte & (BIT0HI|BIT1HI));
@@ -354,7 +368,7 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
           (LastGameState == WAITING_FOR_START))
         {
           printf("Game Started; event not posted\n\r");
-          CommunicationEvent.EventType = ES_CLEANING_UP;
+          CommunicationEvent.EventType = EV_COMPASS_CLEANING_UP;
           //Change To Master SM
           PostMasterSM(CommunicationEvent);
           
@@ -365,7 +379,7 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
           (LastGameState == RECYCLING))
         {
           printf("Game Over; event not posted\n\r");
-          CommunicationEvent.EventType = ES_GAME_OVER;
+          CommunicationEvent.EventType = EV_COMPASS_GAME_OVER;
           PostMasterSM(CommunicationEvent);
         }
         
@@ -388,14 +402,14 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
     }
     break;
 	
-	case QueryingValue:
+    case QueryingValue:
     {
       if ((ThisEvent.EventType == ES_TIMEOUT) && 
         (ThisEvent.EventParam == SPI_TIMER))
       {
         WriteToSPI(ValueTxByte);
 	    }  
-	    else if (ThisEvent.EventType == RESPONSE_RECEIVED)
+	    else if (ThisEvent.EventType == EV_COMPASS_RESPONSE_RECEIVED)
       {
         ValueByte = ThisEvent.EventParam;
       }
@@ -412,7 +426,8 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
     break;
 	
     default:
-      ;
+    {;
+    }
   }                                   // end switch on Current State
   
   CurrentState = NextState;
@@ -450,7 +465,7 @@ void SPIISRResponse(void)
 
   //Post message to SPI SM
   ES_Event_t ThisEvent;
-  ThisEvent.EventType = RESPONSE_RECEIVED;
+  ThisEvent.EventType = EV_COMPASS_RESPONSE_RECEIVED;
   ThisEvent.EventParam = ResponseMessage;
   PostSPISM(ThisEvent);
 

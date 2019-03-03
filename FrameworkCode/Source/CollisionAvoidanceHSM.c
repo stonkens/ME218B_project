@@ -78,7 +78,7 @@ static CollisionAvoidanceState_t CurrentState;
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
  Function
-    RunCollisionAvoidanceHSM
+    RunCollisionAvoidanceSM
 
  Parameters
    ES_Event_t: the event to process
@@ -93,7 +93,7 @@ static CollisionAvoidanceState_t CurrentState;
  Author
    J. Edward Carryer, 2/11/05, 10:45AM
 ****************************************************************************/
-ES_Event_t RunCollisionAvoidanceHSM( ES_Event_t CurrentEvent )
+ES_Event_t RunCollisionAvoidanceSM( ES_Event_t CurrentEvent )
 {
    bool MakeTransition = false;/* are we making a state transition? */
    CollisionAvoidanceState_t NextState = CurrentState;
@@ -149,19 +149,19 @@ ES_Event_t RunCollisionAvoidanceHSM( ES_Event_t CurrentEvent )
     {
        //   Execute exit function for current state
        CurrentEvent.EventType = ES_EXIT;
-       RunCollisionAvoidanceHSM(CurrentEvent);
+       RunCollisionAvoidanceSM(CurrentEvent);
 
        CurrentState = NextState; //Modify state variable
 
        //   Execute entry function for new state
        // this defaults to ES_ENTRY
-       RunCollisionAvoidanceHSM(EntryEventKind);
+       RunCollisionAvoidanceSM(EntryEventKind);
      }
      return(ReturnEvent);
 }
 /****************************************************************************
  Function
-     StartCollisionAvoidanceHSM
+     StartCollisionAvoidanceSM
 
  Parameters
      None
@@ -176,7 +176,7 @@ ES_Event_t RunCollisionAvoidanceHSM( ES_Event_t CurrentEvent )
  Author
      J. Edward Carryer, 2/18/99, 10:38AM
 ****************************************************************************/
-void StartCollisionAvoidanceHSM ( ES_Event_t CurrentEvent )
+void StartCollisionAvoidanceSM ( ES_Event_t CurrentEvent )
 {
    // to implement entry to a history state or directly to a substate
    // you can modify the initialization of the CurrentState variable
@@ -187,7 +187,7 @@ void StartCollisionAvoidanceHSM ( ES_Event_t CurrentEvent )
         CurrentState = ENTRY_STATE;
    }
    // call the entry function (if any) for the ENTRY_STATE
-   RunCollisionAvoidanceHSM(CurrentEvent);
+   RunCollisionAvoidanceSM(CurrentEvent);
 }
 
 /****************************************************************************
@@ -256,7 +256,7 @@ static ES_Event_t DuringMovingBackwards( ES_Event_t Event)
 					ReturnEvent.EventType = EV_MOVED_BACK;
 				}
 				
-				else if (Event.EventType == ES_BUMPER_HIT)
+				else if (Event.EventType == EV_BUMPER_HIT)
 				{
 					//Decide what to do if the bumper is hit again
 				}

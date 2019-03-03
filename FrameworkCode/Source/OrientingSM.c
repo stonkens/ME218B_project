@@ -173,7 +173,7 @@ ES_Event_t RunOrientingSM( ES_Event_t CurrentEvent )
                //restart measurement delay timer
               ES_Timer_InitTimer(LOCALIZE_TIMER,IR_MEASURE_DELAY);
                //record found frequency
-              LastFrequency = IR_getPeriod();
+              LastFrequency = IRGetPeriod();
                //if non-zero, record measurement at current angle
               if( LastRunCount != IRGetRunCount() )
               {

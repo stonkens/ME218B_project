@@ -17,8 +17,8 @@ typedef enum { MovingBackwards} CollisionAvoidanceState_t ;
 
 // Public Function Prototypes
 
-ES_Event_t RunCollisionAvoidanceHSM( ES_Event_t CurrentEvent );
-void StartCollisionAvoidanceHSM ( ES_Event_t CurrentEvent );
+ES_Event_t RunCollisionAvoidanceSM( ES_Event_t CurrentEvent );
+void StartCollisionAvoidanceSM ( ES_Event_t CurrentEvent );
 CollisionAvoidanceState_t QueryCollisionAvoidanceHSM ( void );
 
 #endif /*CollisionAvoidanceHSM_H */

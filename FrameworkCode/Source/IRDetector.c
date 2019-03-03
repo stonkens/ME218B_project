@@ -245,7 +245,7 @@ void IR_ISR(void){
 
 /****************************************************************************
  Function
-   IR_getPeriod(void)
+   IRGetPeriod(void)
 
  Parameters
   nothing
@@ -262,7 +262,7 @@ void IR_ISR(void){
 Hyun Joo Lee 15:33 02/27/2019 Started function
 
 ****************************************************************************/
-uint32_t IR_getPeriod(void){
+uint32_t IRGetPeriod(void){
     return Validated_LastPeriod_us;
 }
 
@@ -341,7 +341,7 @@ void IREnableInterrupt(void){
 //bool IR_found(void){
 //  bool ReturnVal=false;
 //  uint32_t FoundPeriod;
-//  FoundPeriod=IR_getPeriod();
+//  FoundPeriod=IRGetPeriod();
 //  if((FoundPeriod >790)&&(FoundPeriod<810))
 //  {
 //    ES_Event_t ThisEvent;

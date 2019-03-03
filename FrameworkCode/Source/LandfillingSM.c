@@ -169,7 +169,7 @@ ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
               break; 
               
               
-              //Improvement: Add in case for ES_BUMPER_HIT
+              //Improvement: Add in case for EV_BUMPER_HIT
               //This would then depend on the position we are on the field              
 							default:
               {;
@@ -191,7 +191,7 @@ ES_Event_t RunLandFilling( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-              case ES_BUMPER_HIT:
+              case EV_BUMPER_HIT:
               {
                 // Execute action function for state one : event one
                 NextState = Preparing4Landfill;//Decide what the next state will be

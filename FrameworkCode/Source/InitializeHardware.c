@@ -36,7 +36,7 @@
 #include "ADMulti.h"
 //#include "CommunicationSSI.h"
 #include "DriveMotorPWM.h"
-#include "DCMotorService.h"
+#include "HarvesterService.h"
 #include "SPISM.h"
 #include "IREmitter.h"
 #include "EncoderCapture.h"
@@ -52,7 +52,8 @@
 /* prototypes for private functions for this service.They should be functions
    relevant to the behavior of this service
 */
-static void InitializePorts(void);
+static void InitializeAllPorts(void);
+static void InitializeRegularGPIOPorts(void);
 
 /*---------------------------- Module Variables ---------------------------*/
 
@@ -78,10 +79,11 @@ static void InitializePorts(void);
 
 void InitializeHardware(void)
 {
-  InitializePorts();
+  
+  InitializeAllPorts();
 	InitSPI();
   InitEmitterPWM();
-	InitDCPWM();
+	InitHarvesterMotor();
   InitDriveMotor();
   //InitDrvieMotorPWM();
   Enc_Init();
@@ -93,56 +95,75 @@ void InitializeHardware(void)
   //InitializeADC();
 }
 
+void StopAllMovingParts(void)
+{
+  StopDrive();
+  StopHarvesterMotor();
+}
+
+
 /***************************************************************************
  private functions
  ***************************************************************************/
 
-static void InitializePorts(void)
-{
-  // Set bit1 and enable port B
-  HWREG(SYSCTL_RCGCGPIO) |= SYSCTL_RCGCGPIO_R1;
+static void InitializeAllPorts(void)
+{  
+  // Enable Port A
+  HWREG(SYSCTL_RCGCGPIO) |= SYSCTL_RCGCGPIO_R0;  
+  // Wait for peripheral A to be ready
+  while ((HWREG(SYSCTL_PRGPIO) & SYSCTL_PRGPIO_R0) != SYSCTL_PRGPIO_R0)
+  {;
+  }
 
+  //Enable Port B
+  HWREG(SYSCTL_RCGCGPIO) |= SYSCTL_RCGCGPIO_R1;
   // Wait for peripheral B to be ready
   while ((HWREG(SYSCTL_PRGPIO) & SYSCTL_PRGPIO_R1) != SYSCTL_PRGPIO_R1)
-  {
-    ;
+  {;
   }
-
-  // Set PB2 to usable pins: TapeDetection
-  HWREG(GPIO_PORTB_BASE + GPIO_O_DEN) |= (BIT2HI);
-
-  // Set PB2 to input: TapeDetection
-  HWREG(GPIO_PORTB_BASE + GPIO_O_DIR) &= (BIT2LO);
   
-    
-  // Set bit3 and enable port D
+  //Enable Port C
+  HWREG(SYSCTL_RCGCGPIO) |= SYSCTL_RCGCGPIO_R2;
+  // Wait for peripheral C to be ready
+  while ((HWREG(SYSCTL_PRGPIO) & SYSCTL_PRGPIO_R2) != SYSCTL_PRGPIO_R2)
+  {;
+  }
+  
+  //Enable Port D
   HWREG(SYSCTL_RCGCGPIO) |= SYSCTL_RCGCGPIO_R3;
-
   // Wait for peripheral D to be ready
   while ((HWREG(SYSCTL_PRGPIO) & SYSCTL_PRGPIO_R3) != SYSCTL_PRGPIO_R3)
-  {
-    ;
-  }
-  
-  // Set PD2 to input: Bumper Front, Right, Back, Left
-  //printf("initD");
-    HWREG(GPIO_PORTD_BASE + GPIO_O_DEN) |= (BIT2HI | BIT3HI | BIT6HI | BIT7HI);
+  {;
+  }  
 
-  // Set PD2 to input: Bumper Front, Right, Back, Left
-  HWREG(GPIO_PORTD_BASE + GPIO_O_DIR) &= (BIT2LO & BIT3LO & BIT6LO & BIT7LO);
-
-// Set bit 4 and enable port E
+  //Enable Port E
   HWREG(SYSCTL_RCGCGPIO) |= SYSCTL_RCGCGPIO_R4;
-
-// Wait for peripheral E to be ready
+  // Wait for peripheral E to be ready
   while ((HWREG(SYSCTL_PRGPIO) & SYSCTL_PRGPIO_R4) != SYSCTL_PRGPIO_R4)
-  {
-    ;
-  }
+  {;
+  } 
 
-  // Set PE0 to usable pins: Old version of IRBeacon
-  HWREG(GPIO_PORTE_BASE + GPIO_O_DEN) |= (BIT0HI);
+  //Enable Port F
+  HWREG(SYSCTL_RCGCGPIO) |= SYSCTL_RCGCGPIO_R5;
+  // Wait for peripheral F to be ready
+  while ((HWREG(SYSCTL_PRGPIO) & SYSCTL_PRGPIO_R5) != SYSCTL_PRGPIO_R5)
+  {;
+  }  
+}
 
-  // Set PE0 to input: old version of IRBeacon
-  HWREG(GPIO_PORTE_BASE + GPIO_O_DIR) &= (BIT0LO);
+static void InitializeRegularGPIOPorts(void)
+{
+  //Set PB0 & PB1 as a digital output
+  HWREG(GPIO_PORTB_BASE + GPIO_O_DEN) |= (BIT0HI | BIT1HI);
+  HWREG(GPIO_PORTB_BASE + GPIO_O_DIR) |= (BIT1HI | BIT2HI);
+
+  //Intially set them as low
+  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0HI;
+  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1HI;  
+  
+  //Set PE1, PE2 and PE3 as digital inputs
+  HWREG(GPIO_PORTE_BASE + GPIO_O_DEN) |= (BIT1HI | BIT2HI | BIT3HI);
+  HWREG(GPIO_PORTE_BASE + GPIO_O_DIR) &= BIT1LO; 
+  HWREG(GPIO_PORTE_BASE + GPIO_O_DIR) &= BIT2LO;
+  HWREG(GPIO_PORTE_BASE + GPIO_O_DIR) &= BIT3LO;
 }

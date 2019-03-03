@@ -10,7 +10,7 @@
    (finds the frequency of the emitter and pulses at twice that frequency)
 
  Author
-   Obi Onyemepu
+   Sander Tonkens
 ****************************************************************************/
 /*----------------------------- Include Files -----------------------------*/
 /* include header files for this state machine as well as any machines at the

@@ -433,11 +433,6 @@
               <FilePath>.\Source\IREmitter.c</FilePath>
             </File>
             <File>
-              <FileName>DCMotorService.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\DCMotorService.c</FilePath>
-            </File>
-            <File>
               <FileName>Triangulation.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\Triangulation.c</FilePath>
@@ -461,16 +456,6 @@
               <FileName>MotorSpeedControl.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\MotorSpeedControl.c</FilePath>
-            </File>
-            <File>
-              <FileName>PickupMotorService.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\PickupMotorService.c</FilePath>
-            </File>
-            <File>
-              <FileName>TransportMotorService.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\TransportMotorService.c</FilePath>
             </File>
             <File>
               <FileName>IRDetector.c</FileName>
@@ -513,9 +498,9 @@
               <FilePath>.\Source\RecyclingSM.c</FilePath>
             </File>
             <File>
-              <FileName>WaitingForStartHSM.c</FileName>
+              <FileName>HarvesterService.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Source\WaitingForStartHSM.c</FilePath>
+              <FilePath>.\Source\HarvesterService.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -678,11 +663,6 @@
               <FilePath>.\Headers\IREmitter.h</FilePath>
             </File>
             <File>
-              <FileName>DCMotorService.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\DCMotorService.h</FilePath>
-            </File>
-            <File>
               <FileName>Triangulation.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\Triangulation.h</FilePath>
@@ -718,19 +698,9 @@
               <FilePath>.\Headers\MotorSpeedControl.h</FilePath>
             </File>
             <File>
-              <FileName>PickupMotorService.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\PickupMotorService.h</FilePath>
-            </File>
-            <File>
               <FileName>TestHarnessService0.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\TestHarnessService0.h</FilePath>
-            </File>
-            <File>
-              <FileName>TransportMotorService.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TransportMotorService.h</FilePath>
             </File>
             <File>
               <FileName>IRDetector.h</FileName>
@@ -773,9 +743,9 @@
               <FilePath>.\Headers\RecyclingSM.h</FilePath>
             </File>
             <File>
-              <FileName>WaitingForStartHSM.h</FileName>
+              <FileName>HarvesterService.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\Headers\WaitingForStartHSM.h</FilePath>
+              <FilePath>.\Headers\HarvesterService.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1415,11 +1385,6 @@
               <FilePath>.\Source\IREmitter.c</FilePath>
             </File>
             <File>
-              <FileName>DCMotorService.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\DCMotorService.c</FilePath>
-            </File>
-            <File>
               <FileName>Triangulation.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\Triangulation.c</FilePath>
@@ -1443,16 +1408,6 @@
               <FileName>MotorSpeedControl.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\MotorSpeedControl.c</FilePath>
-            </File>
-            <File>
-              <FileName>PickupMotorService.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\PickupMotorService.c</FilePath>
-            </File>
-            <File>
-              <FileName>TransportMotorService.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\TransportMotorService.c</FilePath>
             </File>
             <File>
               <FileName>IRDetector.c</FileName>
@@ -1495,9 +1450,9 @@
               <FilePath>.\Source\RecyclingSM.c</FilePath>
             </File>
             <File>
-              <FileName>WaitingForStartHSM.c</FileName>
+              <FileName>HarvesterService.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Source\WaitingForStartHSM.c</FilePath>
+              <FilePath>.\Source\HarvesterService.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1660,11 +1615,6 @@
               <FilePath>.\Headers\IREmitter.h</FilePath>
             </File>
             <File>
-              <FileName>DCMotorService.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\DCMotorService.h</FilePath>
-            </File>
-            <File>
               <FileName>Triangulation.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\Triangulation.h</FilePath>
@@ -1700,19 +1650,9 @@
               <FilePath>.\Headers\MotorSpeedControl.h</FilePath>
             </File>
             <File>
-              <FileName>PickupMotorService.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\PickupMotorService.h</FilePath>
-            </File>
-            <File>
               <FileName>TestHarnessService0.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\TestHarnessService0.h</FilePath>
-            </File>
-            <File>
-              <FileName>TransportMotorService.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TransportMotorService.h</FilePath>
             </File>
             <File>
               <FileName>IRDetector.h</FileName>
@@ -1755,9 +1695,9 @@
               <FilePath>.\Headers\RecyclingSM.h</FilePath>
             </File>
             <File>
-              <FileName>WaitingForStartHSM.h</FileName>
+              <FileName>HarvesterService.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\Headers\WaitingForStartHSM.h</FilePath>
+              <FilePath>.\Headers\HarvesterService.h</FilePath>
             </File>
           </Files>
         </Group>

@@ -61,11 +61,24 @@ int main (void)
    
 // When doing testing, it is useful to announce just which program
 // is running.
-	puts("\rStarting Test Harness for \r");
+	puts("\rStarting Team 9 ME218B Project with \r");
 	printf("the 2nd Generation Events & Services Framework V2.4\r\n");
-	printf("Template for HSM implementation\r\n");
 	printf("%s %s\n",__TIME__, __DATE__);
 	printf("\n\r\n");
+  puts( "Keys simulate events:\r");
+  puts( "'R'= EV_COMPASS_RESPONSE_RECEIVED\r");
+  puts( "'A'= EV_COMPASS_ACK\r");
+  puts( "'S'= EV_COMPASS_CLEANING_UP\r");
+  puts( "'C'= EV_COMPASS_CLEANING_UP\r");
+  puts( "'G'= EV_COMPASS_GAME_OVER\r");
+  puts( "'B'= EV_BUMPER_HIT\r");
+  puts( "'D'= EV_RECYCLING_DONE\r");
+  puts( "'L'= EV_LANDFILLING_DONE\r\n");
+  puts( "'Y'= EV_MOVED_BACK\r\n");
+  puts( "'M'= EV_MOVE_COMPLETED\r\n");
+  puts( "'T'= EV_TAPE_DETECTED\r\n");
+  puts( "'Z'= EV_ALIGNED2BEACON\r\n");
+  puts( " MasterSM  GamePlayHSM  CollectingSM  OrientingSM   RecyclingSM  LandfillingSM   \r");
 
   // reprogram the ports that are set as alternate functions or
   // locked coming out of reset. (PA2-5, PB2-3, PD7, PF0)

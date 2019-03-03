@@ -202,7 +202,7 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-              case ES_BUMPER_HIT:
+              case EV_BUMPER_HIT:
               {
                 // Execute action function for state one : event one
                 NextState = Preparing4Recycle;//Decide what the next state will be

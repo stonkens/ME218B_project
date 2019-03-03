@@ -48,9 +48,9 @@
 /* prototypes for private functions for this machine.
 */ 
 static void setPickupDuty(uint32_t duty); 
-static void setTransportDuty(uint32_t duty); 
+static void SetHarvesterMotorDutycycle(uint32_t duty); 
 static void RestorePickupDC(void); 
-static void RestoreTransportDC(void); 
+static void RestoreHarvesterMotorDC(void); 
 
 
 
@@ -82,7 +82,7 @@ bool InitDCMotorService(uint8_t Priority)
   MyPriority = Priority;
 
   // Initialize HW for PWM lines will be done in InitializeHardware.c
-  //InitDCPWM();
+  //InitHarvesterMotor();
   ThisEvent.EventType = ES_INIT;
   if (ES_PostToService(MyPriority, ThisEvent) == true)
   {
@@ -164,12 +164,12 @@ void stopPickupMotor(){
   setPickupDuty(0); 
 } 
 
-void startTransportMotor(uint32_t DutyCycle){
-  setTransportDuty(DutyCycle); 
+void StartHarvesterMotor(uint32_t DutyCycle){
+  SetHarvesterMotorDutycycle(DutyCycle); 
 }
 
-void stopTransportMotor(){
-  setTransportDuty(0); 
+void StopHarvesterMotor(){
+  SetHarvesterMotorDutycycle(0); 
 } 
 
 /***************************************************************************
@@ -177,24 +177,7 @@ void stopTransportMotor(){
  ***************************************************************************/
 /* Functions private to the module */
 
-static void setPickupDuty(uint32_t duty) //PB7
-{
-  if (duty == 0)
-  {
-    HWREG(PWM0_BASE + PWM_O_0_GENB) = PWM_0_GENB_ACTZERO_ZERO;
-  }
-  else if (duty == 100)
-  {
-    HWREG(PWM0_BASE + PWM_O_0_GENB) = PWM_0_GENB_ACTZERO_ONE;
-  }
-  else
-  {
-    RestorePickupDC();
-    HWREG(PWM0_BASE + PWM_O_0_CMPB) = (HWREG(PWM0_BASE + PWM_O_0_LOAD) - HWREG(PWM0_BASE + PWM_O_0_LOAD) * duty / 100);
-  }
-}
-
-static void setTransportDuty(uint32_t duty) //PB6
+static void SetHarvesterMotorDutycycle(uint32_t duty) //PB6
 {
   if (duty == 0)
   {
@@ -206,7 +189,7 @@ static void setTransportDuty(uint32_t duty) //PB6
   }
   else
   {
-    RestoreTransportDC();
+    RestoreHarvesterMotorDC();
     HWREG(PWM0_BASE + PWM_O_0_CMPA) = (HWREG(PWM0_BASE + PWM_O_0_LOAD) - HWREG(PWM0_BASE + PWM_O_0_LOAD) * duty / 100);
   }
 }
@@ -216,13 +199,13 @@ static void RestorePickupDC(void)
 // To restore the previos DC, simply set the action back to the normal actions
   HWREG(PWM0_BASE + PWM_O_0_GENB) = GenB_Normal;
 }
-static void RestoreTransportDC(void)
+static void RestoreHarvesterMotorDC(void)
 {
 // To restore the previos DC, simply set the action back to the normal actions
   HWREG(PWM0_BASE + PWM_O_0_GENA) = GenA_Normal;
 }
 
-void InitDCPWM(void)
+void InitHarvesterMotor(void)
 {
 // start by enabling the clock to the PWM Module (PWM0)
   HWREG(SYSCTL_RCGCPWM) |= SYSCTL_RCGCPWM_R0;
@@ -252,7 +235,12 @@ void InitDCPWM(void)
 // to 1/2 the period to count up (or down). Technically, the value to program
 // should be Period/2 - DesiredHighTime/2, but since the desired high time is 1/2
 // the period, we can skip the subtract
-  HWREG(PWM0_BASE + PWM_O_0_CMPA) = HWREG(PWM0_BASE + PWM_O_0_LOAD) >> 1;
+  //HWREG(PWM0_BASE + PWM_O_0_CMPA) = HWREG(PWM0_BASE + PWM_O_0_LOAD) >> 1;
+  
+  //Set the initial duty cycle to 0
+  HWREG(PWM0_BASE + PWM_O_0_GENA) = PWM_0_GENA_ACTZERO_ONE;
+  
+  
   HWREG( PWM0_BASE+PWM_O_0_CMPB) = (HWREG( PWM0_BASE+PWM_O_0_LOAD)) -
 (((PeriodInMS * PWMTicksPerMS))>>3);
   //HWREG(PWM0_BASE + PWM_O_0_CMPB) = HWREG(PWM0_BASE + PWM_O_0_LOAD) >> 1;

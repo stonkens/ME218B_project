@@ -261,7 +261,9 @@ typedef enum
   ES_SHORT_TIMEOUT,         /* signals that a short timer has expired */
   /* User-defined events start here */
   ES_NEW_KEY,               /* signals a new key received from terminal */
-  EV_UNLOCK,
+	ES_ENTRY,
+	ES_ENTRY_HISTORY,
+	ES_EXIT,
   EV_I2C_ReadClear,
   EV_I2C_ReadRed,
   EV_I2C_ReadGreen,
@@ -273,22 +275,20 @@ typedef enum
   EV_I2C_EOS,
   EV_I2C_Wait4Busy,
   EV_I2C_Wait4Time,
-  RESPONSE_RECEIVED,
-  ES_GAME_OVER,
-  ES_CLEANING_UP,
-  ES_BUMPER_HIT,
-	ES_ENTRY,
-	ES_ENTRY_HISTORY,
-	ES_EXIT,
+  EV_COMPASS_RESPONSE_RECEIVED,  
+  EV_RECEIVED_COMPASS_ACK,
+  EV_COMPASS_CLEANING_UP,
+  EV_COMPASS_RECYCLE_CHANGE,
+  EV_COMPASS_GAME_OVER,
+  EV_BUMPER_HIT,
 	EV_RECYCLING_DONE,
 	EV_LANDFILLING_DONE,
 	EV_MOVED_BACK,
-	EV_MOVE_COMPLETED,
-	EV_COMPASS_CLEANING_UP,
-	EV_RECEIVED_COMPASS_ACK,
-  EV_COMPASS_RECYCLE_CHANGE,
+	EV_MOVE_COMPLETED,  
   EV_TAPE_DETECTED,
-  EV_ALIGNED2BEACON
+  EV_ALIGNED2BEACON,
+  EV_DUMP_RECYCLE,
+  EV_DUMP_LANDFILL
 }ES_EventType_t;
 
 /****************************************************************************/

@@ -32,7 +32,7 @@ bool IR_found(void);
 //Getter/setter functions to interface with OrientingSM
 uint32_t IRGetRunCount(void);
 void IRResetRunCount(void);
-uint32_t IR_getPeriod(void);
+uint32_t IRGetPeriod(void);
 
 //Activator function to find specific beacon
 //(Interface with RecyclingSM and LandfillingSM)

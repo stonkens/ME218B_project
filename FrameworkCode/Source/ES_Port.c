@@ -134,7 +134,7 @@ void _HW_Timer_Init(TimerRate_t Rate)
      but simply sets a flag to indicate that the interrupt has occurred.
      the framework response is handled below in _HW_Process_Pending_Ints
  Author
-    John Alabi, 03/05/14 13:50
+    Sander Tonkens, 03/05/14 13:50
 ****************************************************************************/
 void SysTickIntHandler(void)
 {

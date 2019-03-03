@@ -10,6 +10,10 @@
 #include "ES_Events.h"
 #include "ES_Framework.h"
 
+//Team indication defines
+#define TEAM_NORTH 0
+#define TEAM_SOUTH 1
+
 // State definitions for use with the query function
 typedef enum
 {
@@ -21,6 +25,6 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent );
 void StartMasterSM ( ES_Event_t CurrentEvent );
 bool PostMasterSM( ES_Event_t ThisEvent );
 bool InitMasterSM ( uint8_t Priority );
-
+uint8_t QueryTeam(void);
 #endif /*MasterHSM_H */
 

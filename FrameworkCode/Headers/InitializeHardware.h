@@ -12,7 +12,6 @@
 
 // Public Function Prototypes
 void InitializeHardware(void);
-void raiseIO(void);
-void lowerIO(void); 
+void StopAllMovingParts(void);
 
 #endif /* InitializeHardware_H */

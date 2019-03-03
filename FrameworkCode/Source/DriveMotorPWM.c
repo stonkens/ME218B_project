@@ -157,10 +157,15 @@ void InitDriveMotorPWM(void)
   uint32_t PeriodIn100us = 10000 / PWMFrequency;
   // If this mode above is selected we need to modify PWM Ticks per ms by factor 10
   HWREG(PWM0_BASE + PWM_O_1_LOAD) = ((PeriodIn100us * PWMTicksPer100us)) >> 1;
-		
-  HWREG(PWM0_BASE + PWM_O_1_CMPA) = HWREG(PWM0_BASE + PWM_O_1_LOAD) >> 1;
-  HWREG(PWM0_BASE + PWM_O_1_CMPB) = HWREG(PWM0_BASE + PWM_O_1_LOAD) >> 1;
+	
+  //This sets the initial duty cycle to 50 % (COMMENTED OUT --> CHECK IF THIS IS AN ISSUE)
+  //HWREG(PWM0_BASE + PWM_O_1_CMPA) = HWREG(PWM0_BASE + PWM_O_1_LOAD) >> 1;
+  //HWREG(PWM0_BASE + PWM_O_1_CMPB) = HWREG(PWM0_BASE + PWM_O_1_LOAD) >> 1;
   
+  //Set initial duty cycle to 0% (Not moving when starting up)
+  HWREG(PWM0_BASE + PWM_O_1_GENA) = PWM_1_GENA_ACTZERO_ZERO;
+  HWREG(PWM0_BASE + PWM_O_1_GENB) = PWM_1_GENB_ACTZERO_ZERO;
+    
 	// enable the PWM outputs
   HWREG(PWM0_BASE + PWM_O_ENABLE) |= (PWM_ENABLE_PWM2EN | PWM_ENABLE_PWM3EN);
   

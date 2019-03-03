@@ -53,6 +53,8 @@ uint8_t QueryWhichRecycle(void);
 uint16_t GetAssignedFreq(void);
 void InitSPI(void);
 
+void SetReady2Communicate(bool CommunicateReady);
+
 
 #endif /* SPISM_H */
 
