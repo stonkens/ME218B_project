@@ -198,7 +198,7 @@ ES_Event_t RunCollisionAvoidanceSM( ES_Event_t CurrentEvent )
            case EV_MOVE_COMPLETED :
            {
              //If event is event one
-             ReturnEvent = CurrentEvent;
+             ReturnEvent.EventType = EV_MOVED_BACK;
 					 }
            break;
 							 
@@ -329,15 +329,7 @@ static ES_Event_t DuringMovingBackwards( ES_Event_t Event)
         // repeat for any concurrent lower level machines
       
         // do any activity that is repeated as long as we are in this state
-				if (Event.EventType == EV_MOVE_COMPLETED)
-				{
-					ReturnEvent.EventType = EV_MOVED_BACK;
-				}
 				
-				else if (Event.EventType == EV_BUMPER_HIT)
-				{
-					//Decide what to do if the bumper is hit again
-				}
     }
     // return either Event, if you don't want to allow the lower level machine
     // to remap the current event, or ReturnEvent if you do want to allow it.

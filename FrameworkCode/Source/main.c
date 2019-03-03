@@ -66,10 +66,8 @@ int main (void)
 	printf("%s %s\n",__TIME__, __DATE__);
 	printf("\n\r\n");
   puts( "Keys simulate events:\r");
-  puts( "'R'= EV_COMPASS_RESPONSE_RECEIVED\r");
-  puts( "'A'= EV_COMPASS_ACK\r");
   puts( "'S'= EV_COMPASS_CLEANING_UP\r");
-  puts( "'C'= EV_COMPASS_CLEANING_UP\r");
+  puts( "'C'= EV_COMPASS_RECYCLE_CHANGE\r");
   puts( "'G'= EV_COMPASS_GAME_OVER\r");
   puts( "'B'= EV_BUMPER_HIT\r");
   puts( "'D'= EV_RECYCLING_DONE\r");

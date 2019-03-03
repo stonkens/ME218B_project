@@ -30,7 +30,7 @@
 #include "LandfillingSM.h"
 #include "KeyMapperService.h"
 #include <stdio.h>
-/*
+
 void UpdateDisplay(void)
 {
   MasterState_t               MasterState             = QueryMasterSM();
@@ -39,7 +39,7 @@ void UpdateDisplay(void)
   OrientingState_t            OrientingState          = QueryOrientingSM();
   RecyclingState_t            RecyclingState          = QueryRecyclingSM();
   LandfillingState_t          LandfillingState        = QueryLandfillingSM();
-  CollisionAvoidanceState_t   CollisionAvoidanceState = QueryCollisionAvoidanceSM();
+  CollisionAvoidanceState_t   CollisionAvoidanceState = QueryCollisionAvoidanceHSM();
 
   // now update the display
   printf("\r");
@@ -79,7 +79,7 @@ void UpdateDisplay(void)
       printf(" Recycling ");
     }
     break;
-    case Landfilling
+    case Landfilling:
     {
       printf(" Landfilling     ");
     }
@@ -129,71 +129,68 @@ void UpdateDisplay(void)
       printf(" ApproachingRecycle       ");
     }
     break;
-    case T_SquaringWithWallCCW:
+    case Preparing4Recycle:
     {
-      printf(" SquaringWithWallCCW      ");
+      printf(" Preparing4Recycle      ");
     }
     break;
-    case ReleasingTrash:
+    case DumpingRecycle:
     {
-      printf(" ReleasingTrash           ");
+      printf(" DumpingRecycle           ");
     }
     break;
   }
 
-  switch (CollisionAvoidanceFrontState)
+  switch (LandfillingState)
   {
-    case Front_DrivingBackwards:
+    case Orienting2Landfill:
     {
-      printf(" DrivingBackwards ");
+      printf(" Orienting2Landfill ");
     }
     break;
-    case Front_TurningAway:
+    case Driving2Landfill:
     {
-      printf(" TurningAway      ");
+      printf(" Driving2Landfill      ");
     }
     break;
-    case Front_GoingAroundRobot:
+    case ApproachingLandfill:
     {
-      printf(" GoingAroundRobot ");
+      printf(" ApproachingLandfill ");
+    }
+    break;
+    case Preparing4Landfill:
+    {
+      printf(" Preparing4Landfill ");
+    }
+    break;
+    
+    case DumpingLandfill:
+    {
+      printf(" DumpingLandfill ");
     }
     break;
   }
-  switch (CollisionAvoidanceRearState)
+  switch (CollisionAvoidanceState)
   {
-    case Rear_DrivingForward:
+    case MovingBackwards:
     {
-      printf(" DrivingForward   ");
+      printf(" MovingBackwards   ");
     }
     break;
-    case Rear_TurningAway:
+    case QuarterTurn:
     {
-      printf(" TurningAway      ");
+      printf(" QuarterTurn      ");
     }
     break;
-    case Rear_GoingAroundRobot:
+    case MovingForward:
     {
-      printf(" GoingAroundRobot ");
+      printf(" MovingForward ");
     }
     break;
-  }
-  switch (TapeState)
-  {
-    case Looking4Tape:
-    {
-      printf(" Looking4Tape ");
-    }
-    break;
-    case SawTape:
-    {
-      printf(" SawTape      ");
-    }
-    break;
-  }
-  
+  }  
   printf(" %d ", HowManyRecyclingBalls());
   printf(" %d ", HowManyTrashBalls());
 }
 
 
-*/
+
