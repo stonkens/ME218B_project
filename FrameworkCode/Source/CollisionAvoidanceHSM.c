@@ -198,22 +198,13 @@ ES_Event_t RunCollisionAvoidanceSM( ES_Event_t CurrentEvent )
            case EV_MOVE_COMPLETED :
            {
              //If event is event one
-              // Execute action function for state one : event one
-              NextState = MovingForward;//Decide what the next state will be
-              // for internal transitions, skip changing MakeTransition
-              MakeTransition = true; //mark that we are taking a transition
-              // if transitioning to a state with history change kind of entry
-              EntryEventKind.EventType = ES_ENTRY;
-              // optionally, consume or re-map this event for the upper
-              // level state machine
-              ReturnEvent.EventType = ES_NO_EVENT;
-                  
-						}
-            break;
+             ReturnEvent = CurrentEvent;
+					 }
+           break;
 							 
-            default:
-						{;
-						}
+           default:
+					 {;
+					 }
                 // repeat cases as required for relevant events
          }
 
