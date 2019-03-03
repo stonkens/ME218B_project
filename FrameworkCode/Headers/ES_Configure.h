@@ -279,7 +279,12 @@ typedef enum
   ES_WESTRECYCLING_FOUND,
   ES_EASTRECYCLING_FOUND,
   ES_SOUTHLANDFILL_FOUND,
-  ES_NORTHLANDFILL_FOUND
+  ES_NORTHLANDFILL_FOUND,
+  EV_LEFT_TAPE_ON,
+  EV_LEFT_TAPE_OFF,
+  EV_RIGHT_TAPE_ON,
+  EV_RIGHT_TAPE_OFF,
+  EV_MOVE_COMPLETED
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -314,7 +319,7 @@ typedef enum
 
 /****************************************************************************/
 // This is the list of event checking functions
-#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished, IR_found 
+#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished, IR_found, Check4TapeFollow 
 
 /****************************************************************************/
 // These are the definitions for the post functions to be executed when the

@@ -507,6 +507,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\IRDetector.c</FilePath>
             </File>
+            <File>
+              <FileName>TapeFollowingChecker.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\TapeFollowingChecker.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -731,6 +736,11 @@
               <FileName>IRDetector.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\IRDetector.h</FilePath>
+            </File>
+            <File>
+              <FileName>TapeFollowingChecker.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TapeFollowingChecker.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1430,6 +1440,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\IRDetector.c</FilePath>
             </File>
+            <File>
+              <FileName>TapeFollowingChecker.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\TapeFollowingChecker.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1654,6 +1669,11 @@
               <FileName>IRDetector.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\IRDetector.h</FilePath>
+            </File>
+            <File>
+              <FileName>TapeFollowingChecker.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TapeFollowingChecker.h</FilePath>
             </File>
           </Files>
         </Group>

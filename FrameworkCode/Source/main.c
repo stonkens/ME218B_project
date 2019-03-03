@@ -27,6 +27,7 @@
 #include "EnablePA25_PB23_PD7_PF0.h"
 
 #include "InitializeHardware.h"
+#include "TapeFollowingChecker.h"
 
 #define clrScrn() printf("\x1b[2J")
 #define goHome() printf("\x1b[1,1H")
@@ -58,6 +59,11 @@ int main(void)
 
   // Your hardware initialization function calls go here
   InitializeHardware();
+  
+  //For test
+  InitTapeHardware(); 
+  //End test 
+  
   // now initialize the Events and Services Framework and start it running
   ErrorType = ES_Initialize(ES_Timer_RATE_1mS);
   if (ErrorType == Success)
