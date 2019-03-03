@@ -153,6 +153,7 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
                   }
                   else
                   {
+                    ReturnEvent.EventType = ES_NO_EVENT;
                     //This time we only allow for BALL_COLLECTION_TIME/2 seconds to query again
                     ES_Timer_InitTimer(BALL_COLLECTION_TIMER, BALL_COLLECTION_TIME/2);
                   }
@@ -365,6 +366,7 @@ static ES_Event_t DuringCollectingGarbage( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      Event.EventType = ES_ENTRY;
       StartCollectingSM(Event);
         // implement any entry actions required for this state machine
         
@@ -416,6 +418,7 @@ static ES_Event_t DuringRecycling( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      Event.EventType = ES_ENTRY;
       StartRecyclingSM(Event);
         // implement any entry actions required for this state machine
         
@@ -441,6 +444,7 @@ static ES_Event_t DuringRecycling( ES_Event_t Event)
     // do the 'during' function for this state
     {
       ReturnEvent = RunRecyclingSM(Event);
+      
         // run any lower level state machine
         // ReturnEvent = RunLowerLevelSM(Event);
       
@@ -461,6 +465,7 @@ static ES_Event_t DuringLandfilling( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      Event.EventType = ES_ENTRY;
       StartLandfillingSM(Event);
         // implement any entry actions required for this state machine
         

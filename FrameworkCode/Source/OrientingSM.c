@@ -189,7 +189,11 @@ ES_Event_t RunOrientingSM( ES_Event_t CurrentEvent )
 					case EV_MOVE_COMPLETED:
           {
             //calculate current Position on the field: X, Y, Orientation/Heading
-						CalculatePosition();
+						//printf("Calculating position \r\n");
+            CalculatePosition();
+            //TO BE REMOVED
+            SetPositionAwareness(true);
+            ReturnEvent = CurrentEvent;
           }
 					break;
           

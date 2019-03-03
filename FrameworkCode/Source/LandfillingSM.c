@@ -193,14 +193,17 @@ ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent )
             {
               case EV_BUMPER_HIT:
               {
-                // Execute action function for state one : event one
-                NextState = Preparing4Landfill;//Decide what the next state will be
-                // for internal transitions, skip changing MakeTransition
-                MakeTransition = true; //mark that we are taking a transition
-                // if transitioning to a state with history change kind of entry
-                EntryEventKind.EventType = ES_ENTRY;                              
-                //Consume event 
-                ReturnEvent.EventType = ES_NO_EVENT;
+                if((CurrentEvent.EventParam == 1) || (CurrentEvent.EventParam == 2))
+                {
+                  // Execute action function for state one : event one
+                  NextState = Preparing4Landfill;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;                              
+                  //Consume event 
+                  ReturnEvent.EventType = ES_NO_EVENT;
+                }
                 
               }
               break;  

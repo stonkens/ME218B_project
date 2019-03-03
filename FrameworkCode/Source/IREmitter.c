@@ -113,7 +113,7 @@ void InitEmitterPWM(void) // PWM1 GEN Block 1
   HWREG(PWM1_BASE + PWM_O_2_CTL) = (PWM_2_CTL_MODE | PWM_2_CTL_ENABLE | 
   PWM_2_CTL_GENAUPD_LS);
 
-  printf("Finished initializing IR emitter PWM\r\n");
+  //printf("Finished initializing IR emitter PWM\r\n"); PRINTF REMOVED
   //disable after init
   //DisableEmitterPWM();
 }

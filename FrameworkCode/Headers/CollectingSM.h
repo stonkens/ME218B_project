@@ -26,6 +26,6 @@ CollectingState_t QueryCollectingSM ( void );
 
 //Setter function for the OrientingSM
 void SetPositionAwareness(bool PositionStatus);
-
+bool QueryPositionAwareness(void);
 #endif /*CollectingSM_H */
 

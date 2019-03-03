@@ -140,6 +140,8 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
             {
               case EV_MOVE_COMPLETED:
               {
+                //printf("EV_MOVE_COMPLETED in Orienting\r\n");
+                //printf("PositionAwareness: %d \r\n", PositionAwareness);
                 if (PositionAwareness == true)
                 {
                   // Execute action function for state one : event one
@@ -148,6 +150,8 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
                   MakeTransition = true; //mark that we are taking a transition
                   // if transitioning to a state with history change kind of entry
                   EntryEventKind.EventType = ES_ENTRY;
+                  //printf("\r\n In here");
+                  
                 }
                 else
                 {
@@ -158,6 +162,8 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
                   // if transitioning to a state with history change kind of entry
                   EntryEventKind.EventType = ES_ENTRY;                
                 }
+                //Current placeholder event
+                PositionAwareness = false;
                 
               }
 							break;
@@ -514,6 +520,10 @@ void SetPositionAwareness(bool PositionStatus)
   PositionAwareness = PositionStatus;
 }
 
+bool QueryPositionAwareness(void)
+{
+  return PositionAwareness;
+}
 
 
 

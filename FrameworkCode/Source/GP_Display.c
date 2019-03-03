@@ -31,6 +31,8 @@
 #include "KeyMapperService.h"
 #include <stdio.h>
 
+bool BotDirection;
+
 void UpdateDisplay(void)
 {
   MasterState_t               MasterState             = QueryMasterSM();
@@ -40,29 +42,29 @@ void UpdateDisplay(void)
   RecyclingState_t            RecyclingState          = QueryRecyclingSM();
   LandfillingState_t          LandfillingState        = QueryLandfillingSM();
   CollisionAvoidanceState_t   CollisionAvoidanceState = QueryCollisionAvoidanceHSM();
-
+  
   // now update the display
   printf("\r");
   switch (MasterState)
   {
     case WaitingForStart:
     {
-      printf(" WaitingForStart                 ");
+      printf("  WaitingForStart   ");
     }
     break;
     case GamePlay:
     {
-      printf(" GamePlay            ");
+      printf("     GamePlay       ");
     }
     break;
     case GameEnded:
     {
-      printf(" GameEnded ");
+      printf("      GameEnded     ");
     }
     break;
     case CollisionAvoidance:
     {
-      printf(" CollisionAvoidance  ");
+      printf(" CollisionAvoidance ");
     }
     break;
   }
@@ -71,17 +73,17 @@ void UpdateDisplay(void)
   {
     case CollectingGarbage:
     {
-      printf(" Collecting  ");
+      printf("  Collecting ");
     }
     break;
     case Recycling:
     {
-      printf(" Recycling ");
+      printf("  Recycling  ");
     }
     break;
     case Landfilling:
     {
-      printf(" Landfilling     ");
+      printf(" Landfilling ");
     }
     break;
   }
@@ -90,17 +92,17 @@ void UpdateDisplay(void)
   {
     case Orienting:
     {
-      printf(" Orienting ");
+      printf("   Orienting    ");
     }
     break;
     case Driving2Target:
     {
-      printf(" Driving2Target      ");
+      printf(" Driving2Target ");
     }
     break;
     case Roaming:
     {
-      printf(" Roaming   ");
+      printf("    Roaming     ");
     }
     break;
   }
@@ -108,7 +110,7 @@ void UpdateDisplay(void)
   {
     case Measuring:
     {
-      printf(" Measuring       ");
+      printf("   Measuring  ");
     }
   }
 
@@ -116,27 +118,27 @@ void UpdateDisplay(void)
   {
     case Orienting2Recycle:
     {
-      printf(" Orienting2Recycle       ");
+      printf(" Orienting2Recycle  ");
     }
     break;
     case Driving2Recycle:
     {
-      printf(" Driving2Recycle     ");
+      printf("  Driving2Recycle   ");
     }
     break;
     case ApproachingRecycle:
     {
-      printf(" ApproachingRecycle       ");
+      printf(" ApproachingRecycle ");
     }
     break;
     case Preparing4Recycle:
     {
-      printf(" Preparing4Recycle      ");
+      printf(" Preparing4Recycle  ");
     }
     break;
     case DumpingRecycle:
     {
-      printf(" DumpingRecycle           ");
+      printf("   DumpingRecycle   ");
     }
     break;
   }
@@ -145,12 +147,12 @@ void UpdateDisplay(void)
   {
     case Orienting2Landfill:
     {
-      printf(" Orienting2Landfill ");
+      printf(" Orienting2Landfill  ");
     }
     break;
     case Driving2Landfill:
     {
-      printf(" Driving2Landfill      ");
+      printf("  Driving2Landfill   ");
     }
     break;
     case ApproachingLandfill:
@@ -160,13 +162,13 @@ void UpdateDisplay(void)
     break;
     case Preparing4Landfill:
     {
-      printf(" Preparing4Landfill ");
+      printf(" Preparing4Landfill  ");
     }
     break;
     
     case DumpingLandfill:
     {
-      printf(" DumpingLandfill ");
+      printf("   DumpingLandfill   ");
     }
     break;
   }
@@ -174,22 +176,25 @@ void UpdateDisplay(void)
   {
     case MovingBackwards:
     {
-      printf(" MovingBackwards   ");
+      printf(" MovingBackwards ");
     }
     break;
     case QuarterTurn:
     {
-      printf(" QuarterTurn      ");
+      printf("   QuarterTurn   ");
     }
     break;
     case MovingForward:
     {
-      printf(" MovingForward ");
+      printf("  MovingForward  ");
     }
     break;
   }  
-  printf(" %d ", HowManyRecyclingBalls());
-  printf(" %d ", HowManyTrashBalls());
+  BotDirection = QueryBotDirection();
+  printf(" %d ", BotDirection);
+  printf(" %d ", QueryRecycleBalls());
+  printf(" %d ", QueryLandFillBalls());
+  printf(" %d ", QueryPositionAwareness());
 }
 
 

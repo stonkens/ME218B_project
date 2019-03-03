@@ -377,7 +377,7 @@ void Drive_SpeedControlISR(void){
 	
 	 //if Distance Error and Heading Error is within error bounds
 	if((fabsf(DistanceError) <= MIN_ERROR) && (fabsf(HeadingError) <= MIN_ERROR) && Driving == true){
-		printf("Amount of ticks executed: %d", LastTickCount_1);
+		//printf("Amount of ticks executed: %d", LastTickCount_1); PRINTF REMOVED
 		
 		Driving = false;
 		
@@ -408,7 +408,7 @@ void Drive_SpeedControlISR(void){
 ****************************************************************************/
 void Drive_SpeedUpdateTimer_Init(uint16_t updateTime){
 	//initialization for Periodic Timer (Timer 5-A)
-	printf("Update control loop \r\n");
+	//printf("Update control loop \r\n"); PRINTF REMOVED
 	//start by enabling the clock to the timer (Wide Timer 5)
 	HWREG(SYSCTL_RCGCWTIMER) |= SYSCTL_RCGCWTIMER_R5;
 	

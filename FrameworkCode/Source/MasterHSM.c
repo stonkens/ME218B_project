@@ -107,11 +107,11 @@ bool InitMasterSM ( uint8_t Priority )
   
   if (OurTeam == TEAM_NORTH)
   {
-    printf("\r\n Go Team North\r\n");
+    //printf("\r\n Go Team North\r\n");PRINTF REMOVED
   }
   else
   {
-    printf("\r\n Go Team South\r\n");
+    //printf("\r\n Go Team South\r\n");PRINTF REMOVED
   }
   
   //The SSI communication service can start
@@ -168,6 +168,7 @@ bool PostMasterSM( ES_Event_t ThisEvent )
 ****************************************************************************/
 ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
 {
+  
    bool MakeTransition = false;/* are we making a state transition? */
    MasterState_t NextState = CurrentState;
    ES_Event_t EntryEventKind = { ES_ENTRY, 0 };// default to normal entry to new state
@@ -188,7 +189,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
             {
                case EV_COMPASS_CLEANING_UP : //If event is event one
 							 {
-                 printf("\r\n Master Acknowledges Start of Game\r\n");
+                // printf("\r\n Master Acknowledges Start of Game\r\n");
                   // Execute action function for state one : event one
                   NextState = GamePlay;//Decide what the next state will be
                   // for internal transitions, skip changing MakeTransition

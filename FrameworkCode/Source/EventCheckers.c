@@ -38,6 +38,8 @@
 // actual functionsdefinition
 #include "EventCheckers.h"
 
+#include "KeyMapperService.h"
+
 // This is the event checking function sample. It is not intended to be
 // included in the module. It is only here as a sample to guide you in writing
 // your own event checkers
@@ -115,7 +117,7 @@ bool Check4Keystroke(void)
     // test distribution list functionality by sending the 'L' key out via
     // a distribution list.
     //PostMotorService(ThisEvent);
-
+    PostKeyMapperService(ThisEvent);
     return true;
   }else
   {

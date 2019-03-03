@@ -128,7 +128,22 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
                 //Select new move to start up (Idea: Start from one point and go to others)
                 ReturnEvent.EventType = ES_NO_EVENT;
               }
-							break; 
+              break;
+              
+              case EV_COMPASS_RECYCLE_CHANGE:
+              {
+                
+                // Execute action function for state one : event one
+                NextState = Orienting2Recycle;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Consuming event  
+                ReturnEvent.EventType = ES_NO_EVENT;
+                
+              }
+             	break; 
 							 default:
 							 {;
 							 }
@@ -204,18 +219,35 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
             {
               case EV_BUMPER_HIT:
               {
+                if((CurrentEvent.EventParam == 1) || (CurrentEvent.EventParam == 2))
+                {
+                  // Execute action function for state one : event one
+                  NextState = Preparing4Recycle;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;                              
+                  //Consume event 
+                  ReturnEvent.EventType = ES_NO_EVENT;
+                }
+                
+              }
+              break;
+              case EV_COMPASS_RECYCLE_CHANGE:
+              {
+                
                 // Execute action function for state one : event one
-                NextState = Preparing4Recycle;//Decide what the next state will be
+                NextState = Orienting2Recycle;//Decide what the next state will be
                 // for internal transitions, skip changing MakeTransition
                 MakeTransition = true; //mark that we are taking a transition
                 // if transitioning to a state with history change kind of entry
                 EntryEventKind.EventType = ES_ENTRY;                              
-                //Consume event 
+                //Consuming event  
                 ReturnEvent.EventType = ES_NO_EVENT;
                 
               }
-              break;
-							 
+                
+              break;							 
 							 default:
 							{;
 							}
@@ -249,7 +281,21 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
                 
               }
               break;							 
-							
+              case EV_COMPASS_RECYCLE_CHANGE:
+              {
+                
+                // Execute action function for state one : event one
+                NextState = Orienting2Recycle;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Consuming event  
+                ReturnEvent.EventType = ES_NO_EVENT;
+                
+              }
+                
+              break;							
               default:
 							{;
 							}
@@ -280,7 +326,21 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
                 
               }
               break;	
-							 
+              case EV_COMPASS_RECYCLE_CHANGE:
+              {
+                
+                // Execute action function for state one : event one
+                NextState = Orienting2Recycle;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Consuming event  
+                ReturnEvent.EventType = ES_NO_EVENT;
+                
+              }               
+              break;	
+              
 							 default:
 							{;
 							}

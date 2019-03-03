@@ -98,7 +98,7 @@ void Enc_Init(void){
 	 //initialize encoders A & B for motor 2 (right)
 	InitInputCaptureEnc_2();
   
-  printf("Initialized Encoder interrupts\r\n");
+  //printf("Initialized Encoder interrupts\r\n"); PRINTF REMOVED
 }
 
 /****************************************************************************

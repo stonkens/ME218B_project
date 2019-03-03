@@ -90,7 +90,7 @@ void Drive_Control_Init(void){
 	
 	Drive_SpeedControl_Init();
 	
-	printf("\r\n Drive Control Initialized \r\n");
+	//printf("\r\n Drive Control Initialized \r\n"); PRINTF REMOVED
 	
 }
 

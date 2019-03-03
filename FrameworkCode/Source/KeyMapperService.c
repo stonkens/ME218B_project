@@ -33,6 +33,7 @@
 #include "GP_Display.h"
 
 #include "MasterHSM.h"
+#include "CollectingSM.h"
 /*----------------------------- Module Defines ----------------------------*/
 #define DISPLAY_UPDATE_TIME 100
 /*---------------------------- Module Functions ---------------------------*/
@@ -146,16 +147,36 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             case 'B' :
             {
               ThisEvent.EventType = EV_BUMPER_HIT;
+              ThisEvent.EventParam = 2;
+            }
+            break;
+            case 'N' :
+            {
+              ThisEvent.EventType = EV_BUMPER_HIT;
+              ThisEvent.EventParam = 3;
+            }
+            break;
+            case 'M' :
+            {
+              ThisEvent.EventType = EV_BUMPER_HIT;
+              ThisEvent.EventParam = 4;
+            }
+            break;
+            case 'V' :
+            { 
+              ThisEvent.EventType = EV_BUMPER_HIT;
               ThisEvent.EventParam = 1;
             }
             break;
             case 'D' :
             {
+              RecycleBalls = 0;
               ThisEvent.EventType = EV_RECYCLING_DONE;
             }
             break;
             case 'L' :
             {
+              LandFillBalls = 0;
               ThisEvent.EventType = EV_LANDFILLING_DONE;
             }
             break;
@@ -164,7 +185,7 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
               ThisEvent.EventType = EV_MOVED_BACK;
             }
             break;
-            case 'M' :
+            case 'P' :
             {
               ThisEvent.EventType = EV_MOVE_COMPLETED;
             }
@@ -183,10 +204,17 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               RecycleBalls++;
             }
-            case '2':
+            break;
+            case '0':
             {
               LandFillBalls++;
             }
+            break;
+            case 'X' :
+            {
+              SetPositionAwareness(true);
+            }
+            break;
             
               
         }

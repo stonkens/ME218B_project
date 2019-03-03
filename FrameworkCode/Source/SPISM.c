@@ -167,7 +167,7 @@ bool InitSPISM(uint8_t Priority)
   //initialize SPI hardware
   //InitSPI();
 
-  printf("SSI Init Complete\r\n");
+
 
   // Initialize value of register variable to 0
 
@@ -281,7 +281,7 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
             LeftRecycleFrequency = WEST_RECYCLE_FREQUENCY;
             RightRecycleFrequency = EAST_RECYCLE_FREQUENCY;
           }         
-            printf("Writing to SPI \r\n");
+            //printf("Writing to SPI \r\n"); PRINTF REMOVED
             WriteToSPI(RegistrationByte);
           }
         else 
@@ -291,14 +291,14 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
       }          
       else if (ThisEvent.EventType == EV_COMPASS_RESPONSE_RECEIVED)
       {
-				printf("Response received \r\n");
+				//printf("Response received \r\n"); PRINTF REMOVED
         //Bits 2&3 have to be masked, as ACK byte is unknown
         ReceivedAckByte = ThisEvent.EventParam;
 
         //Move to next state only if behaviour is as expected
         if(ReceivedAckByte == ExpectedAckByte)
         {
-					printf("Successfully registered team \n \r");
+					//printf("Successfully registered team \n \r"); PRINTF REMOVED
           ES_Timer_InitTimer(SPI_TIMER, SPI_QUERYTIME);
 
           //Disable interrupt
@@ -309,7 +309,7 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
 
         else
         {
-          printf("Failed to Register Team \n\r");
+          //printf("Failed to Register Team \n\r"); PRINTF REMOVED
         }
 
       }
@@ -327,10 +327,10 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
 				TeamStatusByte = ThisEvent.EventParam;
 				
 				AssignedColor = (TeamStatusByte & (BIT1HI|BIT2HI|BIT3HI)) >> 1;
-        printf("Assigned Color: %d\n\r", AssignedColor);
+        //printf("Assigned Color: %d\n\r", AssignedColor); PRINTF REMOVED
         AssignedFrequency = RecycleActFreq[(TeamStatusByte & 
           (BIT4HI|BIT5HI|BIT6HI|BIT7HI)) >> 4];
-        printf("Assigned Frequency: %d\n\r", AssignedFrequency);
+        //printf("Assigned Frequency: %d\n\r", AssignedFrequency); PRINTF REMOVED
 				
 				//Initialize timers and disable SSI interrupt 
 				//in preparation for move to next state
@@ -367,7 +367,7 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
 				if ((CurrentGameState == RECYCLING) && 
           (LastGameState == WAITING_FOR_START))
         {
-          printf("Game Started; event not posted\n\r");
+          //printf("Game Started; event not posted\n\r"); PRINTF REMOVED
           CommunicationEvent.EventType = EV_COMPASS_CLEANING_UP;
           //Change To Master SM
           PostMasterSM(CommunicationEvent);
@@ -378,14 +378,14 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
         else if ((CurrentGameState == GAME_OVER) && 
           (LastGameState == RECYCLING))
         {
-          printf("Game Over; event not posted\n\r");
+          //printf("Game Over; event not posted\n\r"); PRINTF REMOVED
           CommunicationEvent.EventType = EV_COMPASS_GAME_OVER;
           PostMasterSM(CommunicationEvent);
         }
         
         if (CurrentRecyclingCenter != LastRecyclingCenter)
         {
-          printf("New recycling center: %d \n\r", CurrentRecyclingCenter);
+          //printf("New recycling center: %d \n\r", CurrentRecyclingCenter); PRINTF REMOVED
           //Set recycling center we orient to in the RecyclingSM
           CommunicationEvent.EventType = EV_COMPASS_RECYCLE_CHANGE;
           PostMasterSM(CommunicationEvent);
@@ -688,7 +688,7 @@ uint16_t GetRightRecycleFreq(void)
 void InitSPI(void)
 {
  __disable_irq();
-	printf("Initializing the SSI Module \n \r");
+	//printf("Initializing the SSI Module \n \r"); PRINTF REMOVED
 
     // Enable the clock to the GPIO Port
 	HWREG(SYSCTL_RCGCGPIO) |= SYSCTL_RCGCGPIO_R0;
@@ -775,7 +775,7 @@ void InitSPI(void)
 	// Enable interrupts globally
 	//__enable_irq();
 
-	printf("SSI Initialization Complete \n\r");
+	//printf("SSI Initialization Complete \n\r"); PRINTF REMOVED
 }
 
  

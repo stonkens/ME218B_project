@@ -69,14 +69,14 @@ int main (void)
   puts( "'S'= EV_COMPASS_CLEANING_UP\r");
   puts( "'C'= EV_COMPASS_RECYCLE_CHANGE\r");
   puts( "'G'= EV_COMPASS_GAME_OVER\r");
-  puts( "'B'= EV_BUMPER_HIT\r");
+  puts( "'V, B, N, M'= EV_BUMPER_HIT 1, 2, 3, 4\r");
   puts( "'D'= EV_RECYCLING_DONE\r");
   puts( "'L'= EV_LANDFILLING_DONE\r\n");
   puts( "'Y'= EV_MOVED_BACK\r\n");
-  puts( "'M'= EV_MOVE_COMPLETED\r\n");
+  puts( "'P'= EV_MOVE_COMPLETED\r\n");
   puts( "'T'= EV_TAPE_DETECTED\r\n");
   puts( "'Z'= EV_ALIGNED2BEACON\r\n");
-  puts( " MasterSM  GamePlayHSM  CollectingSM  OrientingSM   RecyclingSM  LandfillingSM   \r");
+  puts( "      MasterSM     | GamePlayHSM|  CollectingSM | OrientingSM |     RecyclingSM   |     LandfillingSM  | Col. Avoidance |D | R |L | PositionAwarness\r");
 
   // reprogram the ports that are set as alternate functions or
   // locked coming out of reset. (PA2-5, PB2-3, PD7, PF0)
