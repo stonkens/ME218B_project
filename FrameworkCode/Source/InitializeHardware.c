@@ -42,7 +42,7 @@
 #include "EncoderCapture.h"
 #include "DriveCommandModule.h"
 #include "IRDetector.h"
-
+#include "TapeFollowingChecker.h"
 // This module
 #include "InitializeHardware.h"
 

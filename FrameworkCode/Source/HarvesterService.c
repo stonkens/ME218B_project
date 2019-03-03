@@ -85,7 +85,7 @@ void StartHarvesterMotor(uint32_t DutyCycle){
   SetHarvesterMotorDutycycle(DutyCycle); 
 }
 
-void StopHarvesterMotor(){
+void StopHarvesterMotor(void){
   SetHarvesterMotorDutycycle(0); 
 } 
 
@@ -94,7 +94,7 @@ void StopHarvesterMotor(){
  ***************************************************************************/
 /* Functions private to the module */
 
-static void SetHarvesterMotorDutycycle(uint32_t duty) //PB6
+void SetHarvesterMotorDutycycle(uint32_t duty) //PB6
 {
   if (duty == 0)
   {
@@ -179,6 +179,7 @@ void InitHarvesterMotor(void)
 // both generator updates locally synchronized to zero count
   HWREG(PWM0_BASE + PWM_O_0_CTL) = (PWM_0_CTL_MODE | PWM_0_CTL_ENABLE |
       PWM_0_CTL_GENAUPD_LS | PWM_0_CTL_GENBUPD_LS);
+      
 }
 
 

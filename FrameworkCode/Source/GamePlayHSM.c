@@ -65,6 +65,7 @@
 
 #include "DriveCommandModule.h"
 
+#include "HarvesterService.h"
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
 // and any other local defines
@@ -371,7 +372,7 @@ static ES_Event_t DuringCollectingGarbage( ES_Event_t Event)
         // implement any entry actions required for this state machine
         
 			  // Start turning DC Motors connected to pin PB6 & PB7
-	
+        StartHarvesterMotor(80);
 							
 				// StartCollectingGarbageSM(Event);
 			
@@ -391,7 +392,7 @@ static ES_Event_t DuringCollectingGarbage( ES_Event_t Event)
         // now do any local exit functionality
 			
 			// Stop turning DC Motors connected to pin PB6 & PB7
-			
+			StopHarvesterMotor();
       
     }else
     // do the 'during' function for this state

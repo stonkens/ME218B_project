@@ -18,4 +18,5 @@
 void StartHarvesterMotor(uint32_t DutyCycle); 
 void StopHarvesterMotor(void);
 void InitHarvesterMotor(void);
+
 #endif /* HarvesterService_H */
