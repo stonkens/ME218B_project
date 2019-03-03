@@ -62,6 +62,7 @@
 #include "DriveCommandModule.h"
 
 #include "IRDetector.h"
+#include "GamePlayHSM.h"
 
 #include <math.h> //for acos and atan
 /*----------------------------- Module Defines ----------------------------*/
@@ -470,6 +471,7 @@ static ES_Event_t DuringRoaming( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      SetBotDirection(BACKWARDS);
       //Based on the target we drove and our heading towards it, determine by what angle to turn
       //DriveRotate(TURN_SPEED, Angle);
         // implement any entry actions required for this state machine
@@ -483,6 +485,8 @@ static ES_Event_t DuringRoaming( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
+      
+      SetBotDirection(FORWARDS);
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines

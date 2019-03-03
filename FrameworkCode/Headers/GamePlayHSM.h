@@ -11,6 +11,10 @@
 #include "ES_Events.h"
 #define BALL_COLLECTION_TIME 20000
 
+#define FORWARDS 0
+#define BACKWARDS 1
+
+
 // typedefs for the states
 // State definitions for use with the query function
 typedef enum { CollectingGarbage, Recycling, Landfilling } GamePlayState_t ;
@@ -21,6 +25,7 @@ typedef enum { CollectingGarbage, Recycling, Landfilling } GamePlayState_t ;
 ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent );
 void StartGamePlaySM ( ES_Event_t CurrentEvent );
 GamePlayState_t QueryGamePlaySM ( void );
-
+void SetBotDirection(bool Direction);
+bool QueryBotDirection(void);
 #endif /*GamePlayHSM_H */
 

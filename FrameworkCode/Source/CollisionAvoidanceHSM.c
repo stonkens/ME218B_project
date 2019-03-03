@@ -70,6 +70,8 @@
    behavior of this state machine
 */
 static ES_Event_t DuringMovingBackwards( ES_Event_t Event);
+static ES_Event_t DuringQuarterTurn (ES_Event_t Event);
+static ES_Event_t DuringMovingForward (ES_Event_t Event);
 
 /*---------------------------- Module Variables ---------------------------*/
 // everybody needs a state variable, you may need others as well
@@ -108,37 +110,114 @@ ES_Event_t RunCollisionAvoidanceSM( ES_Event_t CurrentEvent )
          //process any events
 				 
 				 //Do we want to respond to any events here?
-//         if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
-//         {
-//            switch (CurrentEvent.EventType)
-//            {
-//               case EV_RECEIVED_COMPASS_ACK :
-//							 {
-//								 //If event is event one
-//                  // Execute action function for state one : event one
-//                  NextState = WaitingForCompassStart;//Decide what the next state will be
-//                  // for internal transitions, skip changing MakeTransition
-//                  MakeTransition = true; //mark that we are taking a transition
-//                  // if transitioning to a state with history change kind of entry
-//                  EntryEventKind.EventType = ES_ENTRY;
-//                  // optionally, consume or re-map this event for the upper
-//                  // level state machine
-//                  ReturnEvent.EventType = ES_NO_EVENT;
-//                  
-//							 }
-//							 break;
-//							 
-//							 default:
-//							{;
-//							}
-//                // repeat cases as required for relevant events
-//            }
+         if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
+         {
+            switch (CurrentEvent.EventType)
+            {
+               case EV_MOVE_COMPLETED :
+							 {
+								 //If event is event one
+                  // Execute action function for state one : event one
+                  NextState = QuarterTurn;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;
+                  // optionally, consume or re-map this event for the upper
+                  // level state machine
+                  ReturnEvent.EventType = ES_NO_EVENT;
+                  
+							 }
+							 break;
+							 
+							 default:
+							{;
+							}
+                // repeat cases as required for relevant events
+            }
 
-//         }
+         }
+       
+       // repeat state pattern as required for other states
+       }
+       break;
+    
+       case QuarterTurn :      
+			 {
+         ReturnEvent = CurrentEvent = DuringQuarterTurn(CurrentEvent);
+         //process any events
+				 
+				 //Do we want to respond to any events here?
+         if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
+         {
+            switch (CurrentEvent.EventType)
+            {
+               case EV_MOVE_COMPLETED :
+							 {
+								 //If event is event one
+                  // Execute action function for state one : event one
+                  NextState = MovingForward;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;
+                  // optionally, consume or re-map this event for the upper
+                  // level state machine
+                  ReturnEvent.EventType = ES_NO_EVENT;
+                  
+							 }
+							 break;
+							 
+							 default:
+							{;
+							}
+                // repeat cases as required for relevant events
+            }
+
+         }
        
       // repeat state pattern as required for other states
     }
 		break;
+       
+    case MovingForward :      
+		{
+      ReturnEvent = CurrentEvent = DuringMovingForward(CurrentEvent);
+      //process any events
+				 
+				 
+      //Do we want to respond to any events here?
+      if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
+      {
+        switch (CurrentEvent.EventType)
+        {
+           case EV_MOVE_COMPLETED :
+           {
+             //If event is event one
+              // Execute action function for state one : event one
+              NextState = MovingForward;//Decide what the next state will be
+              // for internal transitions, skip changing MakeTransition
+              MakeTransition = true; //mark that we are taking a transition
+              // if transitioning to a state with history change kind of entry
+              EntryEventKind.EventType = ES_ENTRY;
+              // optionally, consume or re-map this event for the upper
+              // level state machine
+              ReturnEvent.EventType = ES_NO_EVENT;
+                  
+						}
+            break;
+							 
+            default:
+						{;
+						}
+                // repeat cases as required for relevant events
+         }
+
+     }
+       
+      // repeat state pattern as required for other states
+    }
+		break;         
 	
 		default:
 		{;
@@ -217,6 +296,110 @@ CollisionAvoidanceState_t QueryCollisionAvoidanceHSM(void)
  ***************************************************************************/
 
 static ES_Event_t DuringMovingBackwards( ES_Event_t Event)
+{
+    ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
+
+    // process ES_ENTRY, ES_ENTRY_HISTORY & ES_EXIT events
+    if ( (Event.EventType == ES_ENTRY) ||
+         (Event.EventType == ES_ENTRY_HISTORY) )
+    {
+      //Determine which side of the bot got hit by querying the BumperService.c function
+        // implement any entry actions required for this state machine
+      if(QueryBotDirection()==FORWARDS)
+      {
+        DriveTurn
+      }
+			
+      
+				// Based on which of the limit switches have been activated: Set distance to move and which direction
+			  // Likely a combination of moving and reorienting afterwards
+				
+    }
+    else if ( Event.EventType == ES_EXIT )
+    {
+        // on exit, give the lower levels a chance to clean up first
+        //RunLowerLevelSM(Event);
+        // repeat for any concurrently running state machines
+        // now do any local exit functionality
+				
+			
+				// Assure we are not moving anymore! by setting MotorMovement to zero
+      
+    }else
+    // do the 'during' function for this state
+    {
+        // run any lower level state machine
+        // ReturnEvent = RunLowerLevelSM(Event);
+      
+        // repeat for any concurrent lower level machines
+      
+        // do any activity that is repeated as long as we are in this state
+				if (Event.EventType == EV_MOVE_COMPLETED)
+				{
+					ReturnEvent.EventType = EV_MOVED_BACK;
+				}
+				
+				else if (Event.EventType == EV_BUMPER_HIT)
+				{
+					//Decide what to do if the bumper is hit again
+				}
+    }
+    // return either Event, if you don't want to allow the lower level machine
+    // to remap the current event, or ReturnEvent if you do want to allow it.
+    return(ReturnEvent);
+}
+
+static ES_Event_t DuringQuarterTurn( ES_Event_t Event)
+{
+    ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
+
+    // process ES_ENTRY, ES_ENTRY_HISTORY & ES_EXIT events
+    if ( (Event.EventType == ES_ENTRY) ||
+         (Event.EventType == ES_ENTRY_HISTORY) )
+    {
+      //Determine which side of the bot got hit by querying the BumperService.c function
+        // implement any entry actions required for this state machine
+        
+			
+				// Based on which of the limit switches have been activated: Set distance to move and which direction
+			  // Likely a combination of moving and reorienting afterwards
+				
+    }
+    else if ( Event.EventType == ES_EXIT )
+    {
+        // on exit, give the lower levels a chance to clean up first
+        //RunLowerLevelSM(Event);
+        // repeat for any concurrently running state machines
+        // now do any local exit functionality
+				
+			
+				// Assure we are not moving anymore! by setting MotorMovement to zero
+      
+    }else
+    // do the 'during' function for this state
+    {
+        // run any lower level state machine
+        // ReturnEvent = RunLowerLevelSM(Event);
+      
+        // repeat for any concurrent lower level machines
+      
+        // do any activity that is repeated as long as we are in this state
+				if (Event.EventType == EV_MOVE_COMPLETED)
+				{
+					ReturnEvent.EventType = EV_MOVED_BACK;
+				}
+				
+				else if (Event.EventType == EV_BUMPER_HIT)
+				{
+					//Decide what to do if the bumper is hit again
+				}
+    }
+    // return either Event, if you don't want to allow the lower level machine
+    // to remap the current event, or ReturnEvent if you do want to allow it.
+    return(ReturnEvent);
+}
+
+static ES_Event_t DuringMovingForward( ES_Event_t Event)
 {
     ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
 

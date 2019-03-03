@@ -77,6 +77,8 @@ static ES_Event_t DuringLandfilling( ES_Event_t Event);
 // everybody needs a state variable, you may need others as well
 static GamePlayState_t CurrentState;
 
+static bool BotDirection=FORWARDS;
+
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
  Function
@@ -473,4 +475,21 @@ static ES_Event_t DuringLandfilling( ES_Event_t Event)
     // return either Event, if you don't want to allow the lower level machine
     // to remap the current event, or ReturnEvent if you do want to allow it.
     return(ReturnEvent);
+}
+
+bool QueryBotDirection(void)
+{
+  return BotDirection; 
+}
+
+void SetBotDirection(bool Direction)
+{
+  if(Direction == FORWARDS)
+  {
+    BotDirection = FORWARDS;
+  }
+  else
+  {
+    BotDirection = BACKWARDS;
+  }
 }

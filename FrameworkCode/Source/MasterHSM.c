@@ -73,6 +73,7 @@ static MasterState_t CurrentState;
 // with the introduction of Gen2, we need a module level Priority var as well
 static uint8_t MyPriority;
 static uint8_t OurTeam;
+static bool CrashFlag = false;
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
  Function
@@ -227,12 +228,43 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
             {
                case EV_BUMPER_HIT : //If event is event one
 							 {
-                  // Execute action function for state one : event one
-                  NextState = CollisionAvoidance;//Decide what the next state will be
-                  // for internal transitions, skip changing MakeTransition
-                  MakeTransition = true; //mark that we are taking a transition
-                  // if transitioning to a state with history change kind of entry
-                  EntryEventKind.EventType = ES_ENTRY;
+                 
+                 //Bot is hit on the front side
+                 if ((CurrentEvent.EventParam == 1) || (CurrentEvent.EventParam == 2))
+                 {
+                   if(QueryBotDirection()==BACKWARDS)
+                   {
+                     CrashFlag = false;
+                   }
+                   else
+                   {
+                     CrashFlag = true;
+                   }
+                 }
+                 
+                 else if ((CurrentEvent.EventParam == 3) || (CurrentEvent.EventParam == 4))
+                 {
+                   if(QueryBotDirection() == FORWARDS)
+                   {
+                     CrashFlag = false;
+                   }
+                   else
+                   {
+                     CrashFlag = true;
+                   }
+                 }
+                 
+                 if (CrashFlag == true)
+                 {
+                    // Execute action function for state one : event one
+                    NextState = CollisionAvoidance;//Decide what the next state will be
+                    // for internal transitions, skip changing MakeTransition
+                    MakeTransition = true; //mark that we are taking a transition
+                    // if transitioning to a state with history change kind of entry
+                    EntryEventKind.EventType = ES_ENTRY;
+                 }
+                 
+                 CrashFlag = false;
                   
 							 }
 							 
