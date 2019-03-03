@@ -281,14 +281,19 @@ typedef enum
   EV_COMPASS_RECYCLE_CHANGE,
   EV_COMPASS_GAME_OVER,
   EV_BUMPER_HIT,
-	EV_RECYCLING_DONE,
-	EV_LANDFILLING_DONE,
-	EV_MOVED_BACK,
-	EV_MOVE_COMPLETED,  
+  EV_RECYCLING_DONE,
+  EV_LANDFILLING_DONE,
+  EV_MOVED_BACK,
+  EV_MOVE_COMPLETED,  
   EV_TAPE_DETECTED,
   EV_ALIGNED2BEACON,
   EV_DUMP_RECYCLE,
   EV_DUMP_LANDFILL
+  EV_LEFT_TAPE_ON,
+  EV_LEFT_TAPE_OFF,
+  EV_RIGHT_TAPE_ON,
+  EV_RIGHT_TAPE_OFF,
+  EV_MOVE_COMPLETED
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -323,7 +328,8 @@ typedef enum
 
 /****************************************************************************/
 // This is the list of event checking functions
-#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished
+#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished, IR_found, Check4TapeFollow 
+
 
 /****************************************************************************/
 // These are the definitions for the post functions to be executed when the

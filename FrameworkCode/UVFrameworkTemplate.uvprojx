@@ -532,6 +532,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\GP_Display.c</FilePath>
             </File>
+            <File>
+              <FileName>TapeFollowingChecker.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\TapeFollowingChecker.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -781,6 +786,11 @@
               <FileName>GP_Display.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\GP_Display.h</FilePath>
+            </File>
+            <File>
+              <FileName>TapeFollowingChecker.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TapeFollowingChecker.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1505,6 +1515,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\GP_Display.c</FilePath>
             </File>
+            <File>
+              <FileName>TapeFollowingChecker.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\TapeFollowingChecker.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1754,6 +1769,11 @@
               <FileName>GP_Display.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\GP_Display.h</FilePath>
+            </File>
+            <File>
+              <FileName>TapeFollowingChecker.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TapeFollowingChecker.h</FilePath>
             </File>
           </Files>
         </Group>
