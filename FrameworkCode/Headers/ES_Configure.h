@@ -288,12 +288,11 @@ typedef enum
   EV_TAPE_DETECTED,
   EV_ALIGNED2BEACON,
   EV_DUMP_RECYCLE,
-  EV_DUMP_LANDFILL
+  EV_DUMP_LANDFILL,
   EV_LEFT_TAPE_ON,
   EV_LEFT_TAPE_OFF,
   EV_RIGHT_TAPE_ON,
   EV_RIGHT_TAPE_OFF,
-  EV_MOVE_COMPLETED
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -328,7 +327,7 @@ typedef enum
 
 /****************************************************************************/
 // This is the list of event checking functions
-#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished, IR_found, Check4TapeFollow 
+#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished, Check4TapeFollow 
 
 
 /****************************************************************************/

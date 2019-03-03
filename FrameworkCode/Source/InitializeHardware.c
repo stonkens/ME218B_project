@@ -85,6 +85,7 @@ void InitializeHardware(void)
   InitEmitterPWM();
 	InitHarvesterMotor();
   InitDriveMotor();
+  InitTapeHardware();
   //InitDrvieMotorPWM();
   Enc_Init();
   Drive_Control_Init();
