@@ -146,7 +146,7 @@ void disableTapeFollow(void){
 }
 
 void InitTapeHardware(void){
-  printf("Initializing tape hardward \r\n");
+  //printf("Initializing tape hardware \r\n");
   //initialize PE1 & PE2 as digital inputs
      // Set bit 4 and enable port E
   HWREG(SYSCTL_RCGCGPIO) |= SYSCTL_RCGCGPIO_R4;
@@ -159,6 +159,7 @@ void InitTapeHardware(void){
   HWREG(GPIO_PORTE_BASE + GPIO_O_DEN) |= (BIT1HI | BIT2HI);
   // Set PE0, PE1, PE2 to input
   HWREG(GPIO_PORTE_BASE + GPIO_O_DIR) &= (BIT1LO & BIT2LO);
+  disableTapeFollow();
 }
 
 /*------------------------------- Footnotes -------------------------------*/

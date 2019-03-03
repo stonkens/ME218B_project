@@ -17,10 +17,11 @@
 #define TURNING_SPEED					  200 //Max rotation speed
 #define LOCALIZATION_SPEED		  100 //Rotation speed when detecting IR
 #define COLLISIONAVOID_SPEED    50
-#define APPROACH_SPEED          20  //Approaching dumping station speed
+#define APPROACH_SPEED          50  //Approaching dumping station speed
+#define PREPARE4DUMP_SPEED      20
 
 #define COLLISIONAVOID_DISTANCE 1200
-
+#define PREPARE4DUMP_BACKUPDISTANCE     200
 
 #define QUARTER_TURN            900
 #define PLACEHOLDER_ANGLE       900

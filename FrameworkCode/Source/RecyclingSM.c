@@ -57,6 +57,7 @@
    next lower level in the hierarchy that are sub-machines to this machine
 */
 #include "RecyclingSM.h"
+#include "TapeFollowingChecker.h"
 
 //Enabling it to drive
 #include "DriveCommandModule.h"
@@ -319,7 +320,7 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
 
               case EV_RECYCLING_DONE:
               {
-                //Close the Recycling Door
+                //Close the Recycling Door: TO BE DONE
                 
                 //Process event at a higher level
                 ReturnEvent = CurrentEvent; 
@@ -440,9 +441,9 @@ static ES_Event_t DuringOrienting2Recycle( ES_Event_t Event)
       // implement any entry actions required for this state machine
        
 
-      // Set frequency to detect for IR 
-      // Set Posting possibility of IR to true
-      // Enable IR interrupts
+      // Set frequency to detect for IR: TO BE DONE
+      // Set Posting possibility of IR to true: TO BE DONE
+      // Enable IR interrupts: TO BE DONE
       
       // Start rotating (360 degrees but can be interferred)
       DriveRotate(LOCALIZATION_SPEED, 3600);			
@@ -454,10 +455,10 @@ static ES_Event_t DuringOrienting2Recycle( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
-      //Disable IR interrupts
+      //Disable IR interrupts: TO BE DONE
       
       //Stop Motors (should already be the case but to be sure)
-      
+      StopDrive();
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
@@ -492,7 +493,7 @@ static ES_Event_t DuringDriving2Recycle( ES_Event_t Event)
     {
         // implement any entry actions required for this state machine
         DriveStraight(STRAIGHT_SPEED, 10000);
-			
+        enableTapeFollow();
 				
         // after that start any lower level machines that run in this state
         //StartLowerLevelSM( Event );
@@ -501,7 +502,8 @@ static ES_Event_t DuringDriving2Recycle( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
-      //Stop Motors
+      //Stop Motors: TO BE DONE
+      disableTapeFollow(); 
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
@@ -532,8 +534,8 @@ static ES_Event_t DuringApproachingRecycle( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
         // implement any entry actions required for this state machine
-        
-        //Turn left if the right tape sensor is active
+        enableTapeFollow();
+      //Turn left if the right tape sensor is active: TO BE DONE
 			
 				
         // after that start any lower level machines that run in this state
@@ -543,6 +545,7 @@ static ES_Event_t DuringApproachingRecycle( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
+      disableTapeFollow();
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
@@ -573,8 +576,8 @@ static ES_Event_t DuringPreparing4Recycle( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
         
-        //Go back a little bit
-        
+      //Go back a little bit: TO BE DONE
+      DriveStraight(PREPARE4DUMP_SPEED, PREPARE4DUMP_BACKUPDISTANCE);
 				
         // after that start any lower level machines that run in this state
         //StartLowerLevelSM( Event );
@@ -584,7 +587,8 @@ static ES_Event_t DuringPreparing4Recycle( ES_Event_t Event)
     else if ( Event.EventType == ES_EXIT )
     {
       //Stop Motors
-        // on exit, give the lower levels a chance to clean up first
+      disableTapeFollow();  
+      // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
         // now do any local exit functionality
