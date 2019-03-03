@@ -31,7 +31,7 @@
 
 
 #include "GP_Display.h"
-
+#include "BallProcessingSM.h"
 #include "MasterHSM.h"
 #include "CollectingSM.h"
 /*----------------------------- Module Defines ----------------------------*/
@@ -202,12 +202,12 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             break;
             case '1':
             {
-              RecycleBalls++;
+              AddRecycleBalls();
             }
             break;
             case '0':
             {
-              LandFillBalls++;
+              AddLandFillBalls();
             }
             break;
             case 'X' :
@@ -230,15 +230,6 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
   return ReturnEvent;
 }
 
-uint8_t QueryRecycleBalls(void)
-{
-  return RecycleBalls;
-}
-
-uint8_t QueryLandFillBalls(void)
-{
-  return LandFillBalls;
-}
 
 /***************************************************************************
  private functions

@@ -537,6 +537,21 @@
               <FileType>1</FileType>
               <FilePath>.\Source\TapeFollowingChecker.c</FilePath>
             </File>
+            <File>
+              <FileName>BallDumpingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\BallDumpingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>BallProcessingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\BallProcessingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>ColorService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\ColorService.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -791,6 +806,21 @@
               <FileName>TapeFollowingChecker.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\TapeFollowingChecker.h</FilePath>
+            </File>
+            <File>
+              <FileName>BallDumpingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\BallDumpingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>BallProcessingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\BallProcessingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>ColorService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\ColorService.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1520,6 +1550,21 @@
               <FileType>1</FileType>
               <FilePath>.\Source\TapeFollowingChecker.c</FilePath>
             </File>
+            <File>
+              <FileName>BallDumpingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\BallDumpingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>BallProcessingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\BallProcessingSM.c</FilePath>
+            </File>
+            <File>
+              <FileName>ColorService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\ColorService.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1774,6 +1819,21 @@
               <FileName>TapeFollowingChecker.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\TapeFollowingChecker.h</FilePath>
+            </File>
+            <File>
+              <FileName>BallDumpingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\BallDumpingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>BallProcessingSM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\BallProcessingSM.h</FilePath>
+            </File>
+            <File>
+              <FileName>ColorService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\ColorService.h</FilePath>
             </File>
           </Files>
         </Group>

@@ -30,6 +30,9 @@
 #include "LandfillingSM.h"
 #include "KeyMapperService.h"
 #include <stdio.h>
+#include "ColorService.h"
+#include "BallDumpingSM.h"
+#include "BallProcessingSM.h"
 
 bool BotDirection;
 

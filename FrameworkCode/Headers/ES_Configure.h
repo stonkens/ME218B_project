@@ -33,7 +33,7 @@
 /****************************************************************************/
 // This macro determines that nuber of services that are *actually* used in
 // a particular application. It will vary in value from 1 to MAX_NUM_SERVICES
-#define NUM_SERVICES 4
+#define NUM_SERVICES 8
 
 /****************************************************************************/
 // These are the definitions for Service 0, the lowest priority service.
@@ -110,11 +110,11 @@
 // These are the definitions for Service 4
 #if NUM_SERVICES > 5
 // the header file with the public function prototypes
-#define SERV_5_HEADER "MotorService.h"
+#define SERV_5_HEADER "ColorService.h"
 // the name of the Init function
-#define SERV_5_INIT InitMotorService
+#define SERV_5_INIT InitColorService
 // the name of the run function
-#define SERV_5_RUN RunMotorService
+#define SERV_5_RUN RunColorService
 // How big should this services Queue be?
 #define SERV_5_QUEUE_SIZE 3
 #endif
@@ -123,11 +123,11 @@
 // These are the definitions for Service 6
 #if NUM_SERVICES > 6
 // the header file with the public function prototypes
-#define SERV_6_HEADER "TestHarnessService6.h"
+#define SERV_6_HEADER "BallProcessingSM.h"
 // the name of the Init function
-#define SERV_6_INIT InitTestHarnessService6
+#define SERV_6_INIT InitBallProcessingSM
 // the name of the run function
-#define SERV_6_RUN RunTestHarnessService6
+#define SERV_6_RUN RunBallProcessingSM
 // How big should this services Queue be?
 #define SERV_6_QUEUE_SIZE 3
 #endif
@@ -136,11 +136,11 @@
 // These are the definitions for Service 7
 #if NUM_SERVICES > 7
 // the header file with the public function prototypes
-#define SERV_7_HEADER "TestHarnessService7.h"
+#define SERV_7_HEADER "BallDumpingSM.h"
 // the name of the Init function
-#define SERV_7_INIT InitTestHarnessService7
+#define SERV_7_INIT InitBallDumpingSM
 // the name of the run function
-#define SERV_7_RUN RunTestHarnessService7
+#define SERV_7_RUN RunBallDumpingSM
 // How big should this services Queue be?
 #define SERV_7_QUEUE_SIZE 3
 #endif
@@ -293,6 +293,8 @@ typedef enum
   EV_LEFT_TAPE_OFF,
   EV_RIGHT_TAPE_ON,
   EV_RIGHT_TAPE_OFF,
+  EV_BALL_GONE,
+  EV_BALL_DETECTED
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -343,9 +345,9 @@ typedef enum
 #define TIMER3_RESP_FUNC PostKeyMapperService
 #define TIMER4_RESP_FUNC TIMER_UNUSED
 #define TIMER5_RESP_FUNC TIMER_UNUSED
-#define TIMER6_RESP_FUNC TIMER_UNUSED
-#define TIMER7_RESP_FUNC TIMER_UNUSED
-#define TIMER8_RESP_FUNC TIMER_UNUSED
+#define TIMER6_RESP_FUNC PostColorService
+#define TIMER7_RESP_FUNC PostBallProcessingSM
+#define TIMER8_RESP_FUNC PostBallDumpingSM
 #define TIMER9_RESP_FUNC TIMER_UNUSED
 #define TIMER10_RESP_FUNC TIMER_UNUSED
 #define TIMER11_RESP_FUNC TIMER_UNUSED
@@ -365,6 +367,9 @@ typedef enum
 #define SPI_TIMER 1
 #define SPI_REFRESH_TIMER 2
 #define DISPLAY_TIMER 3
+#define COLOR_SENSE_TIMER 6 
+#define PROCESSING_TIMER 7 
+#define DUMP_TIMER 8 
 #define LOCALIZE_TIMER 13
 #define BALL_COLLECTION_TIMER 14
 #define I2C_TIMER 15
