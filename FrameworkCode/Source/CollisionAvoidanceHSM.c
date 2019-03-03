@@ -58,6 +58,10 @@
 */
 #include "CollisionAvoidanceHSM.h"
 
+
+#include "DriveCommandModule.h"
+#include "GamePlayHSM.h"
+#include "MasterHSM.h"
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
 // and any other local defines
@@ -307,9 +311,13 @@ static ES_Event_t DuringMovingBackwards( ES_Event_t Event)
         // implement any entry actions required for this state machine
       if(QueryBotDirection()==FORWARDS)
       {
-        DriveTurn
+        DriveStraight(COLLISIONAVOID_SPEED, -COLLISIONAVOID_DISTANCE); 
       }
-			
+      
+      else //(QueryBotDirection()==BACKWARDS)
+			{
+        DriveStraight(COLLISIONAVOID_SPEED, COLLISIONAVOID_DISTANCE);
+      }
       
 				// Based on which of the limit switches have been activated: Set distance to move and which direction
 			  // Likely a combination of moving and reorienting afterwards
@@ -317,11 +325,7 @@ static ES_Event_t DuringMovingBackwards( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
-        // on exit, give the lower levels a chance to clean up first
-        //RunLowerLevelSM(Event);
-        // repeat for any concurrently running state machines
-        // now do any local exit functionality
-				
+      StopDrive();
 			
 				// Assure we are not moving anymore! by setting MotorMovement to zero
       
@@ -357,6 +361,7 @@ static ES_Event_t DuringQuarterTurn( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      DriveRotate(COLLISIONAVOID_SPEED, QUARTER_TURN); 
       //Determine which side of the bot got hit by querying the BumperService.c function
         // implement any entry actions required for this state machine
         
@@ -372,27 +377,19 @@ static ES_Event_t DuringQuarterTurn( ES_Event_t Event)
         // repeat for any concurrently running state machines
         // now do any local exit functionality
 				
-			
+			StopDrive();
 				// Assure we are not moving anymore! by setting MotorMovement to zero
       
     }else
     // do the 'during' function for this state
     {
+      
         // run any lower level state machine
         // ReturnEvent = RunLowerLevelSM(Event);
       
         // repeat for any concurrent lower level machines
       
         // do any activity that is repeated as long as we are in this state
-				if (Event.EventType == EV_MOVE_COMPLETED)
-				{
-					ReturnEvent.EventType = EV_MOVED_BACK;
-				}
-				
-				else if (Event.EventType == EV_BUMPER_HIT)
-				{
-					//Decide what to do if the bumper is hit again
-				}
     }
     // return either Event, if you don't want to allow the lower level machine
     // to remap the current event, or ReturnEvent if you do want to allow it.
@@ -407,6 +404,15 @@ static ES_Event_t DuringMovingForward( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      if(QueryBotDirection()==FORWARDS)
+      {
+        DriveStraight(COLLISIONAVOID_SPEED, COLLISIONAVOID_DISTANCE); 
+      }
+      
+      else //(QueryBotDirection()==BACKWARDS)
+			{
+        DriveStraight(COLLISIONAVOID_SPEED, -COLLISIONAVOID_DISTANCE);
+      }
       //Determine which side of the bot got hit by querying the BumperService.c function
         // implement any entry actions required for this state machine
         
@@ -417,6 +423,7 @@ static ES_Event_t DuringMovingForward( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
+      StopDrive();
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
@@ -434,15 +441,6 @@ static ES_Event_t DuringMovingForward( ES_Event_t Event)
         // repeat for any concurrent lower level machines
       
         // do any activity that is repeated as long as we are in this state
-				if (Event.EventType == EV_MOVE_COMPLETED)
-				{
-					ReturnEvent.EventType = EV_MOVED_BACK;
-				}
-				
-				else if (Event.EventType == EV_BUMPER_HIT)
-				{
-					//Decide what to do if the bumper is hit again
-				}
     }
     // return either Event, if you don't want to allow the lower level machine
     // to remap the current event, or ReturnEvent if you do want to allow it.
