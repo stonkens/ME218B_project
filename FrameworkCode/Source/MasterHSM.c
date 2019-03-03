@@ -370,6 +370,11 @@ void StartMasterSM ( ES_Event_t CurrentEvent )
   return;
 }
 
+MasterState_t QueryMasterSM(void)
+{
+  return(CurrentState);
+}
+
 
 /***************************************************************************
  private functions

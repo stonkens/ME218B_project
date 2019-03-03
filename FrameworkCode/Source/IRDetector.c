@@ -47,7 +47,6 @@
 
 #include "IRDetector.h"
 
-#include "DCMotorService.h"//posts to this for testing
 
 /*----------------------------- Module Defines -----------------------------*/
 #define MAX_PERIOD_us 820

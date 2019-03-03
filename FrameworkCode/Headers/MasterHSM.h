@@ -26,5 +26,6 @@ void StartMasterSM ( ES_Event_t CurrentEvent );
 bool PostMasterSM( ES_Event_t ThisEvent );
 bool InitMasterSM ( uint8_t Priority );
 uint8_t QueryTeam(void);
+MasterState_t QueryMasterSM(void);
 #endif /*MasterHSM_H */
 

@@ -38,7 +38,8 @@
 /*---------------------------- Module Variables ---------------------------*/
 // with the introduction of Gen2, we need a module level Priority variable
 static uint8_t MyPriority;
-
+static uint8_t RecycleBalls = 0;
+static uint8_t LandFillBalls = 0;
 
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
@@ -133,6 +134,16 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
     }
     
   return ReturnEvent;
+}
+
+uint8_t QueryRecycleBalls(void)
+{
+  return RecycleBalls;
+}
+
+uint8_t QueryLandFillBalls(void)
+{
+  return LandFillBalls;
 }
 
 /***************************************************************************
