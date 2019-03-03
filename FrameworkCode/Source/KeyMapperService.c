@@ -28,8 +28,13 @@
 // to get toupper()
 #include <ctype.h>
 
-/*----------------------------- Module Defines ----------------------------*/
 
+
+#include "GP_Display.h"
+
+#include "MasterHSM.h"
+/*----------------------------- Module Defines ----------------------------*/
+#define DISPLAY_UPDATE_TIME 100
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this service.They should be functions
    relevant to the behavior of this service
@@ -69,15 +74,11 @@ bool InitKeyMapperService ( uint8_t Priority )
    in here you write your initialization code
    *******************************************/
   // post the initial transition event
-  ThisEvent.EventType = ES_INIT;
-  if (ES_PostToService( MyPriority, ThisEvent) == true)
-  {
-      return true;
-  }else
-  {
-      return false;
-  }
-}
+  ES_Timer_InitTimer(DISPLAY_TIMER, DISPLAY_UPDATE_TIME);
+  
+  return true;
+ }
+
 
 /****************************************************************************
  Function
@@ -123,16 +124,81 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
   ES_Event_t ReturnEvent;
   ReturnEvent.EventType = ES_NO_EVENT; // assume no errors
 
-    if ( ThisEvent.EventType == ES_NEW_KEY) // there was a key pressed
+    if (ES_NEW_KEY == ThisEvent.EventType) // there was a key pressed
     {
         switch ( toupper(ThisEvent.EventParam))
         {
-            case '.' : ThisEvent.EventType = EV_I2C_ReadClear;  break;
-            case ',' : ThisEvent.EventType = EV_I2C_StepFinished; break;
+            case 'S' : 
+            {
+              ThisEvent.EventType = EV_COMPASS_CLEANING_UP;
+            }
+            break;
+            case 'C' : 
+            {
+              ThisEvent.EventType = EV_COMPASS_RECYCLE_CHANGE; 
+            }
+            break;
+            case 'G' :
+            {
+              ThisEvent.EventType = EV_COMPASS_GAME_OVER;
+            }
+            break;
+            case 'B' :
+            {
+              ThisEvent.EventType = EV_BUMPER_HIT;
+              ThisEvent.EventParam = 1;
+            }
+            break;
+            case 'D' :
+            {
+              ThisEvent.EventType = EV_RECYCLING_DONE;
+            }
+            break;
+            case 'L' :
+            {
+              ThisEvent.EventType = EV_LANDFILLING_DONE;
+            }
+            break;
+            case 'Y' :
+            {
+              ThisEvent.EventType = EV_MOVED_BACK;
+            }
+            break;
+            case 'M' :
+            {
+              ThisEvent.EventType = EV_MOVE_COMPLETED;
+            }
+            break;
+            case 'T' :
+            {
+              ThisEvent.EventType = EV_TAPE_DETECTED;
+            }
+            break;
+            case 'Z':
+            {
+              ThisEvent.EventType = EV_ALIGNED2BEACON;
+            }
+            break;
+            case '1':
+            {
+              RecycleBalls++;
+            }
+            case '2':
+            {
+              LandFillBalls++;
+            }
+            
+              
         }
-        PostI2CService(ThisEvent);
+        PostMasterSM(ThisEvent);
     }
     
+    if ((ES_TIMEOUT == ThisEvent.EventType) && (ThisEvent.EventParam == DISPLAY_TIMER))
+    {
+      UpdateDisplay();
+      ES_Timer_InitTimer(DISPLAY_TIMER, DISPLAY_UPDATE_TIME);
+      
+    }
   return ReturnEvent;
 }
 
