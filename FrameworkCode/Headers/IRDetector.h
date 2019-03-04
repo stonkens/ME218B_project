@@ -17,7 +17,12 @@
 void IRInitInputCapture(void);
 void IR_ISR(void);
 
+#define EAST_RECYCLING_PERIOD 500 //us
+#define WEST_RECYCLING_PERIOD 600 //us
+#define SOUTH_LANDFILL_PERIOD 700 //us
+#define NORTH_LANDFILL_PERIOD 800 //us
 
+#define DETECTION_TOLERANCE 25 //us
 
 //IR Disabler/Enabler
 //IR sensor to be disabled after every localization

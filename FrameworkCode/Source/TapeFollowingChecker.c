@@ -34,7 +34,7 @@
 #include "inc/hw_gpio.h"
 #include "inc/hw_sysctl.h"
 #include "termio.h"
-
+#include "MasterHSM.h"
 // Specific Hardware
 
 // Event & Services Framework
@@ -103,14 +103,14 @@ bool Check4TapeFollow(void)
       ThisEvent.EventType = EV_LEFT_TAPE_ON;
       ThisEvent.EventParam = ES_Timer_GetTime(); //time in ticks 
       printf("Left tape on\r\n");
-      //PostMasterSM(ThisEvent);
+      PostMasterSM(ThisEvent);
     }
     if ((CurrentTapeFollowLeft & BIT1HI) == BIT1HI) //signal is high when off the tape 
     {
       ThisEvent.EventType = EV_LEFT_TAPE_OFF;
       ThisEvent.EventParam = ES_Timer_GetTime(); //time in ticks 
       printf("Left tape off\r\n");
-      //PostMasterSM(ThisEvent);
+      PostMasterSM(ThisEvent);
     }    
   }
     if (CurrentTapeFollowRight != LastTapeFollowRight)
@@ -121,14 +121,14 @@ bool Check4TapeFollow(void)
       ThisEvent.EventType = EV_RIGHT_TAPE_ON;
       ThisEvent.EventParam = ES_Timer_GetTime(); //time in ticks 
       printf("Right tape on\r\n");
-      //PostMasterSM(ThisEvent);
+      PostMasterSM(ThisEvent);
     }
     if ((CurrentTapeFollowRight & BIT2HI) == BIT2HI) //signal is high when off the tape 
     {
       ThisEvent.EventType = EV_RIGHT_TAPE_OFF;
       ThisEvent.EventParam = ES_Timer_GetTime(); 
       printf("Right tape off\r\n");
-      //PostMasterSM(ThisEvent);
+      PostMasterSM(ThisEvent);
     }    
   }
   LastTapeFollowLeft = CurrentTapeFollowLeft; 

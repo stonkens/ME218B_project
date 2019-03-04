@@ -71,9 +71,8 @@
 
 #define ENTRY_STATE Orienting
 #define IR_FIRST_DELAY 100
-#define LOCALIZATIONSPEED 100
 
-#define QUARTER_TURN 900
+#define REORIENTATION_DELAY 1000
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
    functions, entry & exit functions.They should be functions relevant to the
@@ -144,6 +143,7 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
                 //printf("PositionAwareness: %d \r\n", PositionAwareness);
                 if (PositionAwareness == true)
                 {
+                  StopDrive();
                   // Execute action function for state one : event one
                   NextState = Driving2Target;//Decide what the next state will be
                   // for internal transitions, skip changing MakeTransition
@@ -151,22 +151,37 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
                   // if transitioning to a state with history change kind of entry
                   EntryEventKind.EventType = ES_ENTRY;
                   //printf("\r\n In here");
+                  ReturnEvent.EventType = ES_NO_EVENT;
                   
                 }
                 else
                 {
-                  // Execute action function for state one : event one
-                  NextState = Orienting;//Decide what the next state will be
-                  // for internal transitions, skip changing MakeTransition
-                  MakeTransition = true; //mark that we are taking a transition
-                  // if transitioning to a state with history change kind of entry
-                  EntryEventKind.EventType = ES_ENTRY;                
+                  StopDrive();
+                  ES_Timer_InitTimer(REORIENTATION_TIMER, REORIENTATION_DELAY);
+                  ReturnEvent.EventType = ES_NO_EVENT;                  
                 }
                 //Current placeholder event
                 PositionAwareness = false;
                 
               }
 							break;
+              
+              case ES_TIMEOUT:
+              {
+                if(CurrentEvent.EventParam == REORIENTATION_TIMER)
+                {
+                  StopDrive();
+                  // Execute action function for state one : event one
+                  NextState = Orienting;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;
+                  //printf("\r\n In here");
+                  ReturnEvent.EventType = ES_NO_EVENT;                 
+                }
+              }
+              break;
 							 
               default:
               {;
@@ -195,11 +210,13 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
               {
                 if (RotatedFlag == true)
                 {
+                  StopDrive();
                   DriveStraight(STRAIGHT_SPEED, TargetDistance);
                   RotatedFlag = false;
                 }
                 else
                 {
+                  StopDrive();
                   // Execute action function for state one : event one
                   NextState = Roaming;//Decide what the next state will be
                   // for internal transitions, skip changing MakeTransition
@@ -207,6 +224,7 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
                   // if transitioning to a state with history change kind of entry
                   EntryEventKind.EventType = ES_ENTRY;                              
                   //Select new move to start up (Idea: Start from one point and go to others)
+                  ReturnEvent.EventType = ES_NO_EVENT;
                   
                 }
                   
@@ -238,6 +256,7 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
               {
                 if(RotatedFlag == true)
                 {
+                  StopDrive();
                   DriveDistance = -fabsf(TargetPoints[TargetPoint+1][0]-TargetPoints[TargetPoint][0]);
                   DriveStraight(STRAIGHT_SPEED, DriveDistance);
                   RotatedFlag = false;
@@ -249,6 +268,7 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
                 }
                 else //if RotatedFlag == False
                 {
+                  StopDrive();
                   DriveRotate(TURNING_SPEED, QUARTER_TURN);
                   RotatedFlag = true;
                 }
@@ -360,7 +380,7 @@ static ES_Event_t DuringOrienting( ES_Event_t Event)
       //Enable IR readings
       IREnableInterrupt();
       //Rotate 360 degrees
-      DriveRotate(LOCALIZATIONSPEED, 360);
+      DriveRotate(LOCALIZATION_SPEED, 3600);
       
       //Start any lower level machines that run in this state
       StartOrientingSM(Event);
@@ -371,6 +391,7 @@ static ES_Event_t DuringOrienting( ES_Event_t Event)
     {
         // on exit, give the lower levels a chance to clean up first
         RunOrientingSM(Event);
+        StopDrive();
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
         // now do any local exit functionality
@@ -448,6 +469,7 @@ static ES_Event_t DuringDriving2Target(ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
+      StopDrive();
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
@@ -492,7 +514,9 @@ static ES_Event_t DuringRoaming( ES_Event_t Event)
     else if ( Event.EventType == ES_EXIT )
     {
       
+      StopDrive();
       SetBotDirection(FORWARDS);
+      
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines

@@ -25,6 +25,9 @@
 #define BLUE              0x04
 #define PINK              0x05
 
+#define EAST_RECYCLE 2
+#define WEST_RECYCLE 3
+
 
 #define WEST_RECYCLE_FREQUENCY    1667
 #define EAST_RECYCLE_FREQUENCY    2000
@@ -50,7 +53,7 @@ uint16_t GetLeftRecycleFreq(void);
 uint16_t GetRightRecycleFreq(void);
 uint8_t GetAssignedColor(void);
 uint8_t QueryWhichRecycle(void);
-uint16_t GetAssignedFreq(void);
+uint16_t GetAssignedPeriod(void);
 void InitSPI(void);
 
 void SetReady2Communicate(bool CommunicateReady);

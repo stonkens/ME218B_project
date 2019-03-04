@@ -33,7 +33,7 @@
 /****************************************************************************/
 // This macro determines that nuber of services that are *actually* used in
 // a particular application. It will vary in value from 1 to MAX_NUM_SERVICES
-#define NUM_SERVICES 8
+#define NUM_SERVICES 9
 
 /****************************************************************************/
 // These are the definitions for Service 0, the lowest priority service.
@@ -149,11 +149,11 @@
 // These are the definitions for Service 8
 #if NUM_SERVICES > 8
 // the header file with the public function prototypes
-#define SERV_8_HEADER "TestHarnessService8.h"
+#define SERV_8_HEADER "LEDService.h"
 // the name of the Init function
-#define SERV_8_INIT InitTestHarnessService8
+#define SERV_8_INIT InitLEDService
 // the name of the run function
-#define SERV_8_RUN RunTestHarnessService8
+#define SERV_8_RUN RunLEDService
 // How big should this services Queue be?
 #define SERV_8_QUEUE_SIZE 3
 #endif
@@ -294,7 +294,10 @@ typedef enum
   EV_RIGHT_TAPE_ON,
   EV_RIGHT_TAPE_OFF,
   EV_BALL_GONE,
-  EV_BALL_DETECTED
+  EV_BALL_DETECTED,
+  EV_GO2RECYCLE,
+  EV_GO2LANDFILL,
+  
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -343,12 +346,12 @@ typedef enum
 #define TIMER1_RESP_FUNC PostSPISM
 #define TIMER2_RESP_FUNC PostSPISM
 #define TIMER3_RESP_FUNC PostKeyMapperService
-#define TIMER4_RESP_FUNC TIMER_UNUSED
+#define TIMER4_RESP_FUNC PostMasterSM
 #define TIMER5_RESP_FUNC TIMER_UNUSED
 #define TIMER6_RESP_FUNC PostColorService
 #define TIMER7_RESP_FUNC PostBallProcessingSM
 #define TIMER8_RESP_FUNC PostBallDumpingSM
-#define TIMER9_RESP_FUNC TIMER_UNUSED
+#define TIMER9_RESP_FUNC PostLEDService 
 #define TIMER10_RESP_FUNC TIMER_UNUSED
 #define TIMER11_RESP_FUNC TIMER_UNUSED
 #define TIMER12_RESP_FUNC TIMER_UNUSED
@@ -367,12 +370,14 @@ typedef enum
 #define SPI_TIMER 1
 #define SPI_REFRESH_TIMER 2
 #define DISPLAY_TIMER 3
+#define REORIENTATION_TIMER 4
 #define COLOR_SENSE_TIMER 6 
 #define PROCESSING_TIMER 7 
 #define DUMP_TIMER 8 
 #define LOCALIZE_TIMER 13
 #define BALL_COLLECTION_TIMER 14
 #define I2C_TIMER 15
+#define LED_TIMER 9 
 
 /**************************************************************************/
 // uncomment this line to get some basic framework operation debugging on

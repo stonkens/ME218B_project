@@ -163,11 +163,7 @@
 static uint8_t MyPriority;
 static ColorState_t CurrentState; 
 static uint8_t DetectCount = 0; 
-static uint16_t LastRedValue; 
-static uint16_t LastBlueValue; 
-static uint16_t LastGreenValue; 
-static uint16_t LastClearValue; 
-static bool PostFlag = false; 
+
 /*------------------------------ Module Code ------------------------------*/
 
 /****************************************************************************

@@ -77,6 +77,7 @@ int main (void)
   puts( "'P'= EV_MOVE_COMPLETED\r\n");
   puts( "'T'= EV_TAPE_DETECTED\r\n");
   puts( "'Z'= EV_ALIGNED2BEACON\r\n");
+  puts( "'X'= Change Position Awareness to true\r\n");
   puts( "      MasterSM     | GamePlayHSM|  CollectingSM | OrientingSM |     RecyclingSM   |     LandfillingSM  | Col. Avoidance |D | R |L | PositionAwarness\r");
 
   // reprogram the ports that are set as alternate functions or

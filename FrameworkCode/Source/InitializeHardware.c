@@ -81,6 +81,7 @@ void InitializeHardware(void)
 {
   
   InitializeAllPorts();
+  InitializeRegularGPIOPorts();
 	InitSPI();
   InitEmitterPWM();
 	InitHarvesterMotor();
@@ -158,9 +159,13 @@ static void InitializeRegularGPIOPorts(void)
   HWREG(GPIO_PORTB_BASE + GPIO_O_DEN) |= (BIT0HI | BIT1HI);
   HWREG(GPIO_PORTB_BASE + GPIO_O_DIR) |= (BIT1HI | BIT2HI);
 
-  //Intially set them as low
-  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0HI;
-  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1HI;  
+  //Intially set them as high (this means it's off)
+  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
+  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI;  
+  
+  //Set PB7 as digital input (for Tapefollowing)
+  HWREG(GPIO_PORTB_BASE + GPIO_O_DEN) |= (BIT7HI);
+  HWREG(GPIO_PORTB_BASE + GPIO_O_DIR) &= BIT7HI;
   
   //Set PD2, PD3, PD6 & PD7 as digital inputs
   HWREG(GPIO_PORTD_BASE + GPIO_O_DEN) |= (BIT2HI | BIT3HI | BIT6HI | BIT7HI);
@@ -169,7 +174,7 @@ static void InitializeRegularGPIOPorts(void)
   HWREG(GPIO_PORTD_BASE + GPIO_O_DIR) &= BIT6LO;  
   HWREG(GPIO_PORTD_BASE + GPIO_O_DIR) &= BIT7LO;  
   
-  //Set PE1, PE2 and PE3 as digital inputs
+  //Set PE1, PE2 and PE3 as digital inputs (for Tapefollowing & Team Switch)
   HWREG(GPIO_PORTE_BASE + GPIO_O_DEN) |= (BIT1HI | BIT2HI | BIT3HI);
   HWREG(GPIO_PORTE_BASE + GPIO_O_DIR) &= BIT1LO; 
   HWREG(GPIO_PORTE_BASE + GPIO_O_DIR) &= BIT2LO;

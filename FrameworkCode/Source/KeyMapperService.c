@@ -44,8 +44,7 @@
 /*---------------------------- Module Variables ---------------------------*/
 // with the introduction of Gen2, we need a module level Priority variable
 static uint8_t MyPriority;
-static uint8_t RecycleBalls = 0;
-static uint8_t LandFillBalls = 0;
+
 
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
@@ -69,7 +68,6 @@ static uint8_t LandFillBalls = 0;
 bool InitKeyMapperService ( uint8_t Priority )
 {
   ES_Event_t ThisEvent;
-
   MyPriority = Priority;
   /********************************************
    in here you write your initialization code
@@ -170,13 +168,13 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             break;
             case 'D' :
             {
-              RecycleBalls = 0;
+              clearRecycleBalls();
               ThisEvent.EventType = EV_RECYCLING_DONE;
             }
             break;
             case 'L' :
             {
-              LandFillBalls = 0;
+              clearLandfillBalls();
               ThisEvent.EventType = EV_LANDFILLING_DONE;
             }
             break;

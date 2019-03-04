@@ -47,6 +47,8 @@
 #include "ColorService.h"
 #include "hw_pwm.h"
 
+#include "MasterHSM.h"
+
 
 /*----------------------------- Module Defines ----------------------------*/
 //#define TEST
@@ -166,6 +168,7 @@ bool PostBallProcessingSM(ES_Event_t ThisEvent)
 ES_Event_t RunBallProcessingSM(ES_Event_t ThisEvent)
 {
   ES_Event_t ReturnEvent;
+  ES_Event_t Ready2DumpEvent;
   ReturnEvent.EventType = ES_NO_EVENT; // assume no errors
   
    switch (CurrentState)
@@ -175,15 +178,29 @@ ES_Event_t RunBallProcessingSM(ES_Event_t ThisEvent)
       if (((ThisEvent.EventType == EV_BALL_DETECTED) && (ThisEvent.EventParam == BLUE)) || 
         ((ThisEvent.EventType == EV_BALL_DETECTED) && (ThisEvent.EventParam == RecycleColor)))
       {
-      numRecycled++;
-      printf("Recycrables %d\r\n", numRecycled);
-      ES_Timer_InitTimer(PROCESSING_TIMER,PROCESSING_TIME); 
-      CurrentState = Recycle;
-      }else if(ThisEvent.EventType == EV_BALL_DETECTED){
-      numTrashed++; 
-      printf("Trash %d\r\n", numTrashed);
-      ES_Timer_InitTimer(PROCESSING_TIMER,PROCESSING_TIME); 
-      CurrentState = Landfill;
+        numRecycled++;
+        printf("Recycrables %d\r\n", numRecycled);
+        if (numRecycled>=RECYCLE_LIMIT)
+        {
+          Ready2DumpEvent.EventType = EV_GO2RECYCLE;
+          PostMasterSM(Ready2DumpEvent);
+          
+        }
+        ES_Timer_InitTimer(PROCESSING_TIMER,PROCESSING_TIME); 
+        CurrentState = Recycle;
+      }
+      else if(ThisEvent.EventType == EV_BALL_DETECTED)
+      {
+        numTrashed++; 
+        printf("Trash %d\r\n", numTrashed);
+        if(numTrashed>= LANDFILL_LIMIT)
+        {
+          Ready2DumpEvent.EventType = EV_GO2LANDFILL;
+          PostMasterSM(Ready2DumpEvent);
+          
+        }
+        ES_Timer_InitTimer(PROCESSING_TIMER,PROCESSING_TIME); 
+        CurrentState = Landfill;
       }        
     }
     break;

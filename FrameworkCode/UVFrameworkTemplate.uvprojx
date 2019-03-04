@@ -552,6 +552,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\ColorService.c</FilePath>
             </File>
+            <File>
+              <FileName>LEDService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\LEDService.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1564,6 +1569,11 @@
               <FileName>ColorService.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\ColorService.c</FilePath>
+            </File>
+            <File>
+              <FileName>LEDService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\LEDService.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -170,7 +170,8 @@ ES_Event_t RunBallDumpingSM(ES_Event_t ThisEvent)
     case Waiting2Dump:
     {
       printf("In waiting to dump\r\n");
-      if(ThisEvent.EventType == EV_DUMP_RECYCLE){
+      if(ThisEvent.EventType == EV_DUMP_RECYCLE)
+      {
         openRecyclingDoor(); 
         ES_Timer_InitTimer(DUMP_TIMER, DUMP_TIME); 
         CurrentState = RecycleDumping; 

@@ -45,7 +45,7 @@
 #include "GamePlayHSM.h"
 #include "CollisionAvoidanceHSM.h"
 
-
+#include "LEDService.h"
 
 // the headers to access the GPIO subsystem
 #include "inc/hw_memmap.h"
@@ -119,7 +119,6 @@ bool InitMasterSM ( uint8_t Priority )
   
 	//Stop all motors
 	StopAllMovingParts();
-	//"Close" all servos: TO BE DONE
 	
   
   StartMasterSM( ThisEvent );
@@ -192,6 +191,9 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
                 // printf("\r\n Master Acknowledges Start of Game\r\n");
                   // Execute action function for state one : event one
                   NextState = GamePlay;//Decide what the next state will be
+                  ES_Event_t LEDEvent;
+                  LEDEvent.EventType = EV_COMPASS_CLEANING_UP;
+                  PostLEDService(LEDEvent);
                   // for internal transitions, skip changing MakeTransition
                   MakeTransition = true; //mark that we are taking a transition
                   // if transitioning to a state with history change kind of entry
@@ -205,6 +207,9 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
 							 
 							 case EV_COMPASS_GAME_OVER:
 							 {
+                 ES_Event_t LEDEvent;
+                 LEDEvent.EventType = EV_COMPASS_GAME_OVER;
+                 PostLEDService(LEDEvent);
 								 NextState = GameEnded;
 								 MakeTransition = true;
 								 EntryEventKind.EventType = ES_ENTRY;

@@ -48,6 +48,8 @@
 #include "IRDetector.h"
 
 
+#include "MasterHSM.h"
+
 /*----------------------------- Module Defines -----------------------------*/
 #define MAX_PERIOD_us 820
 #define MIN_PERIOD_us 480
@@ -212,7 +214,7 @@ void IR_ISR(void){
   ThisCapture=HWREG(WTIMER2_BASE + TIMER_O_TBR);
   //if firstedge, don't calculate the period
   
-  RunCount++;
+
   
   if (FirstEdge)
   {
@@ -234,7 +236,17 @@ void IR_ISR(void){
     }
     else
     {
+      RunCount++;
       Validated_LastPeriod_us=Period_In_us;
+      if(SpecificBeaconFinder == true)
+      {
+        if((Period_In_us >= BeaconPeriod - DETECTION_TOLERANCE) && (Period_In_us <= BeaconPeriod + DETECTION_TOLERANCE))
+        {
+          ES_Event_t BeaconEvent;
+          BeaconEvent.EventType = EV_ALIGNED2BEACON;
+          PostMasterSM(BeaconEvent);
+        }          
+      }
     }
   }
   //Update LastCapture value

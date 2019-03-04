@@ -40,6 +40,7 @@
 
 #include "MotorService.h"
 #include "MasterHSM.h"
+
 /*----------------------------- Module Defines ----------------------------*/
 #define SSI_PRESCALE 0x00000014
 #define SCR_VALUE    0x0000C800
@@ -67,8 +68,6 @@
 #define SPI_INITIALIZING 0xFF
 
 
-#define EAST_RECYCLE 2
-#define WEST_RECYCLE 3
 
 
 
@@ -104,7 +103,7 @@ static uint8_t ValueTxByte = 0x69;
 //static uint8_t StatusCmd = 0x78;
 //static uint8_t ValCmd = 0x69;
 
-static uint16_t RecycleActFreq[16] = {1000,947,893,840,787,733,680,627,
+static uint16_t RecycleActPeriod[16] = {1000,947,893,840,787,733,680,627,
                                        573,520,467,413,360,307,253,200};
 
 static uint8_t ExpectedAckByte;
@@ -119,7 +118,7 @@ static uint8_t AssignedColor;
 static uint8_t EastRecycleColor;
 static uint8_t WestRecycleColor;                                       
 																			 
-static uint16_t AssignedFrequency;																			 
+static uint16_t AssignedPeriod;																			 
 
 static uint8_t TeamSwitchValue;
 
@@ -180,7 +179,7 @@ bool InitSPISM(uint8_t Priority)
   LastRecyclingCenter = 0xFF;
   CurrentRecyclingCenter = 0xFF;
 	
-  AssignedFrequency = 0xFFFF;
+  AssignedPeriod = 0xFFFF;
 
   //Start Timer to start sending messages to COMPASS
 	ES_Timer_InitTimer(SPI_TIMER, SPI_QUERYTIME);
@@ -262,6 +261,7 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
         {
           if (QueryTeam() == TEAM_NORTH)
           {
+            TeamSwitchValue = TEAM_NORTH;
             //Set REG byte and expected ACK byte accordingly
             RegistrationByte = REG_NORTH;
             //RegCmd = REG_NORTH;
@@ -273,6 +273,7 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
 
           else if (QueryTeam() == TEAM_SOUTH)
           {
+            TeamSwitchValue = TEAM_SOUTH;
             //Set REG byte and expected ACK byte accordingly
             RegistrationByte = REG_SOUTH;
             //RegCmd = REG_SOUTH;
@@ -328,9 +329,9 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
 				
 				AssignedColor = (TeamStatusByte & (BIT1HI|BIT2HI|BIT3HI)) >> 1;
         //printf("Assigned Color: %d\n\r", AssignedColor); PRINTF REMOVED
-        AssignedFrequency = RecycleActFreq[(TeamStatusByte & 
+        AssignedPeriod = RecycleActPeriod[(TeamStatusByte & 
           (BIT4HI|BIT5HI|BIT6HI|BIT7HI)) >> 4];
-        //printf("Assigned Frequency: %d\n\r", AssignedFrequency); PRINTF REMOVED
+        //printf("Assigned Period: %d\n\r", AssignedPeriod); PRINTF REMOVED
 				
 				//Initialize timers and disable SSI interrupt 
 				//in preparation for move to next state
@@ -538,7 +539,7 @@ uint8_t GetValueByte(void)
 
 /****************************************************************************
  Function
-     GetAssignedFreq
+     GetAssignedPeriod
 
  Parameters
      None
@@ -553,9 +554,9 @@ uint8_t GetValueByte(void)
  Author
      Sander TOnkens, 02/15/2019, 13:16
 ****************************************************************************/
-uint16_t GetAssignedFreq(void)
+uint16_t GetAssignedPeriod(void)
 {
-	return AssignedFrequency;
+	return AssignedPeriod;
 }
 
 /****************************************************************************

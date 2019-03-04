@@ -59,7 +59,10 @@
 #include "LandfillingSM.h"
 
 #include "DriveCommandModule.h"
+#include "BallDumpingSM.h"
+#include "MasterHSM.h"
 
+#include "IRDetector.h"
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
 // and any other local defines
@@ -119,7 +122,7 @@ ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent )
               case EV_ALIGNED2BEACON:
               {
                 //Stop driving motors
-                
+                StopDrive();
                 // Execute action function for state one : event one
                 NextState = Driving2Landfill;//Decide what the next state will be
                 // for internal transitions, skip changing MakeTransition
@@ -154,7 +157,7 @@ ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent )
               case EV_MOVE_COMPLETED:
               {
                 //Turn around to align with beacon
-                
+                StopDrive();
          
                 // Execute action function for state one : event one
                 NextState = ApproachingLandfill;//Decide what the next state will be
@@ -195,6 +198,7 @@ ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent )
               {
                 if((CurrentEvent.EventParam == 1) || (CurrentEvent.EventParam == 2))
                 {
+                  StopDrive();
                   // Execute action function for state one : event one
                   NextState = Preparing4Landfill;//Decide what the next state will be
                   // for internal transitions, skip changing MakeTransition
@@ -230,6 +234,7 @@ ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent )
             {
               case EV_MOVE_COMPLETED:
               {
+                StopDrive();
                 // Execute action function for state one : event one
                 NextState = DumpingLandfill;//Decide what the next state will be
                 // for internal transitions, skip changing MakeTransition
@@ -263,6 +268,7 @@ ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent )
             {
               case EV_LANDFILLING_DONE:
               {
+                StopDrive();
                 //Close the Landfill Door
                 //Post an event to close the Landfill door
                 //Process event at a higher level
@@ -366,11 +372,20 @@ static ES_Event_t DuringOrienting2Landfill( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
         // implement any entry actions required for this state machine
-        
-      // Set frequency to detect for IR 
-      // Set Posting possibility of IR to true
-      // Enable IR interrupts
-      
+      if (QueryTeam() == TEAM_NORTH)
+      {
+        // Set frequency to detect for IR 
+        // Set Posting possibility of IR to true
+        // Enable IR interrupts
+        ActivateBeaconFinder(NORTH_LANDFILL_PERIOD);
+              
+      }        
+      else
+      {
+        ActivateBeaconFinder(SOUTH_LANDFILL_PERIOD);
+      }
+
+      IREnableInterrupt();
       // Start rotating (360 degrees but can be interferred)
       DriveRotate(LOCALIZATION_SPEED, 3600);
       
@@ -385,9 +400,9 @@ static ES_Event_t DuringOrienting2Landfill( ES_Event_t Event)
     else if ( Event.EventType == ES_EXIT )
     {
       //Disable IR interrupts
-      
+      IRDisableInterrupt();
       //Stop Motors (should already be the case but to be sure)
-			
+			StopDrive();
 
 			
       
@@ -423,7 +438,7 @@ static ES_Event_t DuringDriving2Landfill( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
-      
+      StopDrive();
       //Stop Motors
 			
       
@@ -445,9 +460,27 @@ static ES_Event_t DuringApproachingLandfill( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+
         // implement any entry actions required for this state machine
+      if (QueryTeam() == TEAM_NORTH)
+      {
+        // Set frequency to detect for IR 
+        // Set Posting possibility of IR to true
+        // Enable IR interrupts
+        ActivateBeaconFinder(NORTH_LANDFILL_PERIOD);
+              
+      }        
+      else
+      {
+        ActivateBeaconFinder(SOUTH_LANDFILL_PERIOD);
+      }
+
+      IREnableInterrupt();
+      // implement any entry actions required for this state machine
       //Turns 360 degrees but gets interrupted when the other limit switch is triggered 
       DriveRotate(LOCALIZATION_SPEED, 3600);
+      
+
 			
 				
         // after that start any lower level machines that run in this state
@@ -457,6 +490,8 @@ static ES_Event_t DuringApproachingLandfill( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
+      StopDrive();
+      IRDisableInterrupt();
       //Stop Motors
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
@@ -490,7 +525,7 @@ static ES_Event_t DuringPreparing4Landfill( ES_Event_t Event)
         // implement any entry actions required for this state machine
         
       //Go back a little bit
-			
+			DriveStraight(PREPARE4DUMP_SPEED, -PREPARE4DUMP_BACKUPDISTANCE);
 				
         // after that start any lower level machines that run in this state
         //StartLowerLevelSM( Event );
@@ -499,6 +534,7 @@ static ES_Event_t DuringPreparing4Landfill( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
+      StopDrive();
       //Stop Motors
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
@@ -525,11 +561,16 @@ static ES_Event_t DuringPreparing4Landfill( ES_Event_t Event)
 static ES_Event_t DuringDumpingLandfill( ES_Event_t Event)
 {
    ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
+   ES_Event_t DumpEvent;
 
     // process ES_ENTRY, ES_ENTRY_HISTORY & ES_EXIT events
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      StopDrive();
+      DumpEvent.EventType = EV_DUMP_LANDFILL;
+      PostBallDumpingSM(DumpEvent);
+      
       
         // implement any entry actions required for this state machine
         
@@ -542,6 +583,7 @@ static ES_Event_t DuringDumpingLandfill( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
+      StopDrive();
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines

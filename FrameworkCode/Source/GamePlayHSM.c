@@ -163,6 +163,33 @@ ES_Event_t RunGamePlaySM( ES_Event_t CurrentEvent )
 							 }
 							 break;
 							 
+             case EV_GO2RECYCLE:
+             {
+                // Execute action function for state one : event one
+                NextState = Recycling;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;
+                // optionally, consume or re-map this event for the upper
+                // level state machine
+                ReturnEvent.EventType = ES_NO_EVENT;
+             }
+             break;
+             
+             case EV_GO2LANDFILL:
+             {
+                // Execute action function for state one : event one
+                NextState = Landfilling;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;
+                // optionally, consume or re-map this event for the upper
+                // level state machine
+                ReturnEvent.EventType = ES_NO_EVENT;
+             }
+              break;             
                
 							 default:
 							 {;
