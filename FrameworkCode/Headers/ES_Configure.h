@@ -33,7 +33,7 @@
 /****************************************************************************/
 // This macro determines that nuber of services that are *actually* used in
 // a particular application. It will vary in value from 1 to MAX_NUM_SERVICES
-#define NUM_SERVICES 4
+#define NUM_SERVICES 6
 
 /****************************************************************************/
 // These are the definitions for Service 0, the lowest priority service.
@@ -110,11 +110,11 @@
 // These are the definitions for Service 4
 #if NUM_SERVICES > 5
 // the header file with the public function prototypes
-#define SERV_5_HEADER "MotorService.h"
+#define SERV_5_HEADER "TapeFollowingService.h"
 // the name of the Init function
-#define SERV_5_INIT InitMotorService
+#define SERV_5_INIT InitTapeFollowingService
 // the name of the run function
-#define SERV_5_RUN RunMotorService
+#define SERV_5_RUN RunTapeFollowingService
 // How big should this services Queue be?
 #define SERV_5_QUEUE_SIZE 3
 #endif
@@ -293,6 +293,8 @@ typedef enum
   EV_LEFT_TAPE_OFF,
   EV_RIGHT_TAPE_ON,
   EV_RIGHT_TAPE_OFF,
+  EV_TAPE_TIMEOUT,
+  EV_NEW_TAPE,
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -349,7 +351,7 @@ typedef enum
 #define TIMER9_RESP_FUNC TIMER_UNUSED
 #define TIMER10_RESP_FUNC TIMER_UNUSED
 #define TIMER11_RESP_FUNC TIMER_UNUSED
-#define TIMER12_RESP_FUNC TIMER_UNUSED
+#define TIMER12_RESP_FUNC PostMasterSM
 #define TIMER13_RESP_FUNC PostMasterSM
 #define TIMER14_RESP_FUNC PostMasterSM
 #define TIMER15_RESP_FUNC PostI2CService
@@ -368,6 +370,7 @@ typedef enum
 #define LOCALIZE_TIMER 13
 #define BALL_COLLECTION_TIMER 14
 #define I2C_TIMER 15
+#define TAPE_TIMER 12
 
 /**************************************************************************/
 // uncomment this line to get some basic framework operation debugging on
