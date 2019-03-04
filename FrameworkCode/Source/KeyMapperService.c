@@ -34,6 +34,8 @@
 #include "BallProcessingSM.h"
 #include "MasterHSM.h"
 #include "CollectingSM.h"
+#include "IRDetector.h"
+#include "DriveCommandModule.h"
 /*----------------------------- Module Defines ----------------------------*/
 #define DISPLAY_UPDATE_TIME 100
 /*---------------------------- Module Functions ---------------------------*/
@@ -213,6 +215,12 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
               SetPositionAwareness(true);
             }
             break;
+            case '3':
+            {
+              IREnableInterrupt();
+              ActivateBeaconFinder(500);
+              DriveRotate(50, 3600);
+            }
             
               
         }

@@ -330,7 +330,7 @@ void Drive_SpeedControlISR(void){
     //printf("1:%d\r\n", LastTickCount_1);
     //printf("2:%d\r\n", LastTickCount_2);
     HeadingError = (DesiredHeading- ((LastTickCount_2-LastTickCount_1)/2)); //Subtracting both to take average when turning
-    //printf("H:%f", HeadingError);
+    printf("H:%d\r\n", (int)HeadingError);
     DistancePDTerm = KPM*DistanceError + KDM*(DistanceError-LastDistanceError);
     HeadingPDTerm = KPD*HeadingError + KDD*(HeadingError-LastHeadingError); //Positive HeadingError is wheel 2, negative wheel 1
     DesiredSpeed_1 = Clamp(DistancePDTerm - HeadingPDTerm, -ClampRPM, ClampRPM);
@@ -385,6 +385,9 @@ void Drive_SpeedControlISR(void){
       //printf("Amount of ticks executed: %d", LastTickCount_1); PRINTF REMOVED
       
       Driving = false;
+      printf("Did a turn \r\n");
+      PWMSetDutyCycle_1(0);
+      PWMSetDutyCycle_2(0);
       
       //post event to Master SM indicating that target has been reached
       ES_Event_t doneEvent;
