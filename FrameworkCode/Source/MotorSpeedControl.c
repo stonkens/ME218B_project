@@ -60,7 +60,7 @@
 #define RPM_I_GAIN 0.3
 
 
-#define UPDATE_TIME 2			//Adjusted every 2 ms
+#define UPDATE_TIME 2			//Adjusted every 10 ms
 
 /*---------------------------- Module Functions ---------------------------*
   prototypes for private functions for this service.They should be functions
@@ -88,8 +88,8 @@ static float DesiredSpeed_1;
 static float DesiredSpeed_2;
 static float LastRecordedSpeed_1;
 static float LastRecordedSpeed_2;
-static float UpdatedDutyCycle_1;
-static float UpdatedDutyCycle_2;
+static int UpdatedDutyCycle_1;
+static int UpdatedDutyCycle_2;
 static float RPMError_1;
 static float RPMError_2;
 static float IntegralTerm_1;
@@ -101,7 +101,7 @@ static float ClampRPM;
 static uint32_t ControlLoopCount;
 
 
-static float ClampPWM = 100;
+static float ClampPWM = 300;
 
 /*------------------------------ Module Code ------------------------------*/
 
@@ -178,6 +178,8 @@ void Drive_Stop(void){
 	//Reset integral term of controller
 	IntegralTerm_1 = 0;
 	IntegralTerm_2 = 0;
+  PWMSetDutyCycle_1(0);
+  PWMSetDutyCycle_2(0);
 }
 
 void Drive_SetDistance(float newLimit){
@@ -280,113 +282,116 @@ float QueryDriveRPM(uint8_t wheel){
    Sander Tonkens
 ****************************************************************************/
 void Drive_SpeedControlISR(void){
-	
-	ControlLoopCount++;
-	//printf("Timer interrupt\r\n");
-	 //start by clearing the source of the interrupt
 	HWREG(WTIMER5_BASE+TIMER_O_ICR) = TIMER_ICR_TATOCINT;
-	
-	//***Gather new info from DriveMotorPWM module***//
-	
-	//Determine Tick Counts for Motor 1
-	//If not enough new ticks have not been registered (i.e. Motor is at standstill)
-	if(fabsf(QueryEncoderTickCount(1) - LastTickCount_1) <= MIN_TICKS)
-	{
-		//Set last recorded Motor RPM to 0
-		LastRecordedSpeed_1 = 0;
-	}
+  if(Driving == true)
+  {
+    ControlLoopCount++;
+    //printf("Timer interrupt\r\n");
+     //start by clearing the source of the interrupt
+    
+    
+    //***Gather new info from DriveMotorPWM module***//
+    
+    //Determine Tick Counts for Motor 1
+    //If not enough new ticks have not been registered (i.e. Motor is at standstill)
+    if(fabsf(QueryEncoderTickCount(1) - LastTickCount_1) <= MIN_TICKS)
+    {
+      //Set last recorded Motor RPM to 0
+      LastRecordedSpeed_1 = 0;
+    }
 
-	else
-	{
-		//Calculate RPM from current period
-		LastRecordedSpeed_1 = ((TICKS_PER_SECOND/(QueryEncoderPeriod(WHEEL1A))*60)/(PULSES_PER_REV*GEAR_RATIO));
-		//Query new tick count
-		LastTickCount_1 = QueryEncoderTickCount(1);
-	}
-	
-	//Determine Tick Counts for Motor 2
-	//If not enough new ticks have not been registered (i.e. Motor is at standstill)
-	if(fabsf(QueryEncoderTickCount(2) - LastTickCount_2) <= MIN_TICKS)
-	{
-		//Set last recorded Motor RPM to 0
-		LastRecordedSpeed_2 = 0;
-	}
-	else{
-		//Calculate current RPM from current period
-		LastRecordedSpeed_2 = ((TICKS_PER_SECOND/(QueryEncoderPeriod(WHEEL2A))*60)/(PULSES_PER_REV*GEAR_RATIO));
-		//Capture new tick count
-		LastTickCount_2 = QueryEncoderTickCount(2);
-	}
-	
-	//***Position and Heading control***//
-	
-	//Based on PD controller
-	DistanceError = (DesiredDistance - ((LastTickCount_1+LastTickCount_2)/2)); //taking average of wheel 1 and 2 when driving straight
-  //printf("E:%f\r \n", DistanceError);
-	//printf("1:%d\r\n", LastTickCount_1);
-  //printf("2:%d\r\n", LastTickCount_2);
-  HeadingError = (DesiredHeading- ((LastTickCount_2-LastTickCount_1)/2)); //Subtracting both to take average when turning
-  //printf("HeadingError:%f", HeadingError);
-	DistancePDTerm = KPM*DistanceError + KDM*(DistanceError-LastDistanceError);
-	HeadingPDTerm = KPD*HeadingError + KDD*(HeadingError-LastHeadingError); //Positive HeadingError is wheel 2, negative wheel 1
-	DesiredSpeed_1 = Clamp(DistancePDTerm - HeadingPDTerm, -ClampRPM, ClampRPM);
-	DesiredSpeed_2 = Clamp(DistancePDTerm + HeadingPDTerm, -ClampRPM, ClampRPM);
-	LastDistanceError = DistanceError;
-	LastHeadingError = HeadingError;
- 
-	//***Speed control for Motor 1***//
-	
-	RPMError_1 = DesiredSpeed_1 - LastRecordedSpeed_1;
-	
-	//Add RPM Error to integral term
-	IntegralTerm_1 += RPMError_1;
-	//Include Anti-windup for integral term
-	IntegralTerm_1 = Clamp(IntegralTerm_1, -ClampPWM, ClampPWM); 
-	
-  //Compute UpdatedDutyCycle based on PI controller
-	UpdatedDutyCycle_1 = RPM_P_GAIN*RPMError_1 + RPM_I_GAIN*IntegralTerm_1;
-  
-	//Include anti-windup for full term
-	//Positive = Turn CW, Negative = Turn CCW (To update if necessary)
-	UpdatedDutyCycle_1 = Clamp(UpdatedDutyCycle_1, -ClampPWM, ClampPWM); 
-	//printf("1:%f \r\n", UpdatedDutyCycle_1);
-	//Set Duty Cycle for Motor 1
-	PWMSetDutyCycle_1(UpdatedDutyCycle_1); //REMOVED FOR TESTING
-  //PWMSetDutyCycle_1(ClampPWM); //ADDED FOR TESTING
-	 
-	//***Speed control for Motor 2***//
-	
-	RPMError_2 = DesiredSpeed_2 - LastRecordedSpeed_2;
-	
-	//Add RPM Error to integral term
-	IntegralTerm_2 += RPMError_2;
-	//Include Anti-windup for integral term
-	IntegralTerm_2 = Clamp(IntegralTerm_2, -ClampPWM, ClampPWM);
-	
-	//Compute UpdatedDutyCycle based on PI controller
-	UpdatedDutyCycle_2 = RPM_P_GAIN*RPMError_2 + RPM_I_GAIN*IntegralTerm_2;
-	//Include anti-windup for full term
-	//Positive = Turn CW, Negative = Turn CCW (To update if necessary)
-	UpdatedDutyCycle_2 = Clamp(UpdatedDutyCycle_2, -ClampPWM, ClampPWM);
-	//printf("2:%f \r\n", UpdatedDutyCycle_2);
-	//Set Duty Cycle for Motor 2
-	PWMSetDutyCycle_2(UpdatedDutyCycle_2); //REMOVED FOR TESTING
-  //PWMSetDutyCycle_2(ClampPWM); //ADDED FOR TESTING
-	
-	//***Desired geolocation monitor***//
-	
-	 //if Distance Error and Heading Error is within error bounds
-	if((fabsf(DistanceError) <= MIN_ERROR) && (fabsf(HeadingError) <= MIN_ERROR) && Driving == true){
-		//printf("Amount of ticks executed: %d", LastTickCount_1); PRINTF REMOVED
-		
-		Driving = false;
-		
-		//post event to Master SM indicating that target has been reached
-		ES_Event_t doneEvent;
-		doneEvent.EventType = EV_MOVE_COMPLETED;
-		PostMasterSM(doneEvent);
-	}
-	
+    else
+    {
+      //Calculate RPM from current period
+      LastRecordedSpeed_1 = ((TICKS_PER_SECOND/(QueryEncoderPeriod(WHEEL1A))*60)/(PULSES_PER_REV*GEAR_RATIO));
+      //Query new tick count
+      LastTickCount_1 = QueryEncoderTickCount(1);
+    }
+    
+    //Determine Tick Counts for Motor 2
+    //If not enough new ticks have not been registered (i.e. Motor is at standstill)
+    if(fabsf(QueryEncoderTickCount(2) - LastTickCount_2) <= MIN_TICKS)
+    {
+      //Set last recorded Motor RPM to 0
+      LastRecordedSpeed_2 = 0;
+    }
+    else{
+      //Calculate current RPM from current period
+      LastRecordedSpeed_2 = ((TICKS_PER_SECOND/(QueryEncoderPeriod(WHEEL2A))*60)/(PULSES_PER_REV*GEAR_RATIO));
+      //Capture new tick count
+      LastTickCount_2 = QueryEncoderTickCount(2);
+    }
+    
+    //***Position and Heading control***//
+    
+    //Based on PD controller
+    DistanceError = (DesiredDistance - ((LastTickCount_1+LastTickCount_2)/2)); //taking average of wheel 1 and 2 when driving straight
+    //printf("E:%f\r \n", DistanceError);
+    //printf("1:%d\r\n", LastTickCount_1);
+    //printf("2:%d\r\n", LastTickCount_2);
+    HeadingError = (DesiredHeading- ((LastTickCount_2-LastTickCount_1)/2)); //Subtracting both to take average when turning
+    //printf("H:%f", HeadingError);
+    DistancePDTerm = KPM*DistanceError + KDM*(DistanceError-LastDistanceError);
+    HeadingPDTerm = KPD*HeadingError + KDD*(HeadingError-LastHeadingError); //Positive HeadingError is wheel 2, negative wheel 1
+    DesiredSpeed_1 = Clamp(DistancePDTerm - HeadingPDTerm, -ClampRPM, ClampRPM);
+    DesiredSpeed_2 = Clamp(DistancePDTerm + HeadingPDTerm, -ClampRPM, ClampRPM);
+    LastDistanceError = DistanceError;
+    LastHeadingError = HeadingError;
+   
+    //***Speed control for Motor 1***//
+    
+    RPMError_1 = DesiredSpeed_1 - LastRecordedSpeed_1;
+    
+    //Add RPM Error to integral term
+    IntegralTerm_1 += RPMError_1;
+    //Include Anti-windup for integral term
+    IntegralTerm_1 = Clamp(IntegralTerm_1, -ClampPWM, ClampPWM); 
+    
+    //Compute UpdatedDutyCycle based on PI controller
+    UpdatedDutyCycle_1 = RPM_P_GAIN*RPMError_1 + RPM_I_GAIN*IntegralTerm_1;
+    
+    //Include anti-windup for full term
+    //Positive = Turn CW, Negative = Turn CCW (To update if necessary)
+    UpdatedDutyCycle_1 = Clamp(UpdatedDutyCycle_1, -ClampPWM, ClampPWM); 
+    //Set Duty Cycle for Motor 1
+    
+    PWMSetDutyCycle_1(UpdatedDutyCycle_1); //REMOVED FOR TESTING
+    //PWMSetDutyCycle_1(ClampPWM); //ADDED FOR TESTING
+     
+    //***Speed control for Motor 2***//
+    
+    RPMError_2 = DesiredSpeed_2 - LastRecordedSpeed_2;
+    
+    //Add RPM Error to integral term
+    IntegralTerm_2 += RPMError_2;
+    //Include Anti-windup for integral term
+    IntegralTerm_2 = Clamp(IntegralTerm_2, -ClampPWM, ClampPWM);
+    
+    //Compute UpdatedDutyCycle based on PI controller
+    UpdatedDutyCycle_2 = RPM_P_GAIN*RPMError_2 + RPM_I_GAIN*IntegralTerm_2;
+    //Include anti-windup for full term
+    //Positive = Turn CW, Negative = Turn CCW (To update if necessary)
+    UpdatedDutyCycle_2 = Clamp(UpdatedDutyCycle_2, -ClampPWM, ClampPWM);
+    //printf("2:%f \r\n", UpdatedDutyCycle_2);
+    //Set Duty Cycle for Motor 2
+    PWMSetDutyCycle_2(UpdatedDutyCycle_2); //REMOVED FOR TESTING
+    //PWMSetDutyCycle_2(ClampPWM); //ADDED FOR TESTING
+    
+    //***Desired geolocation monitor***//
+    
+     //if Distance Error and Heading Error is within error bounds
+    if((fabsf(DistanceError) <= MIN_ERROR) && (fabsf(HeadingError) <= MIN_ERROR) && Driving == true)
+    {
+      //printf("Amount of ticks executed: %d", LastTickCount_1); PRINTF REMOVED
+      
+      Driving = false;
+      
+      //post event to Master SM indicating that target has been reached
+      ES_Event_t doneEvent;
+      doneEvent.EventType = EV_MOVE_COMPLETED;
+      PostMasterSM(doneEvent);
+    } 
+  }	
 }
 
 /****************************************************************************
@@ -430,12 +435,15 @@ void Drive_SpeedUpdateTimer_Init(uint16_t updateTime){
 	//enable a local timeout interrupt
 	HWREG(WTIMER5_BASE+TIMER_O_IMR) |= TIMER_IMR_TATOIM;
 	
-	//enable the Timer A in Wide Timer 1 interrupt in the NVIC
-	//it is interrupt number 95 so appears in EN3 at bit 0  //***************************
+	//enable the Timer 1 in Wide Timer 5 interrupt in the NVIC
+	//it is interrupt number 104 so appears in EN3 at bit 8  //***************************
 	HWREG(NVIC_EN3) |= (BIT8HI);
 	
+  //Interrupt priority 1
+  HWREG(NVIC_PRI26) |= (BIT5HI); 
+  //Set priority
 	//make sure interrupts are enabled globally (Check whether this should be done in InitializeHardware)
-	__enable_irq();
+	//__enable_irq();
 	
 	//now kick the timer off by enabling it and enabling the timer to stall while stopped by the debugger
 	HWREG(WTIMER5_BASE+TIMER_O_CTL) |= (TIMER_CTL_TAEN | TIMER_CTL_TASTALL);

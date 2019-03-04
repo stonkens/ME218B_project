@@ -413,7 +413,7 @@ void Triangulate(float AngleA, float AngleB, float AngleC, float AngleD) {
     //Calculate heading
     XRelative = X1 - Xf;
     YRelative = Y1 - Yf;
-    
+    printf("X:%d", (int)Xf);
     
     RelativeTheta = atan2((YRelative), (XRelative));
     

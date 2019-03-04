@@ -300,7 +300,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
             {
               DetectCount = 0; //reset detect count 
                         //re-init timer 
-              printf("Ball detected\r\n");
+              //printf("Ball detected\r\n");
               ES_Timer_InitTimer(COLOR_SENSE_TIMER, (FIVE_MS));
               CurrentState = BallDetected;
             }
@@ -347,7 +347,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           //printf("Lower %d Current %d Upper %d \r\n",LowerThres, CurrentClearValue, HigherThres); 
           ThisEvent.EventParam = RED;   
           PostBallProcessingSM(ThisEvent);
-          printf("RED\r\n");
+          //printf("RED\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
       }
@@ -359,7 +359,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           //ThisEvent.EventType = ES_BALL_DETECTED;
           ThisEvent.EventParam = ORANGE;  
           PostBallProcessingSM(ThisEvent);
-          printf("ORANGE\r\n");
+          //printf("ORANGE\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing;
       } 
@@ -371,7 +371,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           //ThisEvent.EventType = ES_BALL_DETECTED;
           ThisEvent.EventParam = YELLOW;   
           PostBallProcessingSM(ThisEvent);
-          printf("YELLOW\r\n");
+          //printf("YELLOW\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
       }
@@ -384,7 +384,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           //ThisEvent.EventType = ES_BALL_DETECTED;
           ThisEvent.EventParam = GREEN;  
           PostBallProcessingSM(ThisEvent);
-          printf("GREEN\r\n");
+          //printf("GREEN\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
       }
@@ -397,7 +397,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           //ThisEvent.EventType = ES_BALL_DETECTED;
           ThisEvent.EventParam = BLUE;  
           PostBallProcessingSM(ThisEvent);
-          printf("BLUE\r\n");
+          //printf("BLUE\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
       }
@@ -409,7 +409,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           //ThisEvent.EventType = ES_BALL_DETECTED;
           ThisEvent.EventParam = PINK;  
           PostBallProcessingSM(ThisEvent);
-          printf("PINK\r\n");
+          //printf("PINK\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
       }
@@ -428,7 +428,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
       uint16_t CurrentClearValue;
       CurrentClearValue = I2C_GetClearValue();
       if(CurrentClearValue <= DETECTION_THRES){
-        printf("Done depositing\r\n");
+        //printf("Done depositing\r\n");
         ThisEvent.EventType = EV_BALL_GONE; 
         PostBallProcessingSM(ThisEvent);
         ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));

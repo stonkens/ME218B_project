@@ -15,9 +15,9 @@
 
 #define STRAIGHT_SPEED	        200 //Max drive speed
 #define TURNING_SPEED					  200 //Max rotation speed
-#define LOCALIZATION_SPEED		  100 //Rotation speed when detecting IR
-#define COLLISIONAVOID_SPEED    50
-#define APPROACH_SPEED          50  //Approaching dumping station speed
+#define LOCALIZATION_SPEED		  100/2 //Rotation speed when detecting IR
+#define COLLISIONAVOID_SPEED    50/2
+#define APPROACH_SPEED          50/2  //Approaching dumping station speed
 #define PREPARE4DUMP_SPEED      20
 
 #define COLLISIONAVOID_DISTANCE 1200

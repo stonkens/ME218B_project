@@ -384,6 +384,11 @@ static void InitInputCaptureEnc_2(void)
 // enable the Timer A in Wide Timer 1 interrupt in the NVIC
 // it is interrupt number 96 so appears in EN3 at bit 0
   HWREG(NVIC_EN3) |= BIT0HI;
+  
+// enable the Timer A in Wide Timer 1 interrupt in the NVIC
+// it is interrupt number 96 so appears in EN3 at bit 0
+  //HWREG(NVIC_PRI24) &= (BIT5LO | BIT6LO | BIT7LO);
+
 // make sure interrupts are enabled globally
   //__enable_irq();
 // now kick the timer off by enabling it and enabling the timer to

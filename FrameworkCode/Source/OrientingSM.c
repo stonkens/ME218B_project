@@ -91,10 +91,10 @@ static float CurrentHeading;
 static uint32_t LastRunCount;
 
 static float Angle_Measurements[4][4] = {
-	{1950,	0,	0,	0},
-	{1250,	0,	0,	0},
-	{1700,	0,	0,	0},
-	{1450,	0,	0,	0}};
+	{600,	0,	0,	0},
+	{500,	0,	0,	0},
+	{700,	0,	0,	0},
+	{800,	0,	0,	0}};
 
 static uint32_t LastFrequency;
 static uint8_t	MissedBeacons;
@@ -331,7 +331,8 @@ static void CalculatePosition(void){
 	for(int i=0;i <= 3;i++){
 		BeaconSpread = fabsf(Angle_Measurements[i][LAST_EDGE] - Angle_Measurements[i][FIRST_EDGE]);
 		if(BeaconSpread < MinAngleWidth){
-			ExcludedAngle = i;
+			printf("BeaconSpread: %d\r\n", (int)BeaconSpread);
+      ExcludedAngle = i;
 			MinAngleWidth = BeaconSpread;
 		}
 	}
@@ -349,6 +350,7 @@ static void CalculatePosition(void){
 		SetPositionAwareness(false);
 	}
 	else{
+    printf("Saw all beacons");
 		 //do next objective
 		SetPositionAwareness(true);
 	}
@@ -361,5 +363,6 @@ static void CalculatePosition(void){
 	CurrentXPosition = QueryXCoordinate();
 	CurrentYPosition = QueryYCoordinate();
 	CurrentHeading = QueryHeading();
+  printf("X:%d\r\n", (int)CurrentXPosition);
 }
 

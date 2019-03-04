@@ -198,6 +198,8 @@ void UpdateDisplay(void)
   printf(" %d ", QueryRecycleBalls());
   printf(" %d ", QueryLandFillBalls());
   printf(" %d ", QueryPositionAwareness());
+
+
 }
 
 

@@ -92,7 +92,7 @@ bool Check4Bump(void)
   {
     //printf("%d",CurrentFrontSwitchState);
     ReturnVal = true;
-    if (CurrentFrontSwitchState == BIT2HI) // was 1, changing to 4...
+    if (CurrentFrontSwitchState == BIT6HI) // was 1, changing to 4...
     {
       printf("\r\nHit the front left bumper");
       ThisEvent.EventType = EV_BUMPER_HIT;
@@ -104,7 +104,7 @@ bool Check4Bump(void)
 	  if (CurrentRightSwitchState != LastRightSwitchState) //right bumper 
   {
     ReturnVal = true;
-    if (CurrentRightSwitchState == BIT3HI)
+    if (CurrentRightSwitchState == BIT7HI)
     {
       printf("Hit the right front bumper\r\n");
       ThisEvent.EventType = EV_BUMPER_HIT;
@@ -116,7 +116,7 @@ bool Check4Bump(void)
 	  if (CurrentBackSwitchState != LastBackSwitchState) //back bumper 
   {
     ReturnVal = true;
-    if (CurrentBackSwitchState == BIT6HI)
+    if (CurrentBackSwitchState == BIT2HI)
     {
       printf("Hit the back left bumper\r\n");
       ThisEvent.EventType = EV_BUMPER_HIT;
@@ -128,7 +128,7 @@ bool Check4Bump(void)
 	  if (CurrentLeftSwitchState != LastLeftSwitchState) //left bumper 
   {
     ReturnVal = true;
-    if (CurrentLeftSwitchState == BIT7HI)
+    if (CurrentLeftSwitchState == BIT3HI)
     {
       printf("Hit the back right bumper\r\n");
       ThisEvent.EventType = EV_BUMPER_HIT;

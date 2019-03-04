@@ -72,7 +72,7 @@
 #define ENTRY_STATE Orienting
 #define IR_FIRST_DELAY 100
 
-#define REORIENTATION_DELAY 1000
+#define REORIENTATION_DELAY 10000
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
    functions, entry & exit functions.They should be functions relevant to the
@@ -143,6 +143,7 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
                 //printf("PositionAwareness: %d \r\n", PositionAwareness);
                 if (PositionAwareness == true)
                 {
+                  //printf("got here\r\n");
                   StopDrive();
                   // Execute action function for state one : event one
                   NextState = Driving2Target;//Decide what the next state will be
@@ -151,11 +152,13 @@ ES_Event_t RunCollectingSM( ES_Event_t CurrentEvent )
                   // if transitioning to a state with history change kind of entry
                   EntryEventKind.EventType = ES_ENTRY;
                   //printf("\r\n In here");
-                  ReturnEvent.EventType = ES_NO_EVENT;
+                  //ReturnEvent.EventType = ES_NO_EVENT;
+                  DriveStraight(STRAIGHT_SPEED, 10000);
                   
                 }
                 else
                 {
+                  //printf("got there\r\n");
                   StopDrive();
                   ES_Timer_InitTimer(REORIENTATION_TIMER, REORIENTATION_DELAY);
                   ReturnEvent.EventType = ES_NO_EVENT;                  

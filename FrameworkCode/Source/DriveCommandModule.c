@@ -55,7 +55,7 @@
 #define ROTATION_RADIUS 5.12 //In inches (IF RECALIBRATED UPDATED BELOW)
 
 #define TICKS_PER_INCHx10	606.38/4 //TO BE RECALIBRATED
-#define TICKS_PER_DEGREEx100	541.87/4 //TO BE RECALIBRATED
+#define TICKS_PER_DEGREEx100	500/4//541.87/4 //TO BE RECALIBRATED
 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this service.They should be functions
@@ -140,6 +140,7 @@ void DriveRotate(float MaxRPM, float degreesx10){
 
 void StopDrive(void)
 {
+  printf("Commanded motor to stop driving");
   Drive_Stop();
 }
 

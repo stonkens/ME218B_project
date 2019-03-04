@@ -772,6 +772,8 @@ void InitSPI(void)
 	// NVIC_EN0 handles IRQs 0-31
 	// SSI0 = IRQ 7 --> EN_0 |= BIT7HI
 	HWREG(NVIC_EN0) |= BIT7HI;
+  
+  HWREG(NVIC_PRI1) |= (BIT29HI | BIT30HI);
 
 	// Enable interrupts globally
 	//__enable_irq();

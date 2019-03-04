@@ -179,12 +179,14 @@ void IRInitInputCapture(void)
 // go to TIVA data sheet page 134 for checking NVIC   
   HWREG(NVIC_EN3) |= BIT3HI;
 
+  HWREG(NVIC_PRI24) |= BIT30HI;
 // make sure interrupts are enabled globally
 // now kick the timer off by enabling it and enabling the timer to
 // stall while stopped by the debugger
   HWREG(WTIMER2_BASE + TIMER_O_CTL) |= (TIMER_CTL_TBEN | TIMER_CTL_TBSTALL);
 //global enable: doing it in Initialize Hardware 
-	printf("\r\n InitInputCapture for IR complete");
+  IRDisableInterrupt();
+	//printf("\r\n InitInputCapture for IR complete");
 }
 
 /****************************************************************************
@@ -213,7 +215,7 @@ void IR_ISR(void){
   //grab the captured tick value
   ThisCapture=HWREG(WTIMER2_BASE + TIMER_O_TBR);
   //if firstedge, don't calculate the period
-  
+  //printf(".");
 
   
   if (FirstEdge)
