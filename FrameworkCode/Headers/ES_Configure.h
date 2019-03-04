@@ -276,15 +276,11 @@ typedef enum
   ES_GAME_OVER,
   ES_CLEANING_UP,
   ES_BUMPER_HIT,
-<<<<<<< HEAD
-  EV_MOVE_COMPLETED
-=======
+  EV_MOVE_COMPLETED,
   ES_WESTRECYCLING_FOUND,
   ES_EASTRECYCLING_FOUND,
   ES_SOUTHLANDFILL_FOUND,
   ES_NORTHLANDFILL_FOUND
-
->>>>>>> IR
 }ES_EventType_t;
 
 /****************************************************************************/
