@@ -256,7 +256,7 @@ void IR_ISR(void){
             PostMasterSM(BeaconEvent);
           
             //ADDED FOR TESTING
-            printf("Found the beacon\r\n");
+            //printf("Found the beacon\r\n");
             StopDrive();
             SpecificBeaconCount = 0;
           }

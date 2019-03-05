@@ -133,6 +133,7 @@ ES_Event_t RunCollectingV2SM( ES_Event_t CurrentEvent )
 
                   //printf("got there\r\n");
                   StopDrive();
+                IRDisableInterrupt();
                   ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIME);
                   ReturnEvent.EventType = ES_NO_EVENT;                  
                   //Current placeholder event
