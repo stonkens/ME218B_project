@@ -123,14 +123,13 @@ ES_Event_t RunLEDService(ES_Event_t ThisEvent)
           {
             HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0LO; //turn LED on 
             HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI;
-            LEDOn = true;
           }
           else
           {
             HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
             HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI;
-            LEDOn = false;
           }
+          LEDOn =~LEDOn;
         }
         
         else if (QueryTeam() == TEAM_SOUTH)
@@ -139,14 +138,13 @@ ES_Event_t RunLEDService(ES_Event_t ThisEvent)
           {
             HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO; //turn LED on 
             HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
-            LEDOn = true;
           }
           else
           {
             HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI; //turn LED off 
             HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
-            LEDOn = false;
           }
+          LEDOn =~LEDOn;
         }
         ES_Timer_InitTimer(LED_TIMER, LED_TIME);
       }
@@ -157,13 +155,12 @@ ES_Event_t RunLEDService(ES_Event_t ThisEvent)
         {
           HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0LO; //turn LED on 
           HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI;          
-          LEDOn = true;
+
         }
         else
         {
           HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO; //turn LED on 
           HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
-          LEDOn = true;
         }
 
       }
