@@ -34,7 +34,7 @@
 // This macro determines that nuber of services that are *actually* used in
 // a particular application. It will vary in value from 1 to MAX_NUM_SERVICES
 
-#define NUM_SERVICES 9
+#define NUM_SERVICES 10
 
 /****************************************************************************/
 // These are the definitions for Service 0, the lowest priority service.
@@ -42,13 +42,14 @@
 // services are added in numeric sequence (1,2,3,...) with increasing
 // priorities
 // the header file with the public function prototypes
-#define SERV_0_HEADER "KeyMapperService.h"
+#define SERV_0_HEADER "SPISM.h"
 // the name of the Init function
-#define SERV_0_INIT InitKeyMapperService
+#define SERV_0_INIT InitSPISM
 // the name of the run function
-#define SERV_0_RUN RunKeyMapperService
+#define SERV_0_RUN RunSPISM
 // How big should this services Queue be?
-#define SERV_0_QUEUE_SIZE 3
+#define SERV_0_QUEUE_SIZE 5
+
 
 /****************************************************************************/
 // The following sections are used to define the parameters for each of the
@@ -84,13 +85,13 @@
 // These are the definitions for Service 3
 #if NUM_SERVICES > 3
 // the header file with the public function prototypes
-#define SERV_3_HEADER "SPISM.h"
+#define SERV_3_HEADER "KeyMapperService.h"
 // the name of the Init function
-#define SERV_3_INIT InitSPISM
+#define SERV_3_INIT InitKeyMapperService
 // the name of the run function
-#define SERV_3_RUN RunSPISM
+#define SERV_3_RUN RunKeyMapperService
 // How big should this services Queue be?
-#define SERV_3_QUEUE_SIZE 5
+#define SERV_3_QUEUE_SIZE 3
 #endif
 
 /****************************************************************************/
@@ -383,9 +384,6 @@ typedef enum
 #define LOCALIZE_TIMER 13
 #define BALL_COLLECTION_TIMER 14
 #define I2C_TIMER 15
-
-
-
 
 /**************************************************************************/
 // uncomment this line to get some basic framework operation debugging on
