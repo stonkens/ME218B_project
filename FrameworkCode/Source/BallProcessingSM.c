@@ -61,7 +61,7 @@
 #define PINK 6 
 #define DUMP_TIME 5000 //5s
 #define SORT_TIME 3000 //3s 
-#define PROCESSING_TIME 200 //200ms
+#define PROCESSING_TIME 400 //200ms //UPDATE UPON KRISTINE REQUEST
 #define BitsPerNibble 4
 #define GenA_Normal (PWM_3_GENA_ACTCMPAU_ONE | PWM_3_GENA_ACTCMPAD_ZERO)
 #define PeriodInMS 20 //50Hz 

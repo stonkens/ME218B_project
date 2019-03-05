@@ -592,7 +592,7 @@ static ES_Event_t DuringStraightDrive( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
 
-      DriveStraight(STRAIGHT_SPEED,-48000); 
+      DriveStraight(STRAIGHT_SPEED,-2400); 
       //Start any lower level machines that run in this state
 
         

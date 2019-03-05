@@ -300,7 +300,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
             {
               DetectCount = 0; //reset detect count 
                         //re-init timer 
-              //printf("Ball detected\r\n");
+              printf("Ball detected\r\n");
               ES_Timer_InitTimer(COLOR_SENSE_TIMER, (FIVE_MS));
               CurrentState = BallDetected;
             }
@@ -428,7 +428,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
       uint16_t CurrentClearValue;
       CurrentClearValue = I2C_GetClearValue();
       if(CurrentClearValue <= DETECTION_THRES){
-        //printf("Done depositing\r\n");
+        printf("Done depositing\r\n");
         ThisEvent.EventType = EV_BALL_GONE; 
         PostBallProcessingSM(ThisEvent);
         ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));

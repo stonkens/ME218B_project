@@ -57,7 +57,6 @@
 #define PINK 6 
 #define DUMP_TIME 5000 //5s
 #define SORT_TIME 3000 //3s 
-#define PROCESSING_TIME 200 //200ms
 #define BitsPerNibble 4
 #define GenB_Normal (PWM_2_GENB_ACTCMPBU_ONE | PWM_2_GENB_ACTCMPBD_ZERO)
 #define GenA_Normal (PWM_2_GENA_ACTCMPAU_ONE | PWM_2_GENA_ACTCMPAD_ZERO)
