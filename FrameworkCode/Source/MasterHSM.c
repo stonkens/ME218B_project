@@ -248,7 +248,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
                  printf("BUMPER HIT \r\n");
                  
                  //Bot is hit on the front side
-                 if ((CurrentEvent.EventParam == 1) || (CurrentEvent.EventParam == 2))
+                 if ((CurrentEvent.EventParam == 1) || (CurrentEvent.EventParam == 2)) //PD 6-7 (see in event checkers) 
                  {
                    printf("Param: %d \r\n", CurrentEvent.EventParam);
                    if(QueryBotDirection()==BACKWARDS)
