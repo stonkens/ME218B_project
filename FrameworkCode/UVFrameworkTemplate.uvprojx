@@ -552,6 +552,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\CollectingV2SM.c</FilePath>
             </File>
+            <File>
+              <FileName>ReflectiveTapeChecker.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\ReflectiveTapeChecker.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1554,6 +1559,11 @@
               <FileName>CollectingV2SM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\CollectingV2SM.c</FilePath>
+            </File>
+            <File>
+              <FileName>ReflectiveTapeChecker.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\ReflectiveTapeChecker.c</FilePath>
             </File>
           </Files>
         </Group>

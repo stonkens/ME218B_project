@@ -275,6 +275,7 @@ typedef enum
   EV_I2C_EOS,
   EV_I2C_Wait4Busy,
   EV_I2C_Wait4Time,
+<<<<<<< HEAD
   EV_COMPASS_RESPONSE_RECEIVED,  
   EV_RECEIVED_COMPASS_ACK,
   EV_COMPASS_CLEANING_UP,
@@ -298,6 +299,17 @@ typedef enum
   EV_GO2RECYCLE,
   EV_GO2LANDFILL,
   
+=======
+  RESPONSE_RECEIVED,
+  ES_GAME_OVER,
+  ES_CLEANING_UP,
+  ES_BUMPER_HIT,
+  EV_MOVE_COMPLETED,
+  ES_WESTRECYCLING_FOUND,
+  ES_EASTRECYCLING_FOUND,
+  ES_SOUTHLANDFILL_FOUND,
+  ES_NORTHLANDFILL_FOUND
+>>>>>>> origin/ReflectiveTapeChecker
 }ES_EventType_t;
 
 /****************************************************************************/
