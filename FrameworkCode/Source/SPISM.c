@@ -182,7 +182,7 @@ bool InitSPISM(uint8_t Priority)
   AssignedPeriod = 0xFFFF;
 
   //Start Timer to start sending messages to COMPASS
-	ES_Timer_InitTimer(SPI_TIMER, SPI_QUERYTIME);
+	ES_Timer_InitTimer(SPI_TIMER, SPI_REFRESHTIME);
   //disable interrupt
   HWREG(SSI0_BASE + SSI_O_IM) &= ~SSI_IM_TXIM;
   
@@ -292,7 +292,7 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
       }          
       else if (ThisEvent.EventType == EV_COMPASS_RESPONSE_RECEIVED)
       {
-				//printf("Response received \r\n"); PRINTF REMOVED
+				printf("Response received \r\n"); //PRINTF REMOVED
         //Bits 2&3 have to be masked, as ACK byte is unknown
         ReceivedAckByte = ThisEvent.EventParam;
 
@@ -463,7 +463,7 @@ void SPIISRResponse(void)
 	HWREG(SSI0_BASE+SSI_O_DR);
 	HWREG(SSI0_BASE+SSI_O_DR);
   ResponseMessage = HWREG(SSI0_BASE + SSI_O_DR);
-
+  printf("Responsemessage: %d\r\n", ResponseMessage);
   //Post message to SPI SM
   ES_Event_t ThisEvent;
   ThisEvent.EventType = EV_COMPASS_RESPONSE_RECEIVED;
@@ -805,7 +805,7 @@ void InitSPI(void)
 ****************************************************************************/
 static void WriteToSPI(uint8_t TransmitMessage)
 {
-	//printf("%d", TransmitMessage);
+	printf("%d", TransmitMessage);
   //Write data to data register
   HWREG(SSI0_BASE + SSI_O_DR) = TransmitMessage;
 	HWREG(SSI0_BASE + SSI_O_DR) = ZERO_BYTE;

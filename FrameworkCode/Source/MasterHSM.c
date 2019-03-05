@@ -272,21 +272,20 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
                  
                  CrashFlag = false;
                   
-							 }
-							 case EV_COMPASS_GAME_OVER:
-							 {
-                 ES_Event_t LEDEvent;
-                 LEDEvent.EventType = EV_COMPASS_GAME_OVER;
-                 PostLEDService(LEDEvent);
-								 NextState = GameEnded;
-								 MakeTransition = true;
-								 EntryEventKind.EventType = ES_ENTRY;
-							 }
-							 break;
-							 
-							 break;
+						}
+						case EV_COMPASS_GAME_OVER:
+						{
+               ES_Event_t LEDEvent;
+               LEDEvent.EventType = EV_COMPASS_GAME_OVER;
+               PostLEDService(LEDEvent);
+               NextState = GameEnded;
+               MakeTransition = true;
+               EntryEventKind.EventType = ES_ENTRY;
+						}
+						break;
+
                 // repeat cases as required for relevant events
-							 default:
+						default:
 							 {;
 							 }								 
 						}

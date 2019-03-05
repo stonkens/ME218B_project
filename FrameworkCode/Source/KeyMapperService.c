@@ -33,7 +33,9 @@
 #include "GP_Display.h"
 #include "BallProcessingSM.h"
 #include "MasterHSM.h"
-#include "CollectingSM.h"
+//#include "CollectingSM.h" Triangulation method
+#include "CollectingV2SM.h"
+
 /*----------------------------- Module Defines ----------------------------*/
 #define DISPLAY_UPDATE_TIME 100
 /*---------------------------- Module Functions ---------------------------*/

@@ -58,7 +58,9 @@
 */
 #include "GamePlayHSM.h"
 
-#include "CollectingSM.h"
+//#include "CollectingSM.h" Triangulation method
+#include "CollectingV2SM.h"
+
 #include "RecyclingSM.h"
 #include "LandfillingSM.h"
 #include "KeyMapperService.h"
@@ -394,8 +396,9 @@ static ES_Event_t DuringCollectingGarbage( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
-      Event.EventType = ES_ENTRY;
-      StartCollectingSM(Event);
+      //StartCollectingSM(Event); For Triangulation
+      StartCollectingV2SM(Event);
+
         // implement any entry actions required for this state machine
         
 			  // Start turning DC Motors connected to pin PB6 & PB7
@@ -411,8 +414,10 @@ static ES_Event_t DuringCollectingGarbage( ES_Event_t Event)
     }
     else if ( Event.EventType == ES_EXIT )
     {
-      RunCollectingSM(Event);
+      //RunCollectingSM(Event); For triangulation
+      RunCollectingV2SM(Event);
       StopDrive();
+      SetBotDirection(FORWARDS);
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
@@ -424,7 +429,7 @@ static ES_Event_t DuringCollectingGarbage( ES_Event_t Event)
     }else
     // do the 'during' function for this state
     {
-      ReturnEvent = RunCollectingSM(Event);
+      ReturnEvent = RunCollectingV2SM(Event);
         // run any lower level state machine
         // ReturnEvent = RunLowerLevelSM(Event);
       

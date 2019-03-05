@@ -78,7 +78,7 @@ int main (void)
   puts( "'T'= EV_TAPE_DETECTED\r\n");
   puts( "'Z'= EV_ALIGNED2BEACON\r\n");
   puts( "'X'= Change Position Awareness to true\r\n");
-  puts( "      MasterSM     | GamePlayHSM|  CollectingSM | OrientingSM |     RecyclingSM   |     LandfillingSM  | Col. Avoidance |D | R |L | PositionAwarness\r");
+  puts( "      MasterSM     | GamePlayHSM|  CollectingSM |     RecyclingSM   |     LandfillingSM  | Col. Avoidance |D | R |L | PositionAwarness\r");
 
   // reprogram the ports that are set as alternate functions or
   // locked coming out of reset. (PA2-5, PB2-3, PD7, PF0)

@@ -24,7 +24,8 @@
 #include "MasterHSM.h"
 #include "GamePlayHSM.h"
 #include "CollisionAvoidanceHSM.h"
-#include "CollectingSM.h"
+//#include "CollectingSM.h" Triangulation method
+#include "CollectingV2SM.h"
 #include "OrientingSM.h"
 #include "RecyclingSM.h"
 #include "LandfillingSM.h"
@@ -40,8 +41,8 @@ void UpdateDisplay(void)
 {
   MasterState_t               MasterState             = QueryMasterSM();
   GamePlayState_t             GamePlayState           = QueryGamePlaySM();
-  CollectingState_t           CollectingState         = QueryCollectingSM();
-  OrientingState_t            OrientingState          = QueryOrientingSM();
+  CollectingState_t           CollectingState         = QueryCollectingV2SM();
+  //OrientingState_t            OrientingState          = QueryOrientingSM();
   RecyclingState_t            RecyclingState          = QueryRecyclingSM();
   LandfillingState_t          LandfillingState        = QueryLandfillingSM();
   CollisionAvoidanceState_t   CollisionAvoidanceState = QueryCollisionAvoidanceHSM();
@@ -93,29 +94,26 @@ void UpdateDisplay(void)
 
   switch (CollectingState)
   {
-    case Orienting:
+    case StraightDrive:
     {
-      printf("   Orienting    ");
+      printf("  StraightDrive ");
     }
     break;
-    case Driving2Target:
+    case TurnDrive:
     {
-      printf(" Driving2Target ");
+      printf("   TurnDrive    ");
     }
     break;
-    case Roaming:
-    {
-      printf("    Roaming     ");
-    }
-    break;
+
   }
-  switch (OrientingState)
+  /*switch (OrientingState)
   {
     case Measuring:
     {
       printf("   Measuring  ");
     }
   }
+  */
 
   switch (RecyclingState)
   {

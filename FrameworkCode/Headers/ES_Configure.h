@@ -370,7 +370,7 @@ typedef enum
 #define SPI_TIMER 1
 #define SPI_REFRESH_TIMER 2
 #define DISPLAY_TIMER 3
-#define REORIENTATION_TIMER 4
+#define COLLECTSTOP_TIMER 4
 #define COLOR_SENSE_TIMER 6 
 #define PROCESSING_TIMER 7 
 #define DUMP_TIMER 8 

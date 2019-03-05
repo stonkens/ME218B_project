@@ -299,7 +299,8 @@ Hyun Joo Lee 16:00 02/27/2019 Started function
 
 ****************************************************************************/
 void IRDisableInterrupt(void){
-    HWREG(WTIMER2_BASE +TIMER_O_IMR) &=~TIMER_IMR_CBEIM;
+  HWREG(WTIMER2_BASE +TIMER_O_IMR) &=~TIMER_IMR_CBEIM;
+  DisableBeaconFinder();
 }
 
 /****************************************************************************
