@@ -43,6 +43,7 @@
 #include "DriveCommandModule.h"
 #include "IRDetector.h"
 #include "TapeFollowingChecker.h"
+#include "ReflectiveTapeChecker.h"
 // This module
 #include "InitializeHardware.h"
 
@@ -92,7 +93,7 @@ void InitializeHardware(void)
   Drive_Control_Init();
   //InitSPI(); //This uses bits xxx and xxx
   IRInitInputCapture();
-
+  InitTapeReflectorHardware();
   __enable_irq();
   //InitializeADC();
 }

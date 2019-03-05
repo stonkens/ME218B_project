@@ -465,7 +465,7 @@ static ES_Event_t DuringAlign2Landfill( ES_Event_t Event)
       }
       IREnableInterrupt();
       //Start any lower level machines that run in this state
-
+      SetBotDirection(FORWARDS);
         
         
     }
@@ -506,13 +506,14 @@ static ES_Event_t DuringPrepare4Harvesting( ES_Event_t Event)
 
       DriveRotate(TURNING_SPEED, 1800); 
       //Start any lower level machines that run in this state
-        
+      
         
     }
     else if ( Event.EventType == ES_EXIT )
     {
         // on exit, give the lower levels a chance to clean up first
         StopDrive();
+        SetBotDirection(BACKWARDS);
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
         // now do any local exit functionality

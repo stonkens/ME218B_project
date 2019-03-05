@@ -33,13 +33,15 @@
 #include "ES_ShortTimer.h"
 #include "EventCheckers.h"
 
+#include "MasterHSM.h"
+
 // Project modules
 #include "ADMulti.h"
 // This module
 #include "ReflectiveTapeChecker.h"
 
 /*----------------------------- Module Defines ----------------------------*/
-#define ENEMY_THRESHOLD 0 
+#define ENEMY_THRESHOLD 1000 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine.
 */
@@ -87,7 +89,7 @@ bool Check4Enemy(void)
     ThisEvent.EventType = EV_BOT_DETECTED;
     ThisEvent.EventParam = CurrentInputState;
     printf("Found another bot \r\n");
-    //PostMasterSM(ThisEvent);
+    PostMasterSM(ThisEvent);
     ReturnVal = true;
   }
   // Update LastInputState
@@ -96,19 +98,7 @@ bool Check4Enemy(void)
   return ReturnVal;  
 }
 
-void InitTapeReflectorHardware(void){
-   // Set bit 4 and enable port E
-  HWREG(SYSCTL_RCGCGPIO) |= SYSCTL_RCGCGPIO_R4;		
-	
-  // Wait for peripheral to be ready
-  while ((HWREG(SYSCTL_PRGPIO) & SYSCTL_PRGPIO_R4) != SYSCTL_PRGPIO_R4) {;}
-	
-  // Set RangePin to usable pin
-  HWREG(GPIO_PORTE_BASE + GPIO_O_DEN) |= BIT0HI;
-    
-  // Set RangePin to input
-  HWREG(GPIO_PORTE_BASE + GPIO_O_DIR) &= BIT0LO; 
-    
+void InitTapeReflectorHardware(void){    
   // Set PE0 as analog inputs  
   ADC_MultiInit(1);
     

@@ -41,6 +41,7 @@
 
 #include "SPISM.h"
 
+#include "DriveCommandModule.h"
 // Header files for state machines at the next lower level in the hierarchy
 #include "GamePlayHSM.h"
 #include "CollisionAvoidanceHSM.h"
@@ -58,7 +59,7 @@
 #include "driverlib/pin_map.h"
 #include "driverlib/gpio.h"
 /*----------------------------- Module Defines ----------------------------*/
-
+#define COLLISION_TIME 300 //300 ms before it reacts
 /*---------------------------- Module Functions ---------------------------*/
 static ES_Event_t DuringWaitingForStart( ES_Event_t Event);
 static ES_Event_t DuringGamePlay (ES_Event_t Event);
@@ -74,6 +75,7 @@ static MasterState_t CurrentState;
 static uint8_t MyPriority;
 static uint8_t OurTeam;
 static bool CrashFlag = false;
+static uint8_t FieldLocation;
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
  Function
@@ -108,10 +110,12 @@ bool InitMasterSM ( uint8_t Priority )
   if (OurTeam == TEAM_NORTH)
   {
     //printf("\r\n Go Team North\r\n");PRINTF REMOVED
+    FieldLocation = NORTH_HALF;
   }
   else
   {
     //printf("\r\n Go Team South\r\n");PRINTF REMOVED
+    FieldLocation = SOUTH_HALF;
   }
   
   //The SSI communication service can start
@@ -262,17 +266,35 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
                  
                  if (CrashFlag == true)
                  {
+                   /* Currently testing a new strategy
                     // Execute action function for state one : event one
                     NextState = CollisionAvoidance;//Decide what the next state will be
                     // for internal transitions, skip changing MakeTransition
                     MakeTransition = true; //mark that we are taking a transition
                     // if transitioning to a state with history change kind of entry
                     EntryEventKind.EventType = ES_ENTRY;
+                   */
+                   ES_Timer_InitTimer(COLLISION_TIMER, COLLISION_TIME);
                  }
                  
                  CrashFlag = false;
                   
 						}
+            break;
+
+            case ES_TIMEOUT:
+            {
+              StopDrive();
+              //Currently testing a new strategy
+              // Execute action function for state one : event one
+              NextState = CollisionAvoidance;//Decide what the next state will be
+              // for internal transitions, skip changing MakeTransition
+              MakeTransition = true; //mark that we are taking a transition
+              // if transitioning to a state with history change kind of entry
+              EntryEventKind.EventType = ES_ENTRY;
+              
+            }  
+            
 						case EV_COMPASS_GAME_OVER:
 						{
                ES_Event_t LEDEvent;
@@ -517,4 +539,20 @@ uint8_t QueryTeam(void)
   return OurTeam;
 }
 
+uint8_t QueryFieldLocation(void)
+{
+  return FieldLocation;
+}
 
+void SetFieldLocation(bool FieldSide)
+{
+  if (FieldSide == SOUTH_HALF)
+  {
+    FieldLocation = SOUTH_HALF;
+  }
+  else
+  {
+    FieldLocation = NORTH_HALF;
+  }
+}
+    

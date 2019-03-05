@@ -38,6 +38,7 @@
 // actual functionsdefinition
 #include "EventCheckers.h"
 
+#include "ReflectiveTapeChecker.h"
 #include "KeyMapperService.h"
 #include "BumperChecker.h"
 

@@ -68,6 +68,8 @@
 #include "DriveCommandModule.h"
 
 #include "HarvesterService.h"
+
+#include "IREmitter.h"
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
 // and any other local defines
@@ -465,6 +467,7 @@ static ES_Event_t DuringRecycling( ES_Event_t Event)
     else if ( Event.EventType == ES_EXIT )
     {
       RunRecyclingSM(Event);
+      DisableEmitterPWM();
       StopDrive();
       
         // on exit, give the lower levels a chance to clean up first

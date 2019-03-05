@@ -24,4 +24,5 @@
 // contained event checking functions
 #include "TapeFollowingChecker.h"
 #include "BumperChecker.h"
+#include "ReflectiveTapeChecker.h"
 #endif  // ES_EventCheckWrapper_H

@@ -11,8 +11,12 @@
 #include "ES_Framework.h"
 
 //Team indication defines
-#define TEAM_NORTH 0
-#define TEAM_SOUTH 1
+#define TEAM_NORTH  0
+#define TEAM_SOUTH  1
+
+#define NORTH_HALF  0
+#define SOUTH_HALF  1
+
 
 // State definitions for use with the query function
 typedef enum
@@ -26,6 +30,8 @@ void StartMasterSM ( ES_Event_t CurrentEvent );
 bool PostMasterSM( ES_Event_t ThisEvent );
 bool InitMasterSM ( uint8_t Priority );
 uint8_t QueryTeam(void);
+uint8_t QueryFieldLocation(void);
+void SetFieldLocation(bool FieldSide);
 MasterState_t QueryMasterSM(void);
 #endif /*MasterHSM_H */
 

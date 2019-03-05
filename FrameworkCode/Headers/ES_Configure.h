@@ -275,7 +275,6 @@ typedef enum
   EV_I2C_EOS,
   EV_I2C_Wait4Busy,
   EV_I2C_Wait4Time,
-<<<<<<< HEAD
   EV_COMPASS_RESPONSE_RECEIVED,  
   EV_RECEIVED_COMPASS_ACK,
   EV_COMPASS_CLEANING_UP,
@@ -298,18 +297,7 @@ typedef enum
   EV_BALL_DETECTED,
   EV_GO2RECYCLE,
   EV_GO2LANDFILL,
-  
-=======
-  RESPONSE_RECEIVED,
-  ES_GAME_OVER,
-  ES_CLEANING_UP,
-  ES_BUMPER_HIT,
-  EV_MOVE_COMPLETED,
-  ES_WESTRECYCLING_FOUND,
-  ES_EASTRECYCLING_FOUND,
-  ES_SOUTHLANDFILL_FOUND,
-  ES_NORTHLANDFILL_FOUND
->>>>>>> origin/ReflectiveTapeChecker
+  EV_BOT_DETECTED
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -344,7 +332,7 @@ typedef enum
 
 /****************************************************************************/
 // This is the list of event checking functions
-#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished, Check4TapeFollow, Check4Bump 
+#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished, Check4TapeFollow, Check4Bump, Check4Enemy 
 
 
 /****************************************************************************/
@@ -359,7 +347,7 @@ typedef enum
 #define TIMER2_RESP_FUNC PostSPISM
 #define TIMER3_RESP_FUNC PostKeyMapperService
 #define TIMER4_RESP_FUNC PostMasterSM
-#define TIMER5_RESP_FUNC TIMER_UNUSED
+#define TIMER5_RESP_FUNC PostMasterSM
 #define TIMER6_RESP_FUNC PostColorService
 #define TIMER7_RESP_FUNC PostBallProcessingSM
 #define TIMER8_RESP_FUNC PostBallDumpingSM
@@ -383,6 +371,7 @@ typedef enum
 #define SPI_REFRESH_TIMER 2
 #define DISPLAY_TIMER 3
 #define COLLECTSTOP_TIMER 4
+#define COLLISION_TIMER 5
 #define COLOR_SENSE_TIMER 6 
 #define PROCESSING_TIMER 7 
 #define DUMP_TIMER 8 

@@ -80,6 +80,7 @@ static ES_Event_t DuringDriving2Recycle(ES_Event_t Event);
 static ES_Event_t DuringApproachingRecycle( ES_Event_t Event);
 static ES_Event_t DuringPreparing4Recycle (ES_Event_t Event);
 static ES_Event_t DuringDumpingRecycle (ES_Event_t Event);
+static ES_Event_t DuringRecoveringFromRecycle (ES_Event_t Event);
 /*---------------------------- Module Variables ---------------------------*/
 // everybody needs a state variable, you may need others as well
 static RecyclingState_t CurrentState;
@@ -329,9 +330,47 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
               {
                 StopDrive();
                 //Close the Recycling Door: TO BE DONE
+                NextState = RecoveringFromRecycle;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Consuming event  
+                ReturnEvent.EventType = ES_NO_EVENT;                 
+                //Process event at a higher level
+                               
+              }
+              break;	
+              
+							 default:
+							{;
+							}
+                // repeat cases as required for relevant events
+            }
+
+         }
+       
+      // repeat state pattern as required for other states
+		}
+		break;    
+    
+    
+		case RecoveringFromRecycle:
+		{
+         ReturnEvent = CurrentEvent = DuringRecoveringFromRecycle(CurrentEvent);
+         //process any events
+         if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
+         {
+            switch (CurrentEvent.EventType)
+            {
+
+              case EV_MOVE_COMPLETED:
+              {
+                StopDrive();
+                //Close the Recycling Door: TO BE DONE
                 
                 //Process event at a higher level
-                ReturnEvent = CurrentEvent; 
+                ReturnEvent.EventType = EV_RECYCLING_DONE;
                 
               }
               break;	
@@ -646,6 +685,47 @@ static ES_Event_t DuringDumpingRecycle( ES_Event_t Event)
     else if ( Event.EventType == ES_EXIT )
     {
       DisableEmitterPWM();
+      StopDrive();
+        // on exit, give the lower levels a chance to clean up first
+        //RunLowerLevelSM(Event);
+        // repeat for any concurrently running state machines
+        // now do any local exit functionality
+			
+      
+    }else
+    // do the 'during' function for this state
+    {
+        // run any lower level state machine
+        // ReturnEvent = RunLowerLevelSM(Event);
+      
+        // repeat for any concurrent lower level machines
+      
+        // do any activity that is repeated as long as we are in this state
+    }
+    // return either Event, if you don't want to allow the lower level machine
+    // to remap the current event, or ReturnEvent if you do want to allow it.
+    return(ReturnEvent);
+}
+
+static ES_Event_t DuringRecoveringFromRecycle( ES_Event_t Event)
+{
+   ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
+
+    // process ES_ENTRY, ES_ENTRY_HISTORY & ES_EXIT events
+    if ( (Event.EventType == ES_ENTRY) ||
+         (Event.EventType == ES_ENTRY_HISTORY) )
+    {
+        // implement any entry actions required for this state machine
+        DriveRotate(PREPARE4DUMP_SPEED, -900); 
+			
+				
+        // after that start any lower level machines that run in this state
+        //StartLowerLevelSM( Event );
+        // repeat the StartxxxSM() functions for concurrent state machines
+        // on the lower level
+    }
+    else if ( Event.EventType == ES_EXIT )
+    {
       StopDrive();
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
