@@ -101,7 +101,7 @@ bool Check4Bump(void)
     }
   }
 	
-	  if (CurrentRightSwitchState != LastRightSwitchState) //right bumper 
+	if (CurrentRightSwitchState != LastRightSwitchState) //right bumper 
   {
     ReturnVal = true;
     if (CurrentRightSwitchState)
@@ -113,7 +113,7 @@ bool Check4Bump(void)
     }
   }
 	
-	  if (CurrentBackSwitchState != LastBackSwitchState) //back bumper 
+	if (CurrentBackSwitchState != LastBackSwitchState) //back bumper 
   {
     ReturnVal = true;
     if (CurrentBackSwitchState)
@@ -125,7 +125,7 @@ bool Check4Bump(void)
     }
   }
 	
-	  if (CurrentLeftSwitchState != LastLeftSwitchState) //left bumper 
+	if (CurrentLeftSwitchState != LastLeftSwitchState) //left bumper 
   {
     ReturnVal = true;
     if (CurrentLeftSwitchState)
