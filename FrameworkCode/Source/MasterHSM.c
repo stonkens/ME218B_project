@@ -105,16 +105,23 @@ bool InitMasterSM ( uint8_t Priority )
   // Start the Master State machine
 
 	//Initialize North/South team designation
-	OurTeam = HWREG(GPIO_PORTE_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT3HI;
+	if ((HWREG(GPIO_PORTE_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT3HI) == BIT3HI)
+  {
+    OurTeam = TEAM_SOUTH;
+  }
+  else
+  {
+    OurTeam = TEAM_NORTH;
+  }
   
   if (OurTeam == TEAM_NORTH)
   {
-    //printf("\r\n Go Team North\r\n");PRINTF REMOVED
+    printf("\r\n Go Team North\r\n");//PRINTF REMOVED
     FieldLocation = NORTH_HALF;
   }
   else
   {
-    //printf("\r\n Go Team South\r\n");PRINTF REMOVED
+    printf("\r\n Go Team South\r\n");//PRINTF REMOVED
     FieldLocation = SOUTH_HALF;
   }
   
@@ -238,17 +245,21 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
             {
                case EV_BUMPER_HIT : //If event is event one
 							 {
+                 printf("BUMPER HIT \r\n");
                  
                  //Bot is hit on the front side
                  if ((CurrentEvent.EventParam == 1) || (CurrentEvent.EventParam == 2))
                  {
+                   printf("Param: %d \r\n", CurrentEvent.EventParam);
                    if(QueryBotDirection()==BACKWARDS)
                    {
+                     //printf("reached BACKWARDS\r\n");
                      CrashFlag = false;
                    }
                    else
                    {
                      CrashFlag = true;
+                     printf("reached BACKWARDS, crashed\r\n");                     
                    }
                  }
                  
@@ -257,10 +268,12 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
                    if(QueryBotDirection() == FORWARDS)
                    {
                      CrashFlag = false;
+                     //printf("reached FORWARDS\r\n");
                    }
                    else
                    {
                      CrashFlag = true;
+                     //printf("reached FORWARDS, Crashed\r\n");
                    }
                  }
                  
@@ -275,6 +288,8 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
                     EntryEventKind.EventType = ES_ENTRY;
                    */
                    ES_Timer_InitTimer(COLLISION_TIMER, COLLISION_TIME);
+                   ReturnEvent.EventType = ES_NO_EVENT;
+                   //printf("Ready2Crash\r\n");
                  }
                  
                  CrashFlag = false;
@@ -284,16 +299,21 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
 
             case ES_TIMEOUT:
             {
-              StopDrive();
-              //Currently testing a new strategy
-              // Execute action function for state one : event one
-              NextState = CollisionAvoidance;//Decide what the next state will be
-              // for internal transitions, skip changing MakeTransition
-              MakeTransition = true; //mark that we are taking a transition
-              // if transitioning to a state with history change kind of entry
-              EntryEventKind.EventType = ES_ENTRY;
+              if (CurrentEvent.EventParam == COLLISION_TIMER)
+              {
+                StopDrive();
+                //Currently testing a new strategy
+                // Execute action function for state one : event one
+                NextState = CollisionAvoidance;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;
+                printf("Going to collision avoidance direct command\r\n");
+              }
               
             }  
+            break;
             
 						case EV_COMPASS_GAME_OVER:
 						{

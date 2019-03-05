@@ -33,7 +33,7 @@
  02/08/12 09:56 jec      revisions for the Events and Services Framework Gen2
  02/13/10 14:29 jec      revised Start and run to add new kind of entry function
                          to make implementing history entry cleaner
- 02/13/10 12:29 jec      added NewEvent local variable to During function and
+ 02//10 12:29 jec      added NewEvent local variable to During function and
                          comments about using either it or Event as the return
  02/11/10 15:54 jec      more revised comments, removing last comment in during
                          function that belongs in the run function

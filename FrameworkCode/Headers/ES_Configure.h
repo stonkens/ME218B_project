@@ -299,8 +299,7 @@ typedef enum
   EV_BALL_DETECTED,
   EV_GO2RECYCLE,
   EV_GO2LANDFILL,
-  EV_BOT_DETECTED,
-  EV_NEW_TAPE
+  EV_BOT_DETECTED
 }ES_EventType_t;
 
 /****************************************************************************/

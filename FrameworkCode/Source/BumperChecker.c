@@ -84,7 +84,7 @@ bool Check4Bump(void)
 	CurrentRightSwitchState = HWREG(GPIO_PORTD_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT3HI; //PD3
 	CurrentBackSwitchState = HWREG(GPIO_PORTD_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT6HI; //PD6
 	CurrentLeftSwitchState = HWREG(GPIO_PORTD_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT7HI; //PD7
-	
+	//printf("%d\r\n", CurrentLeftSwitchState);
   
   
   //printf("%d",CurrentFrontSwitchState);
@@ -92,7 +92,7 @@ bool Check4Bump(void)
   {
     //printf("%d",CurrentFrontSwitchState);
     ReturnVal = true;
-    if (CurrentFrontSwitchState == BIT6HI) // was 1, changing to 4...
+    if (CurrentFrontSwitchState) // was 1, changing to 4...
     {
       printf("\r\nHit the front left bumper");
       ThisEvent.EventType = EV_BUMPER_HIT;
@@ -104,7 +104,7 @@ bool Check4Bump(void)
 	  if (CurrentRightSwitchState != LastRightSwitchState) //right bumper 
   {
     ReturnVal = true;
-    if (CurrentRightSwitchState == BIT7HI)
+    if (CurrentRightSwitchState)
     {
       printf("Hit the right front bumper\r\n");
       ThisEvent.EventType = EV_BUMPER_HIT;
@@ -116,7 +116,7 @@ bool Check4Bump(void)
 	  if (CurrentBackSwitchState != LastBackSwitchState) //back bumper 
   {
     ReturnVal = true;
-    if (CurrentBackSwitchState == BIT2HI)
+    if (CurrentBackSwitchState)
     {
       printf("Hit the back left bumper\r\n");
       ThisEvent.EventType = EV_BUMPER_HIT;
@@ -128,7 +128,7 @@ bool Check4Bump(void)
 	  if (CurrentLeftSwitchState != LastLeftSwitchState) //left bumper 
   {
     ReturnVal = true;
-    if (CurrentLeftSwitchState == BIT3HI)
+    if (CurrentLeftSwitchState)
     {
       printf("Hit the back right bumper\r\n");
       ThisEvent.EventType = EV_BUMPER_HIT;

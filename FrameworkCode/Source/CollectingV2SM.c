@@ -73,7 +73,7 @@
 #define ENTRY_STATE StraightDrive
 #define IR_FIRST_DELAY 100
 
-#define COLLECTSTOP_TIME 10000
+#define COLLECTSTOP_TIME 4000
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
    functions, entry & exit functions.They should be functions relevant to the
@@ -147,7 +147,7 @@ ES_Event_t RunCollectingV2SM( ES_Event_t CurrentEvent )
                 {
                   StopDrive();
                   // Execute action function for state one : event one
-                  NextState = TurnDrive;//Decide what the next state will be
+                  NextState = Prepare4Harvesting;//Decide what the next state will be
                   // for internal transitions, skip changing MakeTransition
                   MakeTransition = true; //mark that we are taking a transition
                   // if transitioning to a state with history change kind of entry
@@ -226,15 +226,18 @@ ES_Event_t RunCollectingV2SM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-              case EV_MOVE_COMPLETED:
+              case EV_TAPE_DETECTED:
               {
+                if((CurrentEvent.EventParam == 1) || (CurrentEvent.EventParam == 3) || (CurrentEvent.EventParam == 5))
+                {
 
-                  //printf("got there\r\n");
+                  printf("got there\r\n");
                   StopDrive();
                   ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIME);
                   ReturnEvent.EventType = ES_NO_EVENT;                  
                   //Current placeholder event
                   PositionAwareness = false;
+                }
                 
               }
 							break;
@@ -466,6 +469,7 @@ static ES_Event_t DuringAlign2Landfill( ES_Event_t Event)
       IREnableInterrupt();
       //Start any lower level machines that run in this state
       SetBotDirection(FORWARDS);
+      DriveRotate(TURNING_SPEED, 3600);
         
         
     }

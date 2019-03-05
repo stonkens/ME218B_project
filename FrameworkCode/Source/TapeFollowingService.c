@@ -135,7 +135,7 @@ ES_Event_t RunTapeFollowingSM(ES_Event_t CurrentEvent)
     
     case LostTape:
     {
-      if((CurrentEvent.EventType == (EV_NEW_TAPE)) || (CurrentEvent.EventType == ES_ENTRY) ||(CurrentEvent.EventType == ES_ENTRY_HISTORY))
+      if((CurrentEvent.EventType == (EV_TAPE_DETECTED)) || (CurrentEvent.EventType == ES_ENTRY) ||(CurrentEvent.EventType == ES_ENTRY_HISTORY))
       {
         ReturnEvent.EventType = ES_NO_EVENT;
         TapeStatus = GetNextTapeState();
@@ -183,7 +183,7 @@ ES_Event_t RunTapeFollowingSM(ES_Event_t CurrentEvent)
     
     case TapeFollowing:
     {
-      if(CurrentEvent.EventType == (EV_NEW_TAPE))
+      if(CurrentEvent.EventType == (EV_TAPE_DETECTED))
       {
         ReturnEvent.EventType = ES_NO_EVENT;
         TapeStatus = GetNextTapeState();

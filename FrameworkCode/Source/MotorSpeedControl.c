@@ -326,7 +326,7 @@ void Drive_SpeedControlISR(void){
     
     //Based on PD controller
     DistanceError = (DesiredDistance - ((LastTickCount_1+LastTickCount_2)/2)); //taking average of wheel 1 and 2 when driving straight
-    //printf("E:%f\r \n", DistanceError);
+    //printf("E:%d\r \n", (int)DistanceError);
     //printf("1:%d\r\n", LastTickCount_1);
     //printf("2:%d\r\n", LastTickCount_2);
     HeadingError = (DesiredHeading- ((LastTickCount_2-LastTickCount_1)/2)); //Subtracting both to take average when turning

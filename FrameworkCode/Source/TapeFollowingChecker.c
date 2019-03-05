@@ -103,23 +103,24 @@ bool Check4TapeFollow(void)
   CurrentTapeFollowLeft = (HWREG(GPIO_PORTE_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT1HI); //PE1
   CurrentTapeFollowRight = (HWREG(GPIO_PORTE_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT2HI); //PE2
   CurrentTapeFollowMid = (MidTapePort & MidTapeHI);
+    
   if (CurrentTapeFollowLeft != LastTapeFollowLeft)
   {
     ReturnVal = true;
     if ((CurrentTapeFollowLeft | BIT1LO) == BIT1LO) //signal is low when on the tape 
     {
-      ThisEvent.EventType = EV_NEW_TAPE;//EV_LEFT_TAPE_ON;
+      ThisEvent.EventType = EV_TAPE_DETECTED;//EV_LEFT_TAPE_ON;
       ThisEvent.EventParam = 1;
       //ThisEvent.EventParam = ES_Timer_GetTime(); //time in ticks 
       printf("Left tape on\r\n");
-      //PostMasterSM(ThisEvent);
+      PostMasterSM(ThisEvent);
     }
     if ((CurrentTapeFollowLeft & BIT1HI) == BIT1HI) //signal is high when off the tape 
     {
-      ThisEvent.EventType = EV_NEW_TAPE;//EV_LEFT_TAPE_OFF;
+      ThisEvent.EventType = EV_TAPE_DETECTED;//EV_LEFT_TAPE_OFF;
       ThisEvent.EventParam = 2; //ES_Timer_GetTime(); //time in ticks 
       printf("Left tape off\r\n");
-      //PostMasterSM(ThisEvent);
+      PostMasterSM(ThisEvent);
 
     }    
   }
@@ -128,41 +129,42 @@ bool Check4TapeFollow(void)
     ReturnVal = true;
     if ((CurrentTapeFollowRight | BIT2LO) == BIT2LO) //signal is low when on the tape 
     {
-      ThisEvent.EventType = EV_NEW_TAPE;//EV_RIGHT_TAPE_ON;
+      ThisEvent.EventType = EV_TAPE_DETECTED;//EV_RIGHT_TAPE_ON;
       ThisEvent.EventParam = 5;//ES_Timer_GetTime(); //time in ticks 
       printf("Right tape on\r\n");
-      //PostMasterSM(ThisEvent);
+      PostMasterSM(ThisEvent);
     }
     if ((CurrentTapeFollowRight & BIT2HI) == BIT2HI) //signal is high when off the tape 
     {
-      ThisEvent.EventType = EV_NEW_TAPE;//EV_RIGHT_TAPE_OFF;
+      ThisEvent.EventType = EV_TAPE_DETECTED;//EV_RIGHT_TAPE_OFF;
       ThisEvent.EventParam = 6;  //ES_Timer_GetTime(); 
       printf("Right tape off\r\n");
-      //PostMasterSM(ThisEvent);
+      PostMasterSM(ThisEvent);
     }    
   }
   
     if (CurrentTapeFollowMid != LastTapeFollowMid)
   {
     ReturnVal = true;
-    if ((CurrentTapeFollowRight | MidTapeLO) == MidTapeLO) //signal is low when on the tape 
+    if ((CurrentTapeFollowMid | MidTapeLO) == MidTapeLO) //signal is low when on the tape 
     {
-      ThisEvent.EventType = EV_NEW_TAPE;
+      ThisEvent.EventType = EV_TAPE_DETECTED;
       ThisEvent.EventParam = 3; //time in ticks 
-      //printf("Right tape on\r\n");
+      //printf("Middle tape on\r\n");
       PostMasterSM(ThisEvent);
     }
-    if ((CurrentTapeFollowRight & BIT2HI) == BIT2HI) //signal is high when off the tape 
+    if ((CurrentTapeFollowMid & BIT2HI) == BIT2HI) //signal is high when off the tape 
     {
-      ThisEvent.EventType = EV_NEW_TAPE;
+      ThisEvent.EventType = EV_TAPE_DETECTED;
       ThisEvent.EventParam = 4; 
-      //printf("Right tape off\r\n");
+      //printf("Middle tape off\r\n");
       PostMasterSM(ThisEvent);
     }    
   }
   
   LastTapeFollowLeft = CurrentTapeFollowLeft; 
   LastTapeFollowRight = CurrentTapeFollowRight; 
+  LastTapeFollowMid = CurrentTapeFollowMid;
   }
   return ReturnVal; 
 }

@@ -158,11 +158,11 @@ static void InitializeRegularGPIOPorts(void)
 {
   //Set PB0 & PB1 as a digital output
   HWREG(GPIO_PORTB_BASE + GPIO_O_DEN) |= (BIT0HI | BIT1HI);
-  HWREG(GPIO_PORTB_BASE + GPIO_O_DIR) |= (BIT1HI | BIT2HI);
+  HWREG(GPIO_PORTB_BASE + GPIO_O_DIR) |= (BIT0HI | BIT1HI);
 
   //Intially set them as high (this means it's off)
-  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
-  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI;  
+  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0LO;
+  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO;  
   
   //Set PB7 as digital input (for Tapefollowing)
   HWREG(GPIO_PORTB_BASE + GPIO_O_DEN) |= (BIT7HI);

@@ -94,18 +94,33 @@ void UpdateDisplay(void)
 
   switch (CollectingState)
   {
+    case Align2Landfill:
+    {
+      printf("  Align2Landfill  ");
+    }
+    break;
     case StraightDrive:
     {
-      printf("  StraightDrive ");
+      printf("   StraightDrive  ");
     }
     break;
     case TurnDrive:
     {
-      printf("   TurnDrive    ");
+      printf("    TurnDrive     ");
     }
     break;
-
+    case Prepare4Harvesting:
+    {
+      printf("Prepare4Harvesting");
+    }
+    break;
+    case FindingTape:
+    {
+      printf("    FindingTape   ");
+    }
+    break;
   }
+
   /*switch (OrientingState)
   {
     case Measuring:
@@ -142,8 +157,12 @@ void UpdateDisplay(void)
       printf("   DumpingRecycle   ");
     }
     break;
+    case RecoveringFromRecycle:
+    {
+      printf("RecoveringFromRecy. ");
+    }
+    break;
   }
-
   switch (LandfillingState)
   {
     case Orienting2Landfill:
@@ -172,6 +191,12 @@ void UpdateDisplay(void)
       printf("   DumpingLandfill   ");
     }
     break;
+    
+    case RecoveringFromDump:
+    {
+      printf(" RecoveringFromDump ");
+    }
+    break;
   }
   switch (CollisionAvoidanceState)
   {
@@ -195,7 +220,7 @@ void UpdateDisplay(void)
   printf(" %d ", BotDirection);
   printf(" %d ", QueryRecycleBalls());
   printf(" %d ", QueryLandFillBalls());
-  printf(" %d ", QueryPositionAwareness());
+  printf(" %d ", QueryTeam());
 
 
 }
