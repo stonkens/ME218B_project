@@ -33,11 +33,8 @@
 /****************************************************************************/
 // This macro determines that nuber of services that are *actually* used in
 // a particular application. It will vary in value from 1 to MAX_NUM_SERVICES
-<<<<<<< HEAD
+
 #define NUM_SERVICES 9
-=======
-#define NUM_SERVICES 6
->>>>>>> TapeFollow
 
 /****************************************************************************/
 // These are the definitions for Service 0, the lowest priority service.
@@ -114,22 +111,15 @@
 // These are the definitions for Service 4
 #if NUM_SERVICES > 5
 // the header file with the public function prototypes
-<<<<<<< HEAD
 #define SERV_5_HEADER "ColorService.h"
 // the name of the Init function
 #define SERV_5_INIT InitColorService
 // the name of the run function
 #define SERV_5_RUN RunColorService
-=======
-#define SERV_5_HEADER "TapeFollowingService.h"
-// the name of the Init function
-#define SERV_5_INIT InitTapeFollowingService
-// the name of the run function
-#define SERV_5_RUN RunTapeFollowingService
->>>>>>> TapeFollow
 // How big should this services Queue be?
 #define SERV_5_QUEUE_SIZE 3
 #endif
+
 
 /****************************************************************************/
 // These are the definitions for Service 6
@@ -174,11 +164,11 @@
 // These are the definitions for Service 9
 #if NUM_SERVICES > 9
 // the header file with the public function prototypes
-#define SERV_9_HEADER "TestHarnessService9.h"
+#define SERV_9_HEADER "TapeFollowingService.h"
 // the name of the Init function
-#define SERV_9_INIT InitTestHarnessService9
+#define SERV_9_INIT InitTapeFollowingService
 // the name of the run function
-#define SERV_9_RUN RunTestHarnessService9
+#define SERV_9_RUN RunTapeFollowingService
 // How big should this services Queue be?
 #define SERV_9_QUEUE_SIZE 3
 #endif
@@ -305,16 +295,12 @@ typedef enum
   EV_LEFT_TAPE_OFF,
   EV_RIGHT_TAPE_ON,
   EV_RIGHT_TAPE_OFF,
-<<<<<<< HEAD
   EV_BALL_GONE,
   EV_BALL_DETECTED,
   EV_GO2RECYCLE,
   EV_GO2LANDFILL,
-  EV_BOT_DETECTED
-=======
-  EV_TAPE_TIMEOUT,
-  EV_NEW_TAPE,
->>>>>>> TapeFollow
+  EV_BOT_DETECTED,
+  EV_NEW_TAPE
 }ES_EventType_t;
 
 /****************************************************************************/
@@ -395,11 +381,9 @@ typedef enum
 #define LOCALIZE_TIMER 13
 #define BALL_COLLECTION_TIMER 14
 #define I2C_TIMER 15
-<<<<<<< HEAD
 #define LED_TIMER 9 
-=======
 #define TAPE_TIMER 12
->>>>>>> TapeFollow
+
 
 /**************************************************************************/
 // uncomment this line to get some basic framework operation debugging on

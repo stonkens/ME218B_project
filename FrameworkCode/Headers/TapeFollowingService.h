@@ -7,19 +7,11 @@
 // Public Function Prototypes
 typedef enum
 {
-  InitTapeState,
-  LostTape,
-  ForwardTape,
-  RotateRight,
-  RotateLeft,
-  RotateRightFine,
-  RotateLeftFine,
-  IMPOSSIBRU
-
-}TapeState;
+  TapeFollowing,
+  LostTape
+}TapeState_t;
 
 // Public Function Prototypes 
-bool InitTapeFollowingService(uint8_t Priority); 
-bool PostTapeFollowingService(ES_Event_t ThisEvent);
-ES_Event_t RunTapeFollowingService(ES_Event_t ThisEvent);
+void StartTapeFollowingSM ( ES_Event_t CurrentEvent );
+ES_Event_t RunTapeFollowingSM(ES_Event_t CurrentEvent);
 #endif /* TapeFollowingService_H */

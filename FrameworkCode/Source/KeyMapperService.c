@@ -221,7 +221,7 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_NEW_TAPE;
               ThisEvent.EventParam = 101;
-              PostTapeFollowingService(ThisEvent);
+              PostMasterSM(ThisEvent);
               ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n ********101 expect 2 *********");
             }
@@ -230,7 +230,7 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_NEW_TAPE;
               ThisEvent.EventParam = 100;
-              PostTapeFollowingService(ThisEvent);
+              PostMasterSM(ThisEvent);
               ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n ***********101 expect 3 \r\n*********");
             }
@@ -239,7 +239,7 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_NEW_TAPE;
               ThisEvent.EventParam = 011;
-              PostTapeFollowingService(ThisEvent);
+              PostMasterSM(ThisEvent);
               ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n ***********011 expect 4\r\n*********");
             }
@@ -248,7 +248,7 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_NEW_TAPE;
               ThisEvent.EventParam = 010;
-              PostTapeFollowingService(ThisEvent);
+              PostMasterSM(ThisEvent);
               ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n ***********010 expect 2 (forward noise)\r\n*********");
             }
@@ -257,7 +257,7 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_NEW_TAPE;
               ThisEvent.EventParam = 001;
-              PostTapeFollowingService(ThisEvent);
+              PostMasterSM(ThisEvent);
               ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n ***********001 expect 6 \r\n*********");
             }
@@ -267,7 +267,7 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_NEW_TAPE;
               ThisEvent.EventParam = 000;
-              PostTapeFollowingService(ThisEvent);
+              PostMasterSM(ThisEvent);
               ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n ***********000 expect 2 \r\n*********");
             }
@@ -277,7 +277,7 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_NEW_TAPE;
               ThisEvent.EventParam = 111;
-              PostTapeFollowingService(ThisEvent);
+              PostMasterSM(ThisEvent);
               ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n *********** 111 expect 1 \r\n*********");
             }
@@ -296,15 +296,6 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
   return ReturnEvent;
 }
 
-uint8_t QueryRecycleBalls(void)
-{
-  return RecycleBalls;
-}
-
-uint8_t QueryLandFillBalls(void)
-{
-  return LandFillBalls;
-}
 
 /***************************************************************************
  private functions

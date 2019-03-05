@@ -458,11 +458,6 @@
               <FilePath>.\Source\IREmitter.c</FilePath>
             </File>
             <File>
-              <FileName>Triangulation.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\Triangulation.c</FilePath>
-            </File>
-            <File>
               <FileName>DriveCommandModule.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\DriveCommandModule.c</FilePath>
@@ -561,6 +556,11 @@
               <FileName>ADMulti.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\ADMulti.c</FilePath>
+            </File>
+            <File>
+              <FileName>TapeFollowingService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\TapeFollowingService.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -723,11 +723,6 @@
               <FilePath>.\Headers\IREmitter.h</FilePath>
             </File>
             <File>
-              <FileName>Triangulation.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\Triangulation.h</FilePath>
-            </File>
-            <File>
               <FileName>DriveCommandModule.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\DriveCommandModule.h</FilePath>
@@ -821,6 +816,11 @@
               <FileName>ColorService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\ColorService.h</FilePath>
+            </File>
+            <File>
+              <FileName>TapeFollowingService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TapeFollowingService.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1471,11 +1471,6 @@
               <FilePath>.\Source\IREmitter.c</FilePath>
             </File>
             <File>
-              <FileName>Triangulation.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\Triangulation.c</FilePath>
-            </File>
-            <File>
               <FileName>DriveCommandModule.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\DriveCommandModule.c</FilePath>
@@ -1574,6 +1569,11 @@
               <FileName>ADMulti.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\ADMulti.c</FilePath>
+            </File>
+            <File>
+              <FileName>TapeFollowingService.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\TapeFollowingService.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1736,11 +1736,6 @@
               <FilePath>.\Headers\IREmitter.h</FilePath>
             </File>
             <File>
-              <FileName>Triangulation.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\Triangulation.h</FilePath>
-            </File>
-            <File>
               <FileName>DriveCommandModule.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\DriveCommandModule.h</FilePath>
@@ -1834,6 +1829,11 @@
               <FileName>ColorService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\ColorService.h</FilePath>
+            </File>
+            <File>
+              <FileName>TapeFollowingService.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\TapeFollowingService.h</FilePath>
             </File>
           </Files>
         </Group>

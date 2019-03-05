@@ -64,6 +64,7 @@
 #include "SPISM.h"
 #include "IRDetector.h"
 #include "IREmitter.h"
+#include "TapeFollowingService.h"
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
 // and any other local defines
@@ -255,7 +256,27 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
                 
               }
                 
-              break;							 
+              break;	
+              
+              case ES_TIMEOUT:
+              {
+                if(CurrentEvent.EventParam == TAPE_TIMER)
+                {
+                  StopDrive();
+                  // Execute action function for state one : event one
+                  NextState = Orienting2Recycle;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;                              
+                  //Consuming event  
+                  ReturnEvent.EventType = ES_NO_EVENT;
+                  
+                }
+              }
+              break;
+              
+                  
 							 default:
 							{;
 							}
@@ -580,17 +601,13 @@ static ES_Event_t DuringApproachingRecycle( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
-      
-      //TO BE DONE: Start TapeFollowingSM
-      
-      
-      
       // implement any entry actions required for this state machine
       enableTapeFollow();
       //Turn left if the right tape sensor is active: TO BE DONE
 			UpdateEmitterPeriod(GetAssignedPeriod());
       EnableEmitterPWM();
-				
+      Event.EventType = ES_ENTRY;
+      StartTapeFollowingSM(Event);        
         // after that start any lower level machines that run in this state
         //StartLowerLevelSM( Event );
         // repeat the StartxxxSM() functions for concurrent state machines
@@ -600,6 +617,7 @@ static ES_Event_t DuringApproachingRecycle( ES_Event_t Event)
     {
       disableTapeFollow();
       StopDrive();
+      RunTapeFollowingSM(Event);
       //TO BE DONE: Stop TapeFollowingSM
       
         // on exit, give the lower levels a chance to clean up first
@@ -611,6 +629,7 @@ static ES_Event_t DuringApproachingRecycle( ES_Event_t Event)
     }else
     // do the 'during' function for this state
     {
+      ReturnEvent = RunTapeFollowingSM(Event);
         // run any lower level state machine
         // ReturnEvent = RunLowerLevelSM(Event);
       

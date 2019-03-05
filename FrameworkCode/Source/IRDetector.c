@@ -50,6 +50,8 @@
 
 #include "MasterHSM.h"
 
+
+#include "DriveCommandModule.h"
 /*----------------------------- Module Defines -----------------------------*/
 #define MAX_PERIOD_us 820
 #define MIN_PERIOD_us 480
@@ -64,6 +66,7 @@ static uint32_t Period_In_us;//
 static uint32_t LastCapture=0; // Time of last rising edge for IR, captured in tick
 static bool FirstEdge=true; // true if it is the first edge
 static uint32_t RunCount=0;//counts up whenever it sees a valid period
+static uint32_t SpecificBeaconCount = 0;
 static bool SpecificBeaconFinder = false;
 static uint32_t BeaconPeriod;
 /*------------------------------ Module Code ------------------------------*/
@@ -244,10 +247,24 @@ void IR_ISR(void){
       {
         if((Period_In_us >= BeaconPeriod - DETECTION_TOLERANCE) && (Period_In_us <= BeaconPeriod + DETECTION_TOLERANCE))
         {
-          ES_Event_t BeaconEvent;
-          BeaconEvent.EventType = EV_ALIGNED2BEACON;
-          PostMasterSM(BeaconEvent);
-        }          
+          SpecificBeaconCount++;
+          
+          if(SpecificBeaconCount >= 15)
+          {
+            ES_Event_t BeaconEvent;
+            BeaconEvent.EventType = EV_ALIGNED2BEACON;
+            PostMasterSM(BeaconEvent);
+          
+            //ADDED FOR TESTING
+            printf("Found the beacon\r\n");
+            StopDrive();
+            SpecificBeaconCount = 0;
+          }
+        }
+        else
+        {
+          SpecificBeaconCount = 0;
+        }  
       }
     }
   }
@@ -299,8 +316,7 @@ Hyun Joo Lee 16:00 02/27/2019 Started function
 
 ****************************************************************************/
 void IRDisableInterrupt(void){
-  HWREG(WTIMER2_BASE +TIMER_O_IMR) &=~TIMER_IMR_CBEIM;
-  DisableBeaconFinder();
+    HWREG(WTIMER2_BASE +TIMER_O_IMR) &=~TIMER_IMR_CBEIM;
 }
 
 /****************************************************************************
