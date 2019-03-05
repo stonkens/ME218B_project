@@ -31,11 +31,10 @@
 
 
 #include "GP_Display.h"
-#include "BallProcessingSM.h"
-#include "MasterHSM.h"
-//#include "CollectingSM.h" Triangulation method
-#include "CollectingV2SM.h"
 
+#include "MasterHSM.h"
+#include "CollectingSM.h"
+#include "TapeFollowingService.h"
 /*----------------------------- Module Defines ----------------------------*/
 #define DISPLAY_UPDATE_TIME 100
 /*---------------------------- Module Functions ---------------------------*/
@@ -46,7 +45,8 @@
 /*---------------------------- Module Variables ---------------------------*/
 // with the introduction of Gen2, we need a module level Priority variable
 static uint8_t MyPriority;
-
+static uint8_t RecycleBalls = 0;
+static uint8_t LandFillBalls = 0;
 
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
@@ -70,6 +70,7 @@ static uint8_t MyPriority;
 bool InitKeyMapperService ( uint8_t Priority )
 {
   ES_Event_t ThisEvent;
+
   MyPriority = Priority;
   /********************************************
    in here you write your initialization code
@@ -170,13 +171,13 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             break;
             case 'D' :
             {
-              clearRecycleBalls();
+              RecycleBalls = 0;
               ThisEvent.EventType = EV_RECYCLING_DONE;
             }
             break;
             case 'L' :
             {
-              clearLandfillBalls();
+              LandFillBalls = 0;
               ThisEvent.EventType = EV_LANDFILLING_DONE;
             }
             break;
@@ -202,12 +203,12 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             break;
             case '1':
             {
-              AddRecycleBalls();
+              RecycleBalls++;
             }
             break;
             case '0':
             {
-              AddLandFillBalls();
+              LandFillBalls++;
             }
             break;
             case 'X' :
@@ -216,6 +217,71 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             }
             break;
             
+            case '2' :
+            {
+              ThisEvent.EventType = EV_NEW_TAPE;
+              ThisEvent.EventParam = 101;
+              PostTapeFollowingService(ThisEvent);
+              ThisEvent.EventType = ES_NO_EVENT;
+              printf("\r\n ********101 expect 2 *********");
+            }
+            break;
+            case '3' :
+            {
+              ThisEvent.EventType = EV_NEW_TAPE;
+              ThisEvent.EventParam = 100;
+              PostTapeFollowingService(ThisEvent);
+              ThisEvent.EventType = ES_NO_EVENT;
+              printf("\r\n ***********101 expect 3 \r\n*********");
+            }
+            break;
+            case '4' :
+            {
+              ThisEvent.EventType = EV_NEW_TAPE;
+              ThisEvent.EventParam = 011;
+              PostTapeFollowingService(ThisEvent);
+              ThisEvent.EventType = ES_NO_EVENT;
+              printf("\r\n ***********011 expect 4\r\n*********");
+            }
+            break;
+            case '5' :
+            {
+              ThisEvent.EventType = EV_NEW_TAPE;
+              ThisEvent.EventParam = 010;
+              PostTapeFollowingService(ThisEvent);
+              ThisEvent.EventType = ES_NO_EVENT;
+              printf("\r\n ***********010 expect 2 (forward noise)\r\n*********");
+            }
+            break;
+            case '6' :
+            {
+              ThisEvent.EventType = EV_NEW_TAPE;
+              ThisEvent.EventParam = 001;
+              PostTapeFollowingService(ThisEvent);
+              ThisEvent.EventType = ES_NO_EVENT;
+              printf("\r\n ***********001 expect 6 \r\n*********");
+            }
+            break;
+            
+             case '7' :
+            {
+              ThisEvent.EventType = EV_NEW_TAPE;
+              ThisEvent.EventParam = 000;
+              PostTapeFollowingService(ThisEvent);
+              ThisEvent.EventType = ES_NO_EVENT;
+              printf("\r\n ***********000 expect 2 \r\n*********");
+            }
+            break;
+            
+             case '8' :
+            {
+              ThisEvent.EventType = EV_NEW_TAPE;
+              ThisEvent.EventParam = 111;
+              PostTapeFollowingService(ThisEvent);
+              ThisEvent.EventType = ES_NO_EVENT;
+              printf("\r\n *********** 111 expect 1 \r\n*********");
+            }
+            break;
               
         }
         PostMasterSM(ThisEvent);
@@ -230,6 +296,15 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
   return ReturnEvent;
 }
 
+uint8_t QueryRecycleBalls(void)
+{
+  return RecycleBalls;
+}
+
+uint8_t QueryLandFillBalls(void)
+{
+  return LandFillBalls;
+}
 
 /***************************************************************************
  private functions
