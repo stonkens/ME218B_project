@@ -457,13 +457,13 @@ void SPIISRResponse(void)
   uint8_t ResponseMessage;
 	//printf("ISR triggered");
   //Clear source of interrupt
-  HWREG(SSI0_BASE + SSI_O_ICR) = SSI_ICR_RTIC;
+ HWREG(SSI0_BASE + SSI_O_IM) = HWREG(SSI0_BASE + SSI_O_IM) & (~SSI_IM_TXIM);
 
   //Read the data register
 	HWREG(SSI0_BASE+SSI_O_DR);
 	HWREG(SSI0_BASE+SSI_O_DR);
   ResponseMessage = HWREG(SSI0_BASE + SSI_O_DR);
- // printf("Responsemessage: %d\r\n", ResponseMessage);
+  printf("Responsemessage: %d\r\n", ResponseMessage);
   //Post message to SPI SM
   ES_Event_t ThisEvent;
   ThisEvent.EventType = EV_COMPASS_RESPONSE_RECEIVED;
@@ -723,11 +723,11 @@ void InitSPI(void)
 	// Program the required data directions on the port lines
 	// Tx(3), Fs(1) & Clk(0) are all outputs
 	// Rx(2) is an input
-	HWREG(GPIO_PORTD_BASE + GPIO_O_DIR) |= (SSI0Clk | SSI0Fss | SSI0Tx);
-	HWREG(GPIO_PORTD_BASE + GPIO_O_DIR) &= ~(SSI0Rx);
+	HWREG(GPIO_PORTA_BASE + GPIO_O_DIR) |= (SSI0Clk | SSI0Fss | SSI0Tx);
+	HWREG(GPIO_PORTA_BASE + GPIO_O_DIR) &= ~(SSI0Rx);
   	
 	// If using SPI mode 3, program the pull-up on the clock line (PA2)
-	HWREG(GPIO_PORTD_BASE + GPIO_O_PUR) |= SSI0Clk;
+	HWREG(GPIO_PORTA_BASE + GPIO_O_PUR) |= SSI0Clk;
 
   	// Wait for SSI0 to be ready
 	while((HWREG(SYSCTL_PRSSI) & SYSCTL_PRSSI_R0) != SYSCTL_PRSSI_R0)
@@ -773,12 +773,12 @@ void InitSPI(void)
 	// SSI0 = IRQ 7 --> EN_0 |= BIT7HI
 	HWREG(NVIC_EN0) |= BIT7HI;
   
-  HWREG(NVIC_PRI1) |= (BIT29HI | BIT30HI);
+  //HWREG(NVIC_PRI1) |= (BIT29HI | BIT30HI);
 
 	// Enable interrupts globally
 	//__enable_irq();
 
-	//printf("SSI Initialization Complete \n\r"); PRINTF REMOVED
+	printf("SSI Initialization Complete \n\r"); //PRINTF REMOVED
 }
 
  
@@ -805,7 +805,7 @@ void InitSPI(void)
 ****************************************************************************/
 static void WriteToSPI(uint8_t TransmitMessage)
 {
-	//printf("%d", TransmitMessage);
+	printf("%d", TransmitMessage);
   //Write data to data register
   HWREG(SSI0_BASE + SSI_O_DR) = TransmitMessage;
 	HWREG(SSI0_BASE + SSI_O_DR) = ZERO_BYTE;

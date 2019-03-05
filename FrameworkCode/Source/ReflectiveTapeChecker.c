@@ -42,6 +42,7 @@
 
 /*----------------------------- Module Defines ----------------------------*/
 #define ENEMY_THRESHOLD 1000 
+#define ENEMY_REPETITION_THRESHOLD 20 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine.
 */
@@ -49,6 +50,7 @@
 /*---------------------------- Module Variables ---------------------------*/
 static uint8_t LastInputState; 
 static uint32_t AnalogValues[1];
+static uint8_t EnemyCounter;
 /*------------------------------ Module Code ------------------------------*/
 
 /****************************************************************************
@@ -86,11 +88,21 @@ bool Check4Enemy(void)
   if ((CurrentInputState != LastInputState) && (CurrentInputState > 
   ENEMY_THRESHOLD))
   {
-    ThisEvent.EventType = EV_BOT_DETECTED;
-    ThisEvent.EventParam = CurrentInputState;
-    printf("Found another bot \r\n");
-    PostMasterSM(ThisEvent);
-    ReturnVal = true;
+    
+    EnemyCounter++;
+    printf("%d \r\n", EnemyCounter);
+    if(EnemyCounter >= ENEMY_REPETITION_THRESHOLD)
+    {
+      ThisEvent.EventType = EV_BOT_DETECTED;
+      ThisEvent.EventParam = CurrentInputState;
+
+      PostMasterSM(ThisEvent);
+      ReturnVal = true;
+    }
+  }
+  else
+  {
+    EnemyCounter = 0;
   }
   // Update LastInputState
   LastInputState = CurrentInputState;

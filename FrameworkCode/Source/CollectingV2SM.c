@@ -232,7 +232,7 @@ ES_Event_t RunCollectingV2SM( ES_Event_t CurrentEvent )
                 if((CurrentEvent.EventParam == 1) || (CurrentEvent.EventParam == 3) || (CurrentEvent.EventParam == 5))
                 {
 
-                  printf("got there\r\n");
+                  //printf("got there\r\n");
                   StopDrive();
                   ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIME);
                   ReturnEvent.EventType = ES_NO_EVENT;                  
@@ -471,6 +471,9 @@ static ES_Event_t DuringAlign2Landfill( ES_Event_t Event)
       //Start any lower level machines that run in this state
       SetBotDirection(FORWARDS);
       DriveRotate(TURNING_SPEED, 3600);
+      
+      //Potentially testing
+      //DriveStraight(STRAIGHT_SPEED, 4800);
         
         
     }
@@ -550,7 +553,7 @@ static ES_Event_t DuringFindingTape( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
 
-      DriveStraight(STRAIGHT_SPEED, -48000); 
+      DriveStraight(STRAIGHT_SPEED, -4800); 
       //Start any lower level machines that run in this state
       enableTapeFollow();
         
@@ -592,7 +595,7 @@ static ES_Event_t DuringStraightDrive( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
 
-      DriveStraight(STRAIGHT_SPEED,-2400); 
+      DriveStraight(STRAIGHT_SPEED,-4800); 
       //Start any lower level machines that run in this state
 
         

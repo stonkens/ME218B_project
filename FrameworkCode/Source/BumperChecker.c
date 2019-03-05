@@ -88,7 +88,7 @@ bool Check4Bump(void)
   
   
   //printf("%d",CurrentFrontSwitchState);
-  if (CurrentFrontSwitchState != LastFrontSwitchState) //front bumper 
+  if (CurrentFrontSwitchState != LastFrontSwitchState) //front bumper PD2
   {
     //printf("%d",CurrentFrontSwitchState);
     ReturnVal = true;
@@ -101,7 +101,7 @@ bool Check4Bump(void)
     }
   }
 	
-	if (CurrentRightSwitchState != LastRightSwitchState) //right bumper 
+	if (CurrentRightSwitchState != LastRightSwitchState) //right bumper PD3
   {
     ReturnVal = true;
     if (CurrentRightSwitchState)
@@ -113,7 +113,7 @@ bool Check4Bump(void)
     }
   }
 	
-	if (CurrentBackSwitchState != LastBackSwitchState) //back bumper 
+	if (CurrentBackSwitchState != LastBackSwitchState) //back bumper PD6
   {
     ReturnVal = true;
     if (CurrentBackSwitchState)
@@ -125,7 +125,7 @@ bool Check4Bump(void)
     }
   }
 	
-	if (CurrentLeftSwitchState != LastLeftSwitchState) //left bumper 
+	if (CurrentLeftSwitchState != LastLeftSwitchState) //left bumper // PD7
   {
     ReturnVal = true;
     if (CurrentLeftSwitchState)
