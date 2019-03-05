@@ -457,8 +457,7 @@ void SPIISRResponse(void)
   uint8_t ResponseMessage;
 	//printf("ISR triggered");
   //Clear source of interrupt
- HWREG(SSI0_BASE + SSI_O_IM) = HWREG(SSI0_BASE + SSI_O_IM) & (~SSI_IM_TXIM);
-
+  HWREG(SSI0_BASE + SSI_O_IM) &= ~SSI_IM_TXIM;
   //Read the data register
 	HWREG(SSI0_BASE+SSI_O_DR);
 	HWREG(SSI0_BASE+SSI_O_DR);
@@ -807,6 +806,7 @@ static void WriteToSPI(uint8_t TransmitMessage)
 {
 	printf("%d", TransmitMessage);
   //Write data to data register
+  HWREG(SSI0_BASE + SSI_O_IM) &= ~SSI_IM_TXIM;
   HWREG(SSI0_BASE + SSI_O_DR) = TransmitMessage;
 	HWREG(SSI0_BASE + SSI_O_DR) = ZERO_BYTE;
 	HWREG(SSI0_BASE + SSI_O_DR) = ZERO_BYTE;
