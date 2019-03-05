@@ -171,11 +171,13 @@ ES_Event_t RunBallDumpingSM(ES_Event_t ThisEvent)
       printf("In waiting to dump\r\n");
       if(ThisEvent.EventType == EV_DUMP_RECYCLE)
       {
+        printf("unloading recycling \r\n");
         openRecyclingDoor(); 
         ES_Timer_InitTimer(DUMP_TIMER, DUMP_TIME); 
         CurrentState = RecycleDumping; 
       }
        if(ThisEvent.EventType == EV_DUMP_LANDFILL){
+         printf("unloading landfill \r\n");
         openLandfillDoor(); 
         ES_Timer_InitTimer(DUMP_TIMER, DUMP_TIME); 
         CurrentState = LandfillDumping; 
@@ -324,26 +326,26 @@ static void SetServoStartingPositions(void)
 }
 
 //servo movement for opening the recycling door 
-void openRecyclingDoor(void){
-  printf("Open recycling door \r\n");
+void openLandfillDoor(void){
+  printf("Open landfill door \r\n");
   setRecyclingDuty(9);
 } 
 
 //servo movement for closing the recycling door 
-void closeRecyclingDoor(void){
-  printf("Close recycling door \r\n");
+void closeLandfillDoor(void){
+  printf("Close landfill door \r\n");
   setRecyclingDuty(4);
 }
 
 //servo movement for opening the landfill door 
-void openLandfillDoor(void){
-  printf("Open landfill door \r\n");
+void openRecyclingDoor(void){
+  printf("Open recycling door \r\n");
   setLandfillDuty(3); 
 }
 
 //servo movement for closing the landfill door 
-void closeLandfillDoor(void){
-  printf("Close landfill door \r\n");
+void closeRecyclingDoor(void){
+  printf("Close recycling door \r\n");
   setLandfillDuty(8); 
 }
   

@@ -423,12 +423,12 @@ static void SetCookieStartingPosition(void)
 //}
   
 //moves cookie in the direction of recycling 
-void sortToRecycling(void){
+void sortToLandfill(void){
   setCookieDuty(1);
   printf("Sort to recycling \r\n");
 }
 //moves cookie in the direction of landfill 
-void sortToLandfill(void){
+void sortToRecycling(void){
    setCookieDuty(11);
   printf("Sort to trash \r\n"); 
 }

@@ -354,7 +354,7 @@ typedef enum
 #define TIMER7_RESP_FUNC PostBallProcessingSM
 #define TIMER8_RESP_FUNC PostBallDumpingSM
 #define TIMER9_RESP_FUNC PostLEDService 
-#define TIMER10_RESP_FUNC TIMER_UNUSED
+#define TIMER10_RESP_FUNC PostColorService
 #define TIMER11_RESP_FUNC TIMER_UNUSED
 #define TIMER12_RESP_FUNC PostMasterSM
 #define TIMER13_RESP_FUNC PostMasterSM
@@ -377,11 +377,14 @@ typedef enum
 #define COLOR_SENSE_TIMER 6 
 #define PROCESSING_TIMER 7 
 #define DUMP_TIMER 8 
+#define LED_TIMER 9 
+#define NO_COLOR_TIMER 10
+#define TAPE_TIMER 12
 #define LOCALIZE_TIMER 13
 #define BALL_COLLECTION_TIMER 14
 #define I2C_TIMER 15
-#define LED_TIMER 9 
-#define TAPE_TIMER 12
+
+
 
 
 /**************************************************************************/

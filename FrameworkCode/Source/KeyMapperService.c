@@ -36,6 +36,7 @@
 #include "CollectingSM.h"
 #include "TapeFollowingService.h"
 #include "BallProcessingSM.h"
+#include "BallDumpingSM.h"
 /*----------------------------- Module Defines ----------------------------*/
 #define DISPLAY_UPDATE_TIME 100
 /*---------------------------- Module Functions ---------------------------*/
@@ -210,7 +211,7 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             break;
             case '0':
             {
-              LandFillBalls++;
+              AddLandFillBalls();
             }
             break;
             case 'X' :
@@ -223,8 +224,8 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_TAPE_DETECTED;
               ThisEvent.EventParam = 101;
-              PostMasterSM(ThisEvent);
-              ThisEvent.EventType = ES_NO_EVENT;
+              //PostMasterSM(ThisEvent);
+              //ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n ********101 expect 2 *********");
             }
             break;
@@ -232,8 +233,8 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_TAPE_DETECTED;
               ThisEvent.EventParam = 100;
-              PostMasterSM(ThisEvent);
-              ThisEvent.EventType = ES_NO_EVENT;
+              //PostMasterSM(ThisEvent);
+              //ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n ***********101 expect 3 \r\n*********");
             }
             break;
@@ -241,8 +242,8 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_TAPE_DETECTED;
               ThisEvent.EventParam = 011;
-              PostMasterSM(ThisEvent);
-              ThisEvent.EventType = ES_NO_EVENT;
+              //PostMasterSM(ThisEvent);
+              //ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n ***********011 expect 4\r\n*********");
             }
             break;
@@ -250,8 +251,8 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_TAPE_DETECTED;
               ThisEvent.EventParam = 010;
-              PostMasterSM(ThisEvent);
-              ThisEvent.EventType = ES_NO_EVENT;
+              //PostMasterSM(ThisEvent);
+              //ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n ***********010 expect 2 (forward noise)\r\n*********");
             }
             break;
@@ -259,8 +260,8 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_TAPE_DETECTED;
               ThisEvent.EventParam = 001;
-              PostMasterSM(ThisEvent);
-              ThisEvent.EventType = ES_NO_EVENT;
+              //PostMasterSM(ThisEvent);
+              //ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n ***********001 expect 6 \r\n*********");
             }
             break;
@@ -269,8 +270,8 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_TAPE_DETECTED;
               ThisEvent.EventParam = 000;
-              PostMasterSM(ThisEvent);
-              ThisEvent.EventType = ES_NO_EVENT;
+              //PostMasterSM(ThisEvent);
+              //ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n ***********000 expect 2 \r\n*********");
             }
             break;
@@ -279,11 +280,27 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
             {
               ThisEvent.EventType = EV_TAPE_DETECTED;
               ThisEvent.EventParam = 111;
-              PostMasterSM(ThisEvent);
-              ThisEvent.EventType = ES_NO_EVENT;
+              //PostMasterSM(ThisEvent);
+              //ThisEvent.EventType = ES_NO_EVENT;
               printf("\r\n *********** 111 expect 1 \r\n*********");
             }
             break;
+            
+             case 'H' :
+             {
+               ThisEvent.EventType = EV_DUMP_RECYCLE;
+               PostBallDumpingSM(ThisEvent);
+               ThisEvent.EventType = ES_NO_EVENT;
+             }
+             break;
+             case 'J' :
+             {
+               ThisEvent.EventType = EV_DUMP_LANDFILL;
+               PostBallDumpingSM(ThisEvent);
+               ThisEvent.EventType = ES_NO_EVENT;
+             }
+             break;
+               
               
         }
         PostMasterSM(ThisEvent);

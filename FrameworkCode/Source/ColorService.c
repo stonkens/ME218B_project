@@ -61,7 +61,8 @@
 #define DETECTION_DELAY 200 //make sure a threshold triggers twice before posting an event 
 /*------------------------------ Ball Presence ---------------------------------*/
 #define DETECTION_THRES 7000//some analog value 
-#define TOLERANCE 1
+#define TOLERANCE 4
+#define RED_ORANGE_TOLERANCE 1
 /*------------------------------ Event params for different colors ---------------------------------*/
 #define ANY_BALL 0
 #define RED 1 
@@ -78,12 +79,12 @@
 #define RED_R_TARGET 60 //percentage of the clear 
 #define RED_B_TARGET 17
 #define RED_G_TARGET 19 
-#define RED_R_LOWER_THRES  RED_R_TARGET - TOLERANCE //percentage of the clear 
-#define RED_R_UPPER_THRES  RED_R_TARGET + TOLERANCE 
-#define RED_G_LOWER_THRES  RED_G_TARGET - TOLERANCE //percentage of the clear 
-#define RED_G_UPPER_THRES  RED_G_TARGET + TOLERANCE
-#define RED_B_LOWER_THRES  RED_B_TARGET - TOLERANCE //percentage of the clear 
-#define RED_B_UPPER_THRES  RED_B_TARGET + TOLERANCE 
+#define RED_R_LOWER_THRES  RED_R_TARGET - RED_ORANGE_TOLERANCE //percentage of the clear 
+#define RED_R_UPPER_THRES  RED_R_TARGET + RED_ORANGE_TOLERANCE 
+#define RED_G_LOWER_THRES  RED_G_TARGET - RED_ORANGE_TOLERANCE //percentage of the clear 
+#define RED_G_UPPER_THRES  RED_G_TARGET + RED_ORANGE_TOLERANCE
+#define RED_B_LOWER_THRES  RED_B_TARGET - RED_ORANGE_TOLERANCE //percentage of the clear 
+#define RED_B_UPPER_THRES  RED_B_TARGET + RED_ORANGE_TOLERANCE 
 /*------------------------------ Orange ------------------------------*/
 //R = 58 -- 43 -- 45 -- 50
 //B = 14 -- 21 -- 20 -- 18
@@ -92,12 +93,12 @@
 #define ORANGE_R_TARGET 58 //percentage of the clear 
 #define ORANGE_B_TARGET 14
 #define ORANGE_G_TARGET 22 
-#define ORANGE_R_LOWER_THRES ORANGE_R_TARGET - TOLERANCE 
-#define ORANGE_R_UPPER_THRES ORANGE_R_TARGET + TOLERANCE
-#define ORANGE_G_LOWER_THRES ORANGE_G_TARGET - TOLERANCE
-#define ORANGE_G_UPPER_THRES ORANGE_G_TARGET + TOLERANCE 
-#define ORANGE_B_LOWER_THRES ORANGE_B_TARGET - TOLERANCE
-#define ORANGE_B_UPPER_THRES ORANGE_B_TARGET + TOLERANCE 
+#define ORANGE_R_LOWER_THRES ORANGE_R_TARGET - RED_ORANGE_TOLERANCE 
+#define ORANGE_R_UPPER_THRES ORANGE_R_TARGET + RED_ORANGE_TOLERANCE
+#define ORANGE_G_LOWER_THRES ORANGE_G_TARGET - RED_ORANGE_TOLERANCE
+#define ORANGE_G_UPPER_THRES ORANGE_G_TARGET + RED_ORANGE_TOLERANCE 
+#define ORANGE_B_LOWER_THRES ORANGE_B_TARGET - RED_ORANGE_TOLERANCE
+#define ORANGE_B_UPPER_THRES ORANGE_B_TARGET + RED_ORANGE_TOLERANCE 
 /*------------------------------ Yellow ------------------------------*/
 //R = 43 
 //B = 14
@@ -321,6 +322,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
       if((ThisEvent.EventType == ES_TIMEOUT) && 
         (ThisEvent.EventParam == COLOR_SENSE_TIMER))
       {
+        ES_Timer_InitTimer(NO_COLOR_TIMER, 400);
       //query RBG values 
       uint16_t CurrentClearValue;
       uint16_t CurrentRedValue;
@@ -347,7 +349,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           //printf("Lower %d Current %d Upper %d \r\n",LowerThres, CurrentClearValue, HigherThres); 
           ThisEvent.EventParam = RED;   
           PostBallProcessingSM(ThisEvent);
-          //printf("RED\r\n");
+          printf("RED\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
       }
@@ -359,7 +361,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           //ThisEvent.EventType = ES_BALL_DETECTED;
           ThisEvent.EventParam = ORANGE;  
           PostBallProcessingSM(ThisEvent);
-          //printf("ORANGE\r\n");
+          printf("ORANGE\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing;
       } 
@@ -371,7 +373,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           //ThisEvent.EventType = ES_BALL_DETECTED;
           ThisEvent.EventParam = YELLOW;   
           PostBallProcessingSM(ThisEvent);
-          //printf("YELLOW\r\n");
+          printf("YELLOW\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
       }
@@ -384,7 +386,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           //ThisEvent.EventType = ES_BALL_DETECTED;
           ThisEvent.EventParam = GREEN;  
           PostBallProcessingSM(ThisEvent);
-          //printf("GREEN\r\n");
+          printf("GREEN\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
       }
@@ -397,7 +399,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           //ThisEvent.EventType = ES_BALL_DETECTED;
           ThisEvent.EventParam = BLUE;  
           PostBallProcessingSM(ThisEvent);
-          //printf("BLUE\r\n");
+          printf("BLUE\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
       }
@@ -409,12 +411,21 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           //ThisEvent.EventType = ES_BALL_DETECTED;
           ThisEvent.EventParam = PINK;  
           PostBallProcessingSM(ThisEvent);
-          //printf("PINK\r\n");
+          printf("PINK\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
       }
       
     }
+      if ((ThisEvent.EventType == ES_TIMEOUT) && (ThisEvent.EventParam == NO_COLOR_TIMER))
+      {
+        ThisEvent.EventType = EV_BALL_DETECTED;
+        printf("Couldnt figure out the color\r\n");
+        ThisEvent.EventParam = ANY_BALL;
+        PostBallProcessingSM(ThisEvent);
+        ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
+        CurrentState = Depositing;
+      }        
   }
       break; 
       
