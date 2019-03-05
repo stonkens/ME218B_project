@@ -90,6 +90,7 @@
 #define RPM 100 // halfspeed
 #define DIST 100 //1 inch
 #define DEG 450 // 45 deg
+#define LostTime 5000
 
 /*---------------------------- Module Variables ---------------------------*/
 static TapeState CurrentState = InitTapeState;
@@ -219,6 +220,8 @@ ES_Event_t RunTapeFollowingService(ES_Event_t ThisEvent){
   ReturnEvent.EventType = ES_NO_EVENT; // assume no errors
   //printf("\r\n  CurrentTapeState is: %d", CurrentState);
   int val;
+   ES_Timer_SetTimer(TAPE_TIMER, (LostTime));
+        
   switch (CurrentState)
   {
     case InitTapeState:
@@ -231,6 +234,7 @@ ES_Event_t RunTapeFollowingService(ES_Event_t ThisEvent){
     }
     case LostTape:
     {
+      ES_Timer_StartTimer(TAPE_TIMER);
       printf("\r\n -------------------LostTape Tape State------------------- \r");
       // turn in small circle
       if(ThisEvent.EventType != (EV_TAPE_TIMEOUT))
