@@ -315,7 +315,7 @@ typedef enum
 
 /****************************************************************************/
 // This is the list of event checking functions
-#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished, IR_found 
+#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished, IR_found, Check4Enemy
 
 /****************************************************************************/
 // These are the definitions for the post functions to be executed when the

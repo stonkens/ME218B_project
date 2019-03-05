@@ -39,7 +39,7 @@
 #include "ReflectiveTapeChecker.h"
 
 /*----------------------------- Module Defines ----------------------------*/
-#define ENEMY_THRESHOLD 0 
+#define ENEMY_THRESHOLD 1000
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine.
 */
@@ -80,11 +80,12 @@ bool Check4Enemy(void)
   
   // Get current state of range finder
   uint32_t CurrentInputState = AnalogValues[0];
+  printf("Current Input State: %d\r\n", CurrentInputState);
   
   if ((CurrentInputState != LastInputState) && (CurrentInputState > 
   ENEMY_THRESHOLD))
   {
-    ThisEvent.EventType = EV_BOT_DETECTED;
+    //ThisEvent.EventType = EV_BOT_DETECTED;
     ThisEvent.EventParam = CurrentInputState;
     printf("Found another bot \r\n");
     //PostMasterSM(ThisEvent);

@@ -512,6 +512,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\ReflectiveTapeChecker.c</FilePath>
             </File>
+            <File>
+              <FileName>ADMulti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\ADMulti.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1439,6 +1444,11 @@
               <FileName>ReflectiveTapeChecker.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\ReflectiveTapeChecker.c</FilePath>
+            </File>
+            <File>
+              <FileName>ADMulti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\ADMulti.c</FilePath>
             </File>
           </Files>
         </Group>
