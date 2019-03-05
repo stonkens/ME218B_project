@@ -300,7 +300,13 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
                ThisEvent.EventType = ES_NO_EVENT;
              }
              break;
-               
+//             case'K':
+//             {
+//               ThisEvent.EventType = EV_GO2RECYCLE; 
+//               PostGamePlayHSM(ThisEvent);
+//               ThisEvent.EventType = ES_NO_EVENT; 
+//             }
+//             break; 
               
         }
         PostMasterSM(ThisEvent);

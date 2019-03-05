@@ -25,8 +25,10 @@
 */
 #include "ES_Configure.h"
 #include "ES_Framework.h"
-#include "SPISM.h"
-//#include "DriveSM.h"
+#include "SPISMV2.h"
+#include "GamePlayHSM.h"
+#include "MasterHSM.h"
+#include "BallProcessingSM.h"
 
 /* include header files for hardware access
  */
@@ -38,15 +40,11 @@
 #include "inc/hw_ssi.h"
 #include "inc/hw_nvic.h"
 
-#include "MotorService.h"
-#include "MasterHSM.h"
-
 /*----------------------------- Module Defines ----------------------------*/
+#define TEST_EMITTER_FREQ 0
+
 #define SSI_PRESCALE 0x00000014
 #define SCR_VALUE    0x0000C800
-
-#define CPSDVSR 0x00000014 
-#define SCR 0x0000C800
 
 #define REG_NORTH 0x10
 #define REG_SOUTH 0x01
@@ -55,17 +53,14 @@
 #define ACK_SOUTH 0xA3
 #define ACK_MASK  0xF3
 
-#define SSI0Clk BIT2HI
-#define SSI0Fss BIT3HI
-#define SSI0Rx BIT4HI
-#define SSI0Tx BIT5HI
-
-#define BitsPerNibble 4
-
-#define SPI_QUERYTIME 2
-#define SPI_REFRESHTIME 100
+#define SPI_BYTE_VALUE 2
+#define SPI_REFRESH_TIMER_VALUE 100
 
 #define SPI_INITIALIZING 0xFF
+
+#define WEST_RECYCLE_FREQUENCY 1667
+#define EAST_RECYCLE_FREQUENCY 2000
+
 
 
 #define ZERO_BYTE 0x00
@@ -73,9 +68,8 @@
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine.They should be functions
    relevant to the behavior of this state machine*/
-//void SPIReceiveISR(void);
-//static void SPISend(uint8_t message);
-static void WriteToSPI(uint8_t TransmitMessage);
+void SPIReceiveISR(void);
+static void SPISend(uint8_t message);
 
 /*---------------------------- Module Variables ---------------------------*/
 // everybody needs a state variable, you may need others as well.
@@ -85,47 +79,31 @@ static SPISM_t CurrentState;
 // with the introduction of Gen2, we need a module level Priority var as well
 static uint8_t MyPriority;
 
-//My team
-static uint8_t TeamStatusByte;
-static uint8_t GameStatusByte;
-static uint8_t ValueByte;
+static uint8_t TeamByte;
+static uint8_t StatusByte;
+static uint8_t ValByte;
 
-static uint8_t RegistrationByte;
+static uint8_t RegCmd;
+static uint8_t TeamCmd = 0xD2;
+static uint8_t StatusCmd = 0x78;
+static uint8_t ValCmd = 0x69;
 
-static uint8_t TeamInfoTxByte = 0xD2;
-static uint8_t GameStatusTxByte = 0x78;
-static uint8_t ValueTxByte = 0x69;
-
-//static uint8_t TeamInfoTxByte = 0xD2;
-//static uint8_t StatusCmd = 0x78;
-//static uint8_t ValCmd = 0x69;
-
-static uint16_t RecycleActPeriod[16] = {1000,947,893,840,787,733,680,627,
+static uint16_t RecycleActFreq[16] = {1000,947,893,840,787,733,680,627,
                                        573,520,467,413,360,307,253,200};
 
 static uint8_t ExpectedAckByte;
 
 static uint8_t LastGameState;
 static uint8_t CurrentGameState;
-static uint8_t CurrentRecyclingCenter;
-static uint8_t LastRecyclingCenter;                                       
 static uint16_t LeftRecycleFrequency;
 static uint16_t RightRecycleFrequency;
 static uint8_t AssignedColor;
-static uint8_t EastRecycleColor;
-static uint8_t WestRecycleColor;                                       
-																			 
-static uint16_t AssignedPeriod;																			 
+static uint16_t AssignedPeriod;
 
-static uint8_t TeamSwitchValue;
-
+static uint8_t NSSwitchVal;
 
 
 /*------------------------------ Module Code ------------------------------*/
-
-
-                                       
-                                       
 /****************************************************************************
  Function
      InitSPISM
@@ -142,43 +120,59 @@ static uint8_t TeamSwitchValue;
  Notes
 
  Author
-     Sander TOnkens, 02/15/19, 19:09
+     Sander Tonkens, 02/15/19, 19:09
 ****************************************************************************/
 bool InitSPISM(uint8_t Priority)
 {
-	ES_Event_t ThisEvent;
-  MyPriority = Priority;  // save our priority
-  ThisEvent.EventType = ES_INIT;
+  ES_Event_t ThisEvent;
 
-  //initialize SPI hardware
-  //InitSPI();
-
-
-
-  // Initialize value of register variable to 0
-
-  TeamStatusByte = 0xFF;
-  GameStatusByte = 0xFF;
-  ValueByte = 0xFF;
+  MyPriority = Priority;
+  
+  //Initialize value of register variable to 0
+  TeamByte = 0xFF;
+  StatusByte = 0xFF;
+  ValByte = 0xFF;
   AssignedColor = 0xFF;
   LastGameState = 0xFF;
   CurrentGameState = 0xFF;
-  LastRecyclingCenter = 0xFF;
-  CurrentRecyclingCenter = 0xFF;
-	
   AssignedPeriod = 0xFFFF;
-
-  //Start Timer to start sending messages to COMPASS
-	ES_Timer_InitTimer(SPI_BYTE_TIMER, SPI_REFRESHTIME);
+  
+  //Read value of North/South Switch
+  NSSwitchVal = QueryTeam(); 
+	if (NSSwitchVal == TEAM_NORTH)
+    {
+      printf("Team North\n\r");
+      //Turn on appropriate LED
+      HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0LO;
+      //Set Recycling Center Definitions
+      LeftRecycleFrequency = EAST_RECYCLE_FREQUENCY;
+      RightRecycleFrequency = WEST_RECYCLE_FREQUENCY;
+      //Set appropriate REG byte and expected acknowledgement byte
+      RegCmd = REG_NORTH;
+		  ExpectedAckByte = ACK_NORTH;
+    }
+    else if (NSSwitchVal == TEAM_SOUTH)
+    {
+      printf("Team South\n\r");
+      //Turn on appropriate LED
+      HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO;
+      //Set Recycling Center Definitions
+      LeftRecycleFrequency = WEST_RECYCLE_FREQUENCY;
+      RightRecycleFrequency = EAST_RECYCLE_FREQUENCY;
+      //Set appropriate REG byte and expected acknowledgement byte
+      RegCmd = REG_SOUTH;
+      ExpectedAckByte = ACK_SOUTH;
+    }
+	
+  //Start byte timer in order to start sending messages to COMPASS
+	ES_Timer_InitTimer(SPI_BYTE_TIMER, SPI_BYTE_VALUE);
   //disable interrupt
   HWREG(SSI0_BASE + SSI_O_IM) &= ~SSI_IM_TXIM;
   
-  //Transition to initial state
+  // put us into the Initial State
   CurrentState = Registering;
-
-  // Initialization event
+  // post the initial transition event
   ThisEvent.EventType = ES_INIT;
-
   if (ES_PostToService(MyPriority, ThisEvent) == true)
   {
     return true;
@@ -187,7 +181,6 @@ bool InitSPISM(uint8_t Priority)
   {
     return false;
   }
-
 }
 
 /****************************************************************************
@@ -205,7 +198,7 @@ bool InitSPISM(uint8_t Priority)
  Notes
 
  Author
-     Sander TOnkens, 02/15/19, 19:08
+     Sander Tonkens, 02/15/19, 19:08
 ****************************************************************************/
 bool PostSPISM(ES_Event_t ThisEvent)
 {
@@ -227,12 +220,11 @@ bool PostSPISM(ES_Event_t ThisEvent)
  Notes
    uses nested switch/case to implement the machine.
  Author
-   Sander TOnkens, 02/15/19, 19:08
+   Sander Tonkens, 02/15/19, 19:08
 ****************************************************************************/
 ES_Event_t RunSPISM(ES_Event_t ThisEvent)
 {
   ES_Event_t ReturnEvent;
-  ES_Event_t CommunicationEvent;
   ReturnEvent.EventType = ES_NO_EVENT; // assume no errors
   SPISM_t NextState = CurrentState;
 	uint8_t ReceivedAckByte;
@@ -241,175 +233,126 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
   {
     case Registering:
     {
-      if((ThisEvent.EventType == ES_TIMEOUT) && 
+      if ((ThisEvent.EventType == ES_TIMEOUT) && 
         (ThisEvent.EventParam == SPI_BYTE_TIMER))
       {
-          if (QueryTeam() == TEAM_NORTH)
-          {
-            TeamSwitchValue = TEAM_NORTH;
-            //Set REG byte and expected ACK byte accordingly
-            RegistrationByte = REG_NORTH;
-            //RegCmd = REG_NORTH;
-            ExpectedAckByte = ACK_NORTH;
-
-            LeftRecycleFrequency = EAST_RECYCLE_FREQUENCY;
-            RightRecycleFrequency = WEST_RECYCLE_FREQUENCY;
-          }
-
-          else if (QueryTeam() == TEAM_SOUTH)
-          {
-            TeamSwitchValue = TEAM_SOUTH;
-            //Set REG byte and expected ACK byte accordingly
-            RegistrationByte = REG_SOUTH;
-            //RegCmd = REG_SOUTH;
-            ExpectedAckByte = ACK_SOUTH; 
-
-            LeftRecycleFrequency = WEST_RECYCLE_FREQUENCY;
-            RightRecycleFrequency = EAST_RECYCLE_FREQUENCY;
-          }         
-            //printf("Writing to SPI \r\n"); PRINTF REMOVED
-            WriteToSPI(RegistrationByte);
-        
-      }          
-      else if (ThisEvent.EventType == EV_COMPASS_RESPONSE_RECEIVED)
-      {
-				//printf("Response received \r\n"); //PRINTF REMOVED
-        //Bits 2&3 have to be masked, as ACK byte is unknown
+				SPISend(RegCmd);
+	    }
+	    else if (ThisEvent.EventType == EV_COMPASS_RESPONSE_RECEIVED) 
+      {       
         ReceivedAckByte = ThisEvent.EventParam;
-
-        //Move to next state only if behaviour is as expected
-        if(ReceivedAckByte == ExpectedAckByte)
+				//printf("Received Acknowledgment Byte: 0x%02hhx\n\r", ReceivedAckByte);
+				if (ReceivedAckByte == ExpectedAckByte)
         {
-					printf("Successfully registered team \n \r"); //PRINTF REMOVED
-          ES_Timer_InitTimer(SPI_BYTE_TIMER, SPI_QUERYTIME);
-
-          //Disable interrupt
-          HWREG(SSI0_BASE + SSI_O_IM) &= ~SSI_IM_TXIM;
-          //NextState = QueryTeamInfo;
-					NextState = QueryTeamInfo;
-        }
-
-        else
+          printf("COMPASS Registration Success!\n\r");
+          //Initialize timer and disable SSI interrupt
+					//in preparation for move to next state
+					ES_Timer_InitTimer(SPI_BYTE_TIMER, SPI_BYTE_VALUE);
+					HWREG(SSI0_BASE + SSI_O_IM) &= ~SSI_IM_TXIM;
+					NextState = QueryingTEAM;
+		    }
+		    else
         {
-          printf("Failed to Register Team \n\r"); //PRINTF REMOVED
-        }
-
+          printf("Reg: %d\r\n", ReceivedAckByte);
+          printf("COMPASS Registration Failed\n\r");
+		    }
       }
     }
     break;
     
-    case QueryTeamInfo:
+	case QueryingTEAM:
     {
       if ((ThisEvent.EventType == ES_TIMEOUT) && (ThisEvent.EventParam == SPI_BYTE_TIMER))
       {
-        WriteToSPI(TeamInfoTxByte);
+        SPISend(TeamCmd);
 	    }
 	    else if (ThisEvent.EventType == EV_COMPASS_RESPONSE_RECEIVED)
       {
-				TeamStatusByte = ThisEvent.EventParam;
+				TeamByte = ThisEvent.EventParam;
 				
-				AssignedColor = (TeamStatusByte & (BIT1HI|BIT2HI|BIT3HI)) >> 1;
-        printf("Assigned Color: %d\n\r", AssignedColor); //PRINTF REMOVED
-        AssignedPeriod = RecycleActPeriod[(TeamStatusByte & 
+				AssignedColor = (TeamByte & (BIT1HI|BIT2HI|BIT3HI)) >> 1;
+        printf("Assigned Color: %d\n\r", AssignedColor);
+        AssignedPeriod = RecycleActFreq[(TeamByte & 
           (BIT4HI|BIT5HI|BIT6HI|BIT7HI)) >> 4];
-        printf("Assigned Period: %d\n\r", AssignedPeriod); //PRINTF REMOVED
+        printf("Assigned Frequency: %d\n\r", AssignedPeriod);
 				
 				//Initialize timers and disable SSI interrupt 
 				//in preparation for move to next state
-				ES_Timer_InitTimer(SPI_BYTE_TIMER, SPI_QUERYTIME);
-		    ES_Timer_InitTimer(SPI_REFRESH_TIMER, SPI_REFRESHTIME);
+				ES_Timer_InitTimer(SPI_BYTE_TIMER, SPI_BYTE_VALUE);
+		    ES_Timer_InitTimer(SPI_REFRESH_TIMER, SPI_REFRESH_TIMER_VALUE);
 				HWREG(SSI0_BASE + SSI_O_IM) &= ~SSI_IM_TXIM;
-				NextState = QueryingStatus;
+				NextState = QueryingSTATUS;
       }
     }
     break;
 	
-    case QueryingStatus:
+	case QueryingSTATUS:
     {
       if ((ThisEvent.EventType == ES_TIMEOUT) && 
         (ThisEvent.EventParam == SPI_BYTE_TIMER))
       {
-        WriteToSPI(GameStatusTxByte);
+        SPISend(StatusCmd);
 	    }
 	    else if (ThisEvent.EventType == EV_COMPASS_RESPONSE_RECEIVED)
       {
-				GameStatusByte = ThisEvent.EventParam;
-				CurrentGameState = (GameStatusByte & (BIT0HI|BIT1HI));
-        EastRecycleColor = (GameStatusByte & (BIT2HI | BIT3HI | BIT4HI)) >> 2;
-        WestRecycleColor = (GameStatusByte & (BIT5HI | BIT6HI | BIT7HI)) >> 5;
+				StatusByte = ThisEvent.EventParam;
+				CurrentGameState = (StatusByte & (BIT0HI|BIT1HI));
 				//printf("Current Game State: %d\n\r", CurrentGameState);
-				if (EastRecycleColor == AssignedColor)
-        {
-          CurrentRecyclingCenter = EAST_RECYCLE;
-        }
-        else
-        {
-          CurrentRecyclingCenter = WEST_RECYCLE;
-        }
-				if ((CurrentGameState == RECYCLING) && 
+				
+				if ((CurrentGameState == CLEANING_UP) && 
           (LastGameState == WAITING_FOR_START))
         {
-          printf("Game Started; event posted\n\r"); //PRINTF REMOVED
-          CommunicationEvent.EventType = EV_COMPASS_CLEANING_UP;
-          //Change To Master SM
-          PostMasterSM(CommunicationEvent);
-          
-          //Set recycling center we orient to in the RecyclingSM
-          
+          printf("Game Started; event posted\n\r");
+          ES_Event_t ThisEvent;
+          ThisEvent.EventType = EV_COMPASS_CLEANING_UP;
+          PostMasterSM(ThisEvent);
+          //PostLEDService(ThisEvent)
         }
         else if ((CurrentGameState == GAME_OVER) && 
-          (LastGameState == RECYCLING))
+          (LastGameState == CLEANING_UP))
         {
-          printf("Game Over; event not posted\n\r"); //PRINTF REMOVED
-          CommunicationEvent.EventType = EV_COMPASS_GAME_OVER;
-          PostMasterSM(CommunicationEvent);
+          printf("Game Over; event posted\n\r");
+          ES_Event_t ThisEvent;
+          ThisEvent.EventType = EV_COMPASS_GAME_OVER;
+          PostMasterSM(ThisEvent);
+          //PostLEDService(ThisEvent)
         }
-        
-        if (CurrentRecyclingCenter != LastRecyclingCenter)
-        {
-          printf("New recycling center: %d \n\r", CurrentRecyclingCenter); //PRINTF REMOVED
-          //Set recycling center we orient to in the RecyclingSM
-          CommunicationEvent.EventType = EV_COMPASS_RECYCLE_CHANGE;
-          PostMasterSM(CommunicationEvent);
-        }
-        
         LastGameState = CurrentGameState;
-				LastRecyclingCenter = CurrentRecyclingCenter;
+				
 				//Initialize timer and disable SSI interrupt
 				//in preparation for move to next state
-		    ES_Timer_InitTimer(SPI_BYTE_TIMER, SPI_QUERYTIME);
+		    ES_Timer_InitTimer(SPI_BYTE_TIMER, SPI_BYTE_VALUE);
 				HWREG(SSI0_BASE + SSI_O_IM) &= ~SSI_IM_TXIM;
-		    NextState = QueryingValue;
+		    NextState = QueryingVAL;
       }
     }
     break;
 	
-    case QueryingValue:
+	case QueryingVAL:
     {
       if ((ThisEvent.EventType == ES_TIMEOUT) && 
         (ThisEvent.EventParam == SPI_BYTE_TIMER))
       {
-        WriteToSPI(ValueTxByte);
+        SPISend(ValCmd);
 	    }  
 	    else if (ThisEvent.EventType == EV_COMPASS_RESPONSE_RECEIVED)
       {
-        ValueByte = ThisEvent.EventParam;
+        ValByte = ThisEvent.EventParam;
       }
 	    else if ((ThisEvent.EventType == ES_TIMEOUT) && 
         (ThisEvent.EventParam == SPI_REFRESH_TIMER))
       {
 				//prep for move to QueryingSTATUS state
-        ES_Timer_InitTimer(SPI_BYTE_TIMER, SPI_QUERYTIME);
-		    ES_Timer_InitTimer(SPI_REFRESH_TIMER, SPI_REFRESHTIME);
+        ES_Timer_InitTimer(SPI_BYTE_TIMER, SPI_BYTE_VALUE);
+		    ES_Timer_InitTimer(SPI_REFRESH_TIMER, SPI_REFRESH_TIMER_VALUE);
 		    HWREG(SSI0_BASE + SSI_O_IM) &= ~SSI_IM_TXIM;
-				NextState = QueryingStatus;
+				NextState = QueryingSTATUS;
       }
     }
     break;
 	
     default:
-    {;
-    }
+      ;
   }                                   // end switch on Current State
   
   CurrentState = NextState;
@@ -418,7 +361,7 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
 
 /****************************************************************************
  Function
-     SPIISRResponse
+     SPIReceiveISR
 
  Parameters
      None
@@ -431,26 +374,30 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
  Notes
 
  Author
-     Sander TOnkens, 02/15/2019, 13:14
+     Sander Tonkens, 02/15/2019, 13:14
 ****************************************************************************/
-void SPIISRResponse(void)
+void SPIReceiveISR(void)
 {
-  uint8_t ResponseMessage;
-	//printf("ISR triggered");
-  //Clear source of interrupt
-  HWREG(SSI0_BASE + SSI_O_IM) &= ~SSI_IM_TXIM;
-  //Read the data register
-	HWREG(SSI0_BASE+SSI_O_DR);
-	HWREG(SSI0_BASE+SSI_O_DR);
-  ResponseMessage = HWREG(SSI0_BASE + SSI_O_DR);
-  // printf("Responsemessage: %d\r\n", ResponseMessage);
-  //Post message to SPI SM
+  uint8_t ReceivedMessage;
+	
+	//clear the interupt
+  HWREG(SSI0_BASE + SSI_O_ICR) = SSI_ICR_RTIC;
+	
+	//Ignore first 2 bytes, and store last byte
+	uint8_t Receive1 = HWREG(SSI0_BASE + SSI_O_DR);
+  uint8_t Receive2 = HWREG(SSI0_BASE + SSI_O_DR);
+	ReceivedMessage = HWREG(SSI0_BASE + SSI_O_DR);
+  
+  //post message to SPI state machine
+  printf("Receive 1: %d\r\n", Receive1);
+  printf("Receive 2: %d\r\n", Receive2);
+  printf("Receive 3: %d\r\n", ReceivedMessage);
   ES_Event_t ThisEvent;
   ThisEvent.EventType = EV_COMPASS_RESPONSE_RECEIVED;
-  ThisEvent.EventParam = ResponseMessage;
+  ThisEvent.EventParam = ReceivedMessage;
   PostSPISM(ThisEvent);
-
 }
+
 /****************************************************************************
  Function
      GetTeamByte
@@ -466,11 +413,11 @@ void SPIISRResponse(void)
  Notes
 
  Author
-     Sander TOnkens, 02/15/2019, 13:14
+     Sander Tonkens, 02/15/2019, 13:14
 ****************************************************************************/
-uint8_t GetTeamInfoByte(void)
+uint8_t GetTeamByte(void)
 {
-  return TeamStatusByte;
+  return TeamByte;
 }
 
 /****************************************************************************
@@ -488,11 +435,11 @@ uint8_t GetTeamInfoByte(void)
  Notes
 
  Author
-     Sander TOnkens, 02/15/2019, 13:15
+     Sander Tonkens, 02/15/2019, 13:15
 ****************************************************************************/
-uint8_t GetGameStatusByte(void)
+uint8_t GetStatusByte(void)
 {
-  return GameStatusByte;
+  return StatusByte;
 }
 
 /****************************************************************************
@@ -510,11 +457,11 @@ uint8_t GetGameStatusByte(void)
  Notes
 
  Author
-     Sander TOnkens, 02/15/2019, 13:16
+     Sander Tonkens, 02/15/2019, 13:16
 ****************************************************************************/
-uint8_t GetValueByte(void)
+uint8_t GetValByte(void)
 {
-	return ValueByte;
+	return ValByte;
 }
 
 /****************************************************************************
@@ -532,11 +479,22 @@ uint8_t GetValueByte(void)
  Notes
 
  Author
-     Sander TOnkens, 02/15/2019, 13:16
+     Sander Tonkens, 02/15/2019, 13:16
 ****************************************************************************/
 uint16_t GetAssignedPeriod(void)
 {
-	return AssignedPeriod;
+	#if TEST_EMITTER_FREQ
+  if (RegCmd == TEAM_NORTH)
+  {
+    AssignedPeriod = 600;
+  }
+  else if (RegCmd == TEAM_SOUTH)
+  {
+    AssignedPeriod = 500;
+  }
+  #endif
+  
+  return AssignedPeriod;
 }
 
 /****************************************************************************
@@ -554,7 +512,7 @@ uint16_t GetAssignedPeriod(void)
  Notes
 
  Author
-     Sander TOnkens, 02/15/2019, 13:16
+     Sander Tonkens, 02/15/2019, 13:16
 ****************************************************************************/
 uint8_t GetGameState(void)
 {
@@ -576,11 +534,32 @@ uint8_t GetGameState(void)
  Notes
 
  Author
-     Sander TOnkens, 02/18/2019, 19:41
+     Sander Tonkens, 02/18/2019, 19:41
 ****************************************************************************/
 uint8_t QueryWhichRecycle(void)
 {
-  return CurrentRecyclingCenter;
+  uint8_t LeftAcceptedColor;
+  uint8_t WhichRecycle;
+  
+  if (NSSwitchVal == TEAM_NORTH)
+  {
+    LeftAcceptedColor = (GetStatusByte() & (BIT2HI | BIT3HI | BIT4HI)) >> 2;
+  }
+  else
+  {
+    LeftAcceptedColor = (GetStatusByte() & (BIT7HI | BIT6HI | BIT5HI)) >> 2;
+  }
+  
+  if (LeftAcceptedColor == GetAssignedColor())
+  {
+    WhichRecycle = EAST_RECYCLE;
+  }
+  else
+  {
+    WhichRecycle = WEST_RECYCLE;
+  }
+  
+  return WhichRecycle;
 }
 
 /****************************************************************************
@@ -598,7 +577,7 @@ uint8_t QueryWhichRecycle(void)
  Notes
 
  Author
-     Sander TOnkens, 02/18/2019, 19:41
+     Sander Tonkens, 02/18/2019, 19:41
 ****************************************************************************/
 uint8_t GetAssignedColor(void)
 {
@@ -620,7 +599,7 @@ uint8_t GetAssignedColor(void)
  Notes
 
  Author
-     Sander TOnkens, 02/18/2019, 19:41
+     Sander Tonkens, 02/18/2019, 19:41
 ****************************************************************************/
 uint16_t GetLeftRecycleFreq(void)
 {
@@ -642,7 +621,7 @@ uint16_t GetLeftRecycleFreq(void)
  Notes
 
  Author
-     Sander TOnkens, 02/18/2019, 19:41
+     Sander Tonkens, 02/18/2019, 19:41
 ****************************************************************************/
 uint16_t GetRightRecycleFreq(void)
 {
@@ -664,103 +643,80 @@ uint16_t GetRightRecycleFreq(void)
  Notes
 
  Author
-     Sander TOnkens, 02/18/2019, 19:41
+     Sander Tonkens, 02/18/2019, 19:41
 ****************************************************************************/
 void InitSPI(void)
 {
- __disable_irq();
-	//printf("Initializing the SSI Module \n \r"); PRINTF REMOVED
-
-    // Enable the clock to the GPIO Port
+  //disable interrupts
+	__disable_irq();
+	//enable the clock to GPIO A and wait
 	HWREG(SYSCTL_RCGCGPIO) |= SYSCTL_RCGCGPIO_R0;
-  
-	// Enable the clock to the SSI module
+    while ((HWREG(SYSCTL_PRGPIO) & SYSCTL_PRGPIO_R0) != SYSCTL_PRGPIO_R0)
+    {}
+	//turn on the clock to the ssi module and wait
 	HWREG(SYSCTL_RCGCSSI) |= SYSCTL_RCGCSSI_R0;
-
-    // Wait for GPIO port to be ready
-	while((HWREG(SYSCTL_PRGPIO) & SYSCTL_PRGPIO_R0) != SYSCTL_PRGPIO_R0)
-	{
-	}	
-  while((HWREG(SYSCTL_PRSSI) & SYSCTL_PRSSI_R0) != SYSCTL_PRSSI_R0)
-  {}
-	// Program the GPIO to use the alternate functions
-	// on the SSI pins. The alternate pins are PA2, 3, 4 and 5
-	// CLK line = PA2
-	// SS line = PA3
-	// MISO line = PA4
-	// MOSI line = PA5
-	HWREG(GPIO_PORTA_BASE + GPIO_O_AFSEL) |= (SSI0Clk | SSI0Fss | SSI0Rx | SSI0Tx); //enable 2-5 for alternative
-
-	//Set mux position in GPIOPCTL to select the SSI use of the pins
-	//Mask 2,3,4,5 and send 2 to the position
+			while((HWREG(SYSCTL_PRSSI) & SYSCTL_PRSSI_R0) != SYSCTL_PRSSI_R0)
+			{}
+	
+	//set up port a to its alternate function
+  HWREG(GPIO_PORTA_BASE + GPIO_O_AFSEL) |= (BIT2HI|BIT3HI|BIT4HI|BIT5HI);				
+	
+	//set alternate fuctions for pins A2-5 to ssi
 	HWREG(GPIO_PORTA_BASE + GPIO_O_PCTL) =
-		(HWREG(GPIO_PORTA_BASE + GPIO_O_PCTL) & 0xff0000ff) + (2 << (5 * BitsPerNibble)) +
-		(2 << (4 * BitsPerNibble)) + (2 << (3 * BitsPerNibble)) + (2 << (2 * BitsPerNibble));
-
-  	// Program the port lines for digital I/O (PA2, PA3, PA4, PA5)
-	HWREG(GPIO_PORTA_BASE + GPIO_O_DEN) |= (SSI0Clk | SSI0Fss | SSI0Rx | SSI0Tx);
-
-	// Program the required data directions on the port lines
-	// Tx(3), Fs(1) & Clk(0) are all outputs
-	// Rx(2) is an input
-	HWREG(GPIO_PORTA_BASE + GPIO_O_DIR) |= (SSI0Clk | SSI0Fss | SSI0Tx);
-	HWREG(GPIO_PORTA_BASE + GPIO_O_DIR) &= ~(SSI0Rx);
-  	
-	// If using SPI mode 3, program the pull-up on the clock line (PA2)
-	HWREG(GPIO_PORTA_BASE + GPIO_O_PUR) |= SSI0Clk;
-
-  	// Wait for SSI0 to be ready
-	while((HWREG(SYSCTL_PRSSI) & SYSCTL_PRSSI_R0) != SYSCTL_PRSSI_R0)
-	{
-	}
-	// Make sure that the SSI is disabled before programming mode bits
+      (HWREG(GPIO_PORTA_BASE + GPIO_O_PCTL) & 0xff0000ff) + (2 << 8) + (2 << 12)
+				+ (2 << 16) + (2 << 20);
+				
+	// Enable pins 2-5 on Port A for digital I/O
+  HWREG(GPIO_PORTA_BASE + GPIO_O_DEN) |= (BIT2HI | BIT3HI | BIT4HI | BIT5HI);
+  // make pins 2,3 5  on Port A into output
+  HWREG(GPIO_PORTA_BASE + GPIO_O_DIR) |= (BIT2HI | BIT3HI | BIT5HI);
+	// make pin 4 on Port A into an input
+	HWREG(GPIO_PORTA_BASE + GPIO_O_DIR) &= BIT4LO;
+			
+	//set the pullup resistor for the clock line
+	HWREG(GPIO_PORTA_BASE + GPIO_O_PUR) |= BIT2HI;
+				
+	//disable the ssi before programming it
 	HWREG(SSI0_BASE + SSI_O_CR1) &= ~SSI_CR1_SSE;
-
-  // Select master mode (MS) & TXRIS indicating End of Transmit (EOT)
+  
+	//select master mode
 	HWREG(SSI0_BASE + SSI_O_CR1) &= ~SSI_CR1_MS;
+	//select end of transmission interupt enable
 	HWREG(SSI0_BASE + SSI_O_CR1) |= SSI_CR1_EOT;
 
   //set the system clock as the clock source
   HWREG(SSI0_BASE + SSI_O_CC) &= ~SSI_CC_CS_M;
-
-  	// Configure the clock prescaler
-	HWREG(SSI0_BASE + SSI_O_CPSR) &= 0xffffff00; //~SSI_CPSR_CPSDVSR_M;
-	HWREG(SSI0_BASE + SSI_O_CPSR) |= CPSDVSR;
-
-	// Configure clock rate, clock phase & clock polarity
-
-  HWREG(SSI0_BASE + SSI_O_CR0) &= 0xffff00ff; //~(SSI_CR0_SCR_M);
-  HWREG(SSI0_BASE + SSI_O_CR0) |= SCR;
-
-  //Set SPH and SP0 to 1 for mode 3
+	
+	//set the clock prescaler to 4
+	HWREG(SSI0_BASE + SSI_O_CPSR) &= 0xffffff00;
+	HWREG(SSI0_BASE + SSI_O_CPSR) |= SSI_PRESCALE;
+	
+	//clear the configure the Serial clock rate bits and write the value we want
+	HWREG(SSI0_BASE + SSI_O_CR0) &= 0xffff00ff;
+	HWREG(SSI0_BASE + SSI_O_CR0) |= SCR_VALUE;
+	
+	//set SPH and SPO to 1 for mode 3
 	HWREG(SSI0_BASE + SSI_O_CR0) |= (SSI_CR0_SPH | SSI_CR0_SPO);
-
-  //set the communications type to freescale SPI
-  HWREG(SSI0_BASE + SSI_O_CR0) &= ~SSI_CR0_FRF_M;
-
-  //set the data size to 8
-  HWREG(SSI0_BASE + SSI_O_CR0) &= ~SSI_CR0_DSS_M;
-  HWREG(SSI0_BASE + SSI_O_CR0) |= SSI_CR0_DSS_8;
-
-	// Locally enable interrupts
+	
+	//set the communications type to freescale SPI
+	HWREG(SSI0_BASE + SSI_O_CR0) &= ~SSI_CR0_FRF_M;
+	
+	//set the data size to 8
+	HWREG(SSI0_BASE + SSI_O_CR0) &= ~SSI_CR0_DSS_M;
+	HWREG(SSI0_BASE + SSI_O_CR0) |= SSI_CR0_DSS_8;
+	
+	//enable interupts in ssim
 	HWREG(SSI0_BASE + SSI_O_IM) |= (SSI_IM_TXIM | SSI_IM_RXIM);
-
-  // Make sure that the SSI is enabled for operation
-  HWREG(SSI0_BASE + SSI_O_CR1) |= SSI_CR1_SSE;
-
-	// Enable NVIC interrupt for SSI when starting transmission
-	// NVIC_EN0 handles IRQs 0-31
-	// SSI0 = IRQ 7 --> EN_0 |= BIT7HI
-	HWREG(NVIC_EN0) |= BIT7HI;
-  
-  //HWREG(NVIC_PRI1) |= (BIT29HI | BIT30HI);
-
-	// Enable interrupts globally
+	
+	//enable the ssi before programming it
+	HWREG(SSI0_BASE + SSI_O_CR1) |= SSI_CR1_SSE;
+	
+	//enable wide timer 1 in NVIC (interupt 96)
+  HWREG(NVIC_EN0) |= BIT7HI;
+	
+	//reenable all interupts
 	//__enable_irq();
-
-	printf("SSI Initialization Complete \n\r"); //PRINTF REMOVED
 }
-
  
  /***************************************************************************
  private functions
@@ -768,7 +724,7 @@ void InitSPI(void)
 
 /****************************************************************************
  Function
-     WriteToSPI
+     SPISend
 
  Parameters
      message to send
@@ -781,16 +737,16 @@ void InitSPI(void)
  Notes
 
  Author
-     Sander TOnkens, 02/15/2019, 16:02
+     Sander Tonkens, 02/15/2019, 16:02
 ****************************************************************************/
-static void WriteToSPI(uint8_t TransmitMessage)
+static void SPISend(uint8_t message)
 {
-	//printf("%d", TransmitMessage);
-  //Write data to data register
-  HWREG(SSI0_BASE + SSI_O_IM) &= ~SSI_IM_TXIM;
-  HWREG(SSI0_BASE + SSI_O_DR) = TransmitMessage;
+  printf("Send: %d\r\n", message);
+  //write the data to the data register
+  HWREG(SSI0_BASE + SSI_O_DR) = message;
 	HWREG(SSI0_BASE + SSI_O_DR) = ZERO_BYTE;
 	HWREG(SSI0_BASE + SSI_O_DR) = ZERO_BYTE;
-  //Enable interrupt
+	
+	//enable interrupt
   HWREG(SSI0_BASE + SSI_O_IM) |= SSI_IM_TXIM;
 }

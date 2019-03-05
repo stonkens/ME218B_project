@@ -34,7 +34,7 @@
 // This macro determines that nuber of services that are *actually* used in
 // a particular application. It will vary in value from 1 to MAX_NUM_SERVICES
 
-#define NUM_SERVICES 10
+#define NUM_SERVICES 9
 
 /****************************************************************************/
 // These are the definitions for Service 0, the lowest priority service.
@@ -42,11 +42,11 @@
 // services are added in numeric sequence (1,2,3,...) with increasing
 // priorities
 // the header file with the public function prototypes
-#define SERV_0_HEADER "SPISM.h"
+#define SERV_0_HEADER "MasterHSM.h"
 // the name of the Init function
-#define SERV_0_INIT InitSPISM
+#define SERV_0_INIT InitMasterSM
 // the name of the run function
-#define SERV_0_RUN RunSPISM
+#define SERV_0_RUN RunMasterSM
 // How big should this services Queue be?
 #define SERV_0_QUEUE_SIZE 5
 
@@ -98,11 +98,11 @@
 // These are the definitions for Service 5
 #if NUM_SERVICES > 4
 // the header file with the public function prototypes
-#define SERV_4_HEADER "MasterHSM.h"
+#define SERV_4_HEADER "SPISM.h"
 // the name of the Init function
-#define SERV_4_INIT InitMasterSM
+#define SERV_4_INIT InitSPISM
 // the name of the run function
-#define SERV_4_RUN RunMasterSM
+#define SERV_4_RUN RunSPISM
 // How big should this services Queue be?
 #define SERV_4_QUEUE_SIZE 5
 #endif
@@ -167,9 +167,9 @@
 // the header file with the public function prototypes
 #define SERV_9_HEADER "TapeFollowingService.h"
 // the name of the Init function
-#define SERV_9_INIT InitTapeFollowingService
+#define SERV_9_INIT StartTapeFollowingSM
 // the name of the run function
-#define SERV_9_RUN RunTapeFollowingService
+#define SERV_9_RUN RunTapeFollowingSM
 // How big should this services Queue be?
 #define SERV_9_QUEUE_SIZE 3
 #endif
@@ -370,7 +370,7 @@ typedef enum
 // These symbolic names should be changed to be relevant to your application
 
 #define I2C_TEST_TIMER 0
-#define SPI_TIMER 1
+#define SPI_BYTE_TIMER 1
 #define SPI_REFRESH_TIMER 2
 #define DISPLAY_TIMER 3
 #define COLLECTSTOP_TIMER 4

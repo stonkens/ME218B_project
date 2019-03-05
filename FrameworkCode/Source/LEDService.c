@@ -27,6 +27,7 @@
 static LEDState_t CurrentState;
 static uint8_t      MyPriority;
 static bool LEDOn = 0;
+static bool nextLEDOn = 0;
 /*------------------------------ Module Code ------------------------------*/
 
 /****************************************************************************
@@ -121,15 +122,22 @@ ES_Event_t RunLEDService(ES_Event_t ThisEvent)
         {
           if(LEDOn == false)
           {
-            HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0LO; //turn LED on 
+            HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= (BIT0LO); //turn LED on 
             HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI;
+            uint8_t status = (HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT0HI);
+            //HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO; //turn LED on
+            nextLEDOn = true;
           }
           else
           {
             HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
             HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI;
+            //HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0LO;
+            //HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO;
+            uint8_t status = (HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT0HI);
+            nextLEDOn = false;
           }
-          LEDOn =~LEDOn;
+          LEDOn =nextLEDOn;
         }
         
         else if (QueryTeam() == TEAM_SOUTH)

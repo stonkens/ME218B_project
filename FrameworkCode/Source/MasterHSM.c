@@ -125,9 +125,6 @@ bool InitMasterSM ( uint8_t Priority )
     FieldLocation = SOUTH_HALF;
   }
   
-  //The SSI communication service can start
-  SetReady2Communicate(true);
-  
 	//Stop all motors
 	StopAllMovingParts();
 	
@@ -538,8 +535,8 @@ static ES_Event_t DuringGameEnded (ES_Event_t Event)
     StopAllMovingParts();
     
 		//Turn off all LEDs
-    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0HI;
-    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1HI;  
+    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
+    HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI;  
 	}
 	else if (Event.EventType == ES_EXIT)
 	{
