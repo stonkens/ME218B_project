@@ -90,7 +90,7 @@ bool Check4Enemy(void)
   {
     
     EnemyCounter++;
-    printf("%d \r\n", EnemyCounter);
+    //printf("%d \r\n", EnemyCounter);
     if(EnemyCounter >= ENEMY_REPETITION_THRESHOLD)
     {
       ThisEvent.EventType = EV_BOT_DETECTED;

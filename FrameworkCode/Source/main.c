@@ -77,6 +77,8 @@ int main (void)
   puts( "'P'= EV_MOVE_COMPLETED\r\n");
   puts( "'T'= EV_TAPE_DETECTED\r\n");
   puts( "'Z'= EV_ALIGNED2BEACON\r\n");
+  puts( "'Q'= EV_GO2RECYCLE\r\n");
+  puts( "'F'= EV_GO2LANDFILL\r\n");
   puts( "'X'= Change Position Awareness to true\r\n");
   puts( "      MasterSM     | GamePlayHSM|  CollectingSM   |     RecyclingSM   |     LandfillingSM  | Col. Avoidance |D | R |L | Team\r");
 

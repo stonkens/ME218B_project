@@ -73,7 +73,7 @@
 #define ENTRY_STATE StraightDrive
 #define IR_FIRST_DELAY 100
 
-#define COLLECTSTOP_TIME 4000
+#define COLLECTSTOP_TIME 500
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
    functions, entry & exit functions.They should be functions relevant to the

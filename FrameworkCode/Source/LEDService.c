@@ -53,6 +53,14 @@ bool InitLEDService(uint8_t Priority)
   ES_Event_t ThisEvent;
 
   MyPriority = Priority;
+  
+  //Set PB0 & PB1 as a digital output
+  HWREG(GPIO_PORTB_BASE + GPIO_O_DEN) |= (BIT0HI | BIT1HI);
+  HWREG(GPIO_PORTB_BASE + GPIO_O_DIR) |= (BIT0HI | BIT1HI);
+
+  //Intially set them as low (this means they're on)
+  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0LO;
+  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO;  
 
   CurrentState = Waiting2Play; 
   ES_Timer_InitTimer(LED_TIMER,LED_TIME);
@@ -144,15 +152,20 @@ ES_Event_t RunLEDService(ES_Event_t ThisEvent)
         {
           if(LEDOn == false)
           {
-            HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO; //turn LED on 
-            HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
+            HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= (BIT1HI); //turn LED on 
+            HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO;
+            //HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO; //turn LED on
+            nextLEDOn = true;
           }
           else
           {
-            HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI; //turn LED off 
             HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT0HI;
+            HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT1HI;
+            //HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT0LO;
+            //HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT1LO;
+            nextLEDOn = false;
           }
-          LEDOn =~LEDOn;
+          LEDOn =nextLEDOn;
         }
         ES_Timer_InitTimer(LED_TIMER, LED_TIME);
       }

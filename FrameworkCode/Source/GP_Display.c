@@ -46,7 +46,7 @@ void UpdateDisplay(void)
   RecyclingState_t            RecyclingState          = QueryRecyclingSM();
   LandfillingState_t          LandfillingState        = QueryLandfillingSM();
   CollisionAvoidanceState_t   CollisionAvoidanceState = QueryCollisionAvoidanceHSM();
-  /*
+  
   // now update the display
   printf("\r");
   switch (MasterState)
@@ -213,7 +213,7 @@ void UpdateDisplay(void)
   printf(" %d ", QueryRecycleBalls());
   printf(" %d ", QueryLandFillBalls());
   printf(" %d ", QueryTeam());
- */
+
 
 }
 

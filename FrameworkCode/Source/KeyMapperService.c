@@ -204,6 +204,16 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
               ThisEvent.EventType = EV_ALIGNED2BEACON;
             }
             break;
+            case 'Q':
+            {
+              ThisEvent.EventType = EV_GO2RECYCLE;
+            }
+            break;
+            case 'F':
+            {
+              ThisEvent.EventType = EV_GO2LANDFILL;
+            }
+            break;
             case '1':
             {
               AddRecycleBalls();

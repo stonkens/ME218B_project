@@ -150,14 +150,14 @@ bool Check4TapeFollow(void)
     {
       ThisEvent.EventType = EV_TAPE_DETECTED;
       ThisEvent.EventParam = 3; //time in ticks 
-      //printf("Middle tape on\r\n");
+      printf("Middle tape on\r\n");
       PostMasterSM(ThisEvent);
     }
-    if ((CurrentTapeFollowMid & BIT2HI) == BIT2HI) //signal is high when off the tape 
+    if ((CurrentTapeFollowMid & MidTapeHI) == MidTapeHI) //signal is high when off the tape 
     {
       ThisEvent.EventType = EV_TAPE_DETECTED;
       ThisEvent.EventParam = 4; 
-      //printf("Middle tape off\r\n");
+      printf("Middle tape off\r\n");
       PostMasterSM(ThisEvent);
     }    
   }

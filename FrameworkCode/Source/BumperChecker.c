@@ -94,9 +94,9 @@ bool Check4Bump(void)
     ReturnVal = true;
     if (CurrentFrontSwitchState) // was 1, changing to 4...
     {
-      printf("\r\nHit the front left bumper");
+      printf("\r\nHit the back left bumper");
       ThisEvent.EventType = EV_BUMPER_HIT;
-			ThisEvent.EventParam = 1; //was 1, change to 4
+			ThisEvent.EventParam = 3; //was 1, change to 4
       PostMasterSM(ThisEvent); //don't know what service to post to yet 
     }
   }
@@ -106,9 +106,9 @@ bool Check4Bump(void)
     ReturnVal = true;
     if (CurrentRightSwitchState)
     {
-      printf("Hit the right front bumper\r\n");
+      printf("Hit the right back bumper\r\n");
       ThisEvent.EventType = EV_BUMPER_HIT;
-			ThisEvent.EventParam = 2; 
+			ThisEvent.EventParam = 4; 
       PostMasterSM(ThisEvent); //don't know what service to post to yet 
     }
   }
@@ -118,9 +118,9 @@ bool Check4Bump(void)
     ReturnVal = true;
     if (CurrentBackSwitchState)
     {
-      printf("Hit the back left bumper\r\n");
+      printf("Hit the front left bumper\r\n");
       ThisEvent.EventType = EV_BUMPER_HIT;
-			ThisEvent.EventParam = 3; 
+			ThisEvent.EventParam = 1; 
       PostMasterSM(ThisEvent); //don't know what service to post to yet 
     }
   }
@@ -130,9 +130,9 @@ bool Check4Bump(void)
     ReturnVal = true;
     if (CurrentLeftSwitchState)
     {
-      printf("Hit the back right bumper\r\n");
+      printf("Hit the front right bumper\r\n");
       ThisEvent.EventType = EV_BUMPER_HIT;
-			ThisEvent.EventParam = 4; 
+			ThisEvent.EventParam = 2; 
       PostMasterSM(ThisEvent); //don't know what service to post to yet 
     }
   }
