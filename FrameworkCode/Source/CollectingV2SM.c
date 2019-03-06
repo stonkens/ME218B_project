@@ -192,7 +192,7 @@ ES_Event_t RunCollectingV2SM( ES_Event_t CurrentEvent )
                 {
                   StopDrive();
                   // Execute action function for state one : event one
-                  NextState = FindingTape;//Decide what the next state will be
+                  NextState = StraightDrive;//Decide what the next state will be
                   // for internal transitions, skip changing MakeTransition
                   MakeTransition = true; //mark that we are taking a transition
                   // if transitioning to a state with history change kind of entry
@@ -214,7 +214,7 @@ ES_Event_t RunCollectingV2SM( ES_Event_t CurrentEvent )
       // repeat state pattern as required for other states
     }
 		break;   
-       case FindingTape :      
+/*       case FindingTape :      
 			 {
          ReturnEvent = CurrentEvent = DuringFindingTape(CurrentEvent);
          //process any events
@@ -231,6 +231,7 @@ ES_Event_t RunCollectingV2SM( ES_Event_t CurrentEvent )
                   ReturnEvent.EventType = ES_NO_EVENT;                  
               }
 							break;
+
               
               case ES_TIMEOUT:
               {
@@ -260,7 +261,7 @@ ES_Event_t RunCollectingV2SM( ES_Event_t CurrentEvent )
       // repeat state pattern as required for other states
     }
 		break;
-    
+*/    
     
 
    case StraightDrive :      
@@ -446,11 +447,11 @@ static ES_Event_t DuringAlign2Landfill( ES_Event_t Event)
 
       if(QueryTeam() == TEAM_NORTH)
       {
-        ActivateBeaconFinder(SOUTH_LANDFILL_PERIOD);
+        ActivateBeaconFinder(NORTH_LANDFILL_PERIOD);
       }
       else
       {
-        ActivateBeaconFinder(NORTH_LANDFILL_PERIOD);
+        ActivateBeaconFinder(SOUTH_LANDFILL_PERIOD);
       }
       IREnableInterrupt();
       //Start any lower level machines that run in this state
@@ -497,7 +498,7 @@ static ES_Event_t DuringPrepare4Harvesting( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
 
-      DriveRotate(TURNING_SPEED, 1800); 
+      DriveRotate(TURNING_SPEED, 900); 
       //Start any lower level machines that run in this state
       
         
@@ -529,7 +530,7 @@ static ES_Event_t DuringPrepare4Harvesting( ES_Event_t Event)
 }
 
 
-static ES_Event_t DuringFindingTape( ES_Event_t Event)
+/*static ES_Event_t DuringFindingTape( ES_Event_t Event)
 {
     ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
 
@@ -569,7 +570,7 @@ static ES_Event_t DuringFindingTape( ES_Event_t Event)
     // to remap the current event, or ReturnEvent if you do want to allow it.
     return(ReturnEvent);
 }
-
+*/
 
 static ES_Event_t DuringStraightDrive( ES_Event_t Event)
 {
@@ -580,7 +581,7 @@ static ES_Event_t DuringStraightDrive( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
 
-      DriveStraight(STRAIGHT_SPEED,-4800); 
+      DriveStraight(STRAIGHT_SPEED,-8000); 
       //Start any lower level machines that run in this state
 
         
@@ -618,7 +619,7 @@ static ES_Event_t DuringTurnDrive(ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
-      DriveRotate(TURNING_SPEED, -900); 
+      DriveRotate(TURNING_SPEED, 900); 
           
         
 			
