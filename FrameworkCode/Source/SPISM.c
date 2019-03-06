@@ -27,6 +27,7 @@
 #include "ES_Framework.h"
 #include "SPISM.h"
 //#include "DriveSM.h"
+#include "BallProcessingSM.h"
 
 /* include header files for hardware access
  */
@@ -315,6 +316,7 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
         AssignedPeriod = RecycleActPeriod[(TeamStatusByte & 
           (BIT4HI|BIT5HI|BIT6HI|BIT7HI)) >> 4];
         printf("Assigned Period: %d\n\r", AssignedPeriod); //PRINTF REMOVED
+        setRecycleColor(AssignedColor);
 				
 				//Initialize timers and disable SSI interrupt 
 				//in preparation for move to next state
