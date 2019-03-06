@@ -34,7 +34,7 @@
 // This macro determines that nuber of services that are *actually* used in
 // a particular application. It will vary in value from 1 to MAX_NUM_SERVICES
 
-#define NUM_SERVICES 9
+#define NUM_SERVICES 8
 
 /****************************************************************************/
 // These are the definitions for Service 0, the lowest priority service.
@@ -72,11 +72,11 @@
 // These are the definitions for Service 2
 #if NUM_SERVICES > 2
 // the header file with the public function prototypes
-#define SERV_2_HEADER "MasterHSM.h"
+#define SERV_2_HEADER "SPISM.h"
 // the name of the Init function
-#define SERV_2_INIT InitMasterSM
+#define SERV_2_INIT InitSPISM
 // the name of the run function
-#define SERV_2_RUN RunMasterSM
+#define SERV_2_RUN RunSPISM
 // How big should this services Queue be?
 #define SERV_2_QUEUE_SIZE 3
 #endif
@@ -85,11 +85,11 @@
 // These are the definitions for Service 3
 #if NUM_SERVICES > 3
 // the header file with the public function prototypes
-#define SERV_3_HEADER "KeyMapperService.h"
+#define SERV_3_HEADER "BallDumpingSM.h"
 // the name of the Init function
-#define SERV_3_INIT InitKeyMapperService
+#define SERV_3_INIT InitBallDumpingSM
 // the name of the run function
-#define SERV_3_RUN RunKeyMapperService
+#define SERV_3_RUN RunBallDumpingSM
 // How big should this services Queue be?
 #define SERV_3_QUEUE_SIZE 3
 #endif
@@ -98,11 +98,11 @@
 // These are the definitions for Service 5
 #if NUM_SERVICES > 4
 // the header file with the public function prototypes
-#define SERV_4_HEADER "SPISM.h"
+#define SERV_4_HEADER "BallProcessingSM.h"
 // the name of the Init function
-#define SERV_4_INIT InitSPISM
+#define SERV_4_INIT InitBallProcessingSM
 // the name of the run function
-#define SERV_4_RUN RunSPISM
+#define SERV_4_RUN RunBallProcessingSM
 // How big should this services Queue be?
 #define SERV_4_QUEUE_SIZE 5
 #endif
@@ -126,11 +126,11 @@
 // These are the definitions for Service 6
 #if NUM_SERVICES > 6
 // the header file with the public function prototypes
-#define SERV_6_HEADER "BallProcessingSM.h"
+#define SERV_6_HEADER "LEDService.h"
 // the name of the Init function
-#define SERV_6_INIT InitBallProcessingSM
+#define SERV_6_INIT InitLEDService
 // the name of the run function
-#define SERV_6_RUN RunBallProcessingSM
+#define SERV_6_RUN RunLEDService
 // How big should this services Queue be?
 #define SERV_6_QUEUE_SIZE 3
 #endif
@@ -139,11 +139,11 @@
 // These are the definitions for Service 7
 #if NUM_SERVICES > 7
 // the header file with the public function prototypes
-#define SERV_7_HEADER "BallDumpingSM.h"
+#define SERV_7_HEADER "KeyMapperService.h"
 // the name of the Init function
-#define SERV_7_INIT InitBallDumpingSM
+#define SERV_7_INIT InitKeyMapperService
 // the name of the run function
-#define SERV_7_RUN RunBallDumpingSM
+#define SERV_7_RUN RunKeyMapperService
 // How big should this services Queue be?
 #define SERV_7_QUEUE_SIZE 3
 #endif

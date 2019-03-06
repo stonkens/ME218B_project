@@ -218,11 +218,6 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
               AddLandFillBalls();
             }
             break;
-            case 'X' :
-            {
-              SetPositionAwareness(true);
-            }
-            break;
             case 'T' :
             {
               ThisEvent.EventType = EV_EQUATOR_DETECTED;

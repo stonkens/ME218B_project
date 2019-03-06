@@ -271,7 +271,7 @@ void PWMSetDutyCycle_2(int DutyCycle_2)
 {
   if (DutyCycle_2 < 0)
   {
-		//Set PB2 high (Motor direction pin)
+		//Set PB3 high (Motor direction pin)
 		HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) |= BIT3HI;
 		//Set Duty Cycle to positive
 		DutyCycle_2 = - DutyCycle_2;
@@ -330,6 +330,7 @@ static void Set0_DC_1(void)
 {
   // To program 0% DC, simply set the action on Zero to set the output to zero
   HWREG(PWM0_BASE + PWM_O_1_GENA) = PWM_1_GENA_ACTZERO_ZERO;
+  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT2LO;
 }
 
 /****************************************************************************
@@ -354,6 +355,7 @@ static void Set100_DC_1(void)
 {
   // To program 100% DC, simply set the action on Zero to set the output to one
   HWREG(PWM0_BASE + PWM_O_1_GENA) = PWM_1_GENA_ACTZERO_ONE;
+  
 }
 
 /****************************************************************************
@@ -402,6 +404,7 @@ static void Set0_DC_2(void)
 {
   // To program 0% DC, simply set the action on Zero to set the output to zero
   HWREG(PWM0_BASE + PWM_O_1_GENB) = PWM_1_GENB_ACTZERO_ZERO;
+  HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) &= BIT3LO;
 }
 
 /****************************************************************************

@@ -67,7 +67,7 @@
 // define constants for the states for this machine
 // and any other local defines
 
-#define ENTRY_STATE Orienting2Landfill
+#define ENTRY_STATE Orienting2RecycleL
 #define KISS_THRESHOLD 3
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during

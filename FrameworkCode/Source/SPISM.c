@@ -753,7 +753,8 @@ void InitSPI(void)
 	// SSI0 = IRQ 7 --> EN_0 |= BIT7HI
 	HWREG(NVIC_EN0) |= BIT7HI;
   
-  //HWREG(NVIC_PRI1) |= (BIT29HI | BIT30HI);
+  //FOR TESTING PURPOSES: GIVING LOWER PRIORITY TO THIS MACHINE
+  HWREG(NVIC_PRI1) |= (BIT29HI | BIT30HI);
 
 	// Enable interrupts globally
 	//__enable_irq();

@@ -24,8 +24,6 @@ ES_Event_t RunCollectingV2SM( ES_Event_t CurrentEvent );
 void StartCollectingV2SM ( ES_Event_t CurrentEvent );
 CollectingState_t QueryCollectingV2SM ( void );
 
-//Setter function for the OrientingSM
-void SetPositionAwareness(bool PositionStatus);
-bool QueryPositionAwareness(void);
+
 #endif /*CollectingV2SM_H */
 

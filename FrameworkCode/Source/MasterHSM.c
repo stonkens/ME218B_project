@@ -443,7 +443,7 @@ static ES_Event_t DuringWaitingForStart( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
         // implement any entry actions required for this state machine
-        enableTapeFollow();
+        //enableTapeFollow();
         // after that start any lower level machines that run in this state
         //StartLowerLevelSM( Event );
         // repeat the StartxxxSM() functions for concurrent state machines

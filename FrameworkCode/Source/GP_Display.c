@@ -124,6 +124,17 @@ void UpdateDisplay(void)
 
   switch (RecyclingState)
   {
+    case Driving2LandfillR:
+    {
+      printf(" Driving2LanfillIR  ");
+    }
+    break;
+    
+    case Orienting2LandfillR:
+    {
+      printf(" Orienting2LanfillIR");
+    }
+    break;
     case Orienting2Recycle:
     {
       printf(" Orienting2Recycle  ");
@@ -157,6 +168,21 @@ void UpdateDisplay(void)
   }
   switch (LandfillingState)
   {
+    case Orienting2RecycleL:
+    {
+      printf(" Orienting2RecycleL  ");
+    }
+    break;
+    case Driving2RecycleL:
+    {
+      printf("   Driving2RecycleL   ");
+    }
+    break;
+        case ReversingFromRecycleL:
+    {
+      printf(" ReversingFromRecycle ");
+    }
+    break;
     case Orienting2Landfill:
     {
       printf(" Orienting2Landfill  ");

@@ -141,7 +141,7 @@ void DriveRotate(float MaxRPM, float degreesx10){
 
 void StopDrive(void)
 {
-  printf("Commanded motor to stop driving");
+  printf("Commanded motor to stop driving\r\n");
   Drive_Stop();
 }
 

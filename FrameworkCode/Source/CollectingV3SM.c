@@ -446,11 +446,11 @@ static ES_Event_t DuringAlign2Landfill( ES_Event_t Event)
 
       if(QueryTeam() == TEAM_NORTH)
       {
-        ActivateBeaconFinder(SOUTH_LANDFILL_PERIOD);
+        ActivateBeaconFinder(WEST_RECYCLING_PERIOD);
       }
       else
       {
-        ActivateBeaconFinder(NORTH_LANDFILL_PERIOD);
+        ActivateBeaconFinder(EAST_RECYCLING_PERIOD);
       }
       IREnableInterrupt();
       //Start any lower level machines that run in this state

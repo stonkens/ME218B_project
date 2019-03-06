@@ -71,7 +71,7 @@
 // define constants for the states for this machine
 // and any other local defines
 
-#define ENTRY_STATE Orienting2Recycle
+#define ENTRY_STATE Orienting2LandfillR
 #define KISS_THRESHOLD 3
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
@@ -173,16 +173,19 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
               
               case EV_BUMPER_HIT:
               {
-                //Stop driving motors
-                StopDrive();
-                // Execute action function for state one : event one
-                NextState = Orienting2LandfillR;//Decide what the next state will be
-                // for internal transitions, skip changing MakeTransition
-                MakeTransition = true; //mark that we are taking a transition
-                // if transitioning to a state with history change kind of entry
-                EntryEventKind.EventType = ES_NO_EVENT;                              
-                //Select new move to start up (Idea: Start from one point and go to others)
-                ReturnEvent = CurrentEvent;
+                if ((CurrentEvent.EventParam == 1) || (CurrentEvent.EventParam == 2))
+                {
+                  //Stop driving motors
+                  StopDrive();
+                  // Execute action function for state one : event one
+                  NextState = Orienting2LandfillR;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_NO_EVENT;                              
+                  //Select new move to start up (Idea: Start from one point and go to others)
+                  ReturnEvent = CurrentEvent;
+                }
               } 
               break;
               

@@ -111,8 +111,9 @@ bool Check4TapeFollow(void)
     if (LeftCounter>= TAPE_THRESHOLD)
     {
       ThisEvent.EventType = EV_EQUATOR_DETECTED;
-      PostMasterSM(ThisEvent);
-      printf("Hit the equator from the left side \r\n");
+      //UNCOMMENTED FOR TESTING
+      //PostMasterSM(ThisEvent);
+      //printf("Hit the equator from the left side \r\n");
     }
   }
   else
@@ -124,9 +125,11 @@ bool Check4TapeFollow(void)
     RightCounter++;
     if (RightCounter>= TAPE_THRESHOLD)
     {
+      
       ThisEvent.EventType = EV_EQUATOR_DETECTED;
-      PostMasterSM(ThisEvent);
-      printf("Hit the equator from the right side \r\n");
+      //UNCOMMENTED FOR TESTING
+      //PostMasterSM(ThisEvent);
+      //printf("Hit the equator from the right side \r\n");
     }
   }
   else
@@ -139,8 +142,9 @@ bool Check4TapeFollow(void)
     if (MiddleCounter>= TAPE_THRESHOLD)
     {
       ThisEvent.EventType = EV_EQUATOR_DETECTED;
-      PostMasterSM(ThisEvent);
-      printf("Hit the equator from the middle side \r\n");
+      //UNCOMMENTED FOR TESTING
+      //PostMasterSM(ThisEvent);
+      //printf("Hit the equator from the middle side \r\n");
     }
   }
   else
