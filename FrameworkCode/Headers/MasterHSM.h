@@ -17,6 +17,7 @@
 #define NORTH_HALF  0
 #define SOUTH_HALF  1
 
+#define COLLISION_TIME 300 //300 ms before it reacts
 
 // State definitions for use with the query function
 typedef enum

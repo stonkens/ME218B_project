@@ -400,6 +400,7 @@ static ES_Event_t DuringCollectingGarbage( ES_Event_t Event)
     {
       //StartCollectingSM(Event); For Triangulation
       StartCollectingV2SM(Event);
+      SetBotDirection(BACKWARDS);
 
         // implement any entry actions required for this state machine
         
@@ -455,6 +456,7 @@ static ES_Event_t DuringRecycling( ES_Event_t Event)
     {
       Event.EventType = ES_ENTRY;
       StartRecyclingSM(Event);
+      SetBotDirection(FORWARDS);
         // implement any entry actions required for this state machine
         
 			
@@ -503,6 +505,7 @@ static ES_Event_t DuringLandfilling( ES_Event_t Event)
     {
       Event.EventType = ES_ENTRY;
       StartLandfillingSM(Event);
+      SetBotDirection(FORWARDS);
         // implement any entry actions required for this state machine
         
 			

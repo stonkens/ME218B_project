@@ -65,12 +65,14 @@
 #include "IRDetector.h"
 #include "IREmitter.h"
 #include "TapeFollowingService.h"
+#include "MasterHSM.h"
+#include "BallDumpingSM.h"
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
 // and any other local defines
 
 #define ENTRY_STATE Orienting2Recycle
-
+#define KISS_THRESHOLD
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
    functions, entry & exit functions.They should be functions relevant to the
@@ -78,14 +80,16 @@
 */
 static ES_Event_t DuringOrienting2Recycle( ES_Event_t Event);
 static ES_Event_t DuringDriving2Recycle(ES_Event_t Event);
-static ES_Event_t DuringApproachingRecycle( ES_Event_t Event);
 static ES_Event_t DuringPreparing4Recycle (ES_Event_t Event);
 static ES_Event_t DuringDumpingRecycle (ES_Event_t Event);
 static ES_Event_t DuringRecoveringFromRecycle (ES_Event_t Event);
+static ES_Event_t DuringOrienting2Landfill (ES_Event_t Event); 
+static ES_Event_t DuringDriving2Landfill (ES_Event_t Event);
+
 /*---------------------------- Module Variables ---------------------------*/
 // everybody needs a state variable, you may need others as well
 static RecyclingState_t CurrentState;
-
+static uint8_t NumberofKisses;
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
  Function
@@ -113,6 +117,83 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
 
    switch ( CurrentState )
    {
+     case Orienting2Landfill:
+     {
+       ReturnEvent = CurrentEvent = DuringOrienting2Landfill(CurrentEvent);
+       if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
+         {
+            switch (CurrentEvent.EventType)
+            {
+              case EV_ALIGNED2BEACON:
+              {
+                //Stop driving motors
+                StopDrive();
+                // Execute action function for state one : event one
+                NextState = Driving2Landfill;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Select new move to start up (Idea: Start from one point and go to others)
+                ReturnEvent.EventType = ES_NO_EVENT;
+              }
+              break;
+              
+              default:
+              {;
+              }
+            }
+          }
+                
+     }
+     break;
+      
+     case Driving2Landfill:
+     {
+       ReturnEvent = CurrentEvent = DuringDriving2Landfill(CurrentEvent);
+       if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
+         {
+            switch (CurrentEvent.EventType)
+            {
+              case EV_EQUATOR_DETECTED:
+              {
+                //Stop driving motors
+                StopDrive();
+                // Execute action function for state one : event one
+                NextState = Driving2Recycling;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Select new move to start up (Idea: Start from one point and go to others)
+                ReturnEvent.EventType = ES_NO_EVENT;
+              }
+              break;
+              
+              case EV_BUMPER_HIT:
+              {
+                //Stop driving motors
+                StopDrive();
+                // Execute action function for state one : event one
+                NextState = Orienting2Landfill;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_NO_EVENT;                              
+                //Select new move to start up (Idea: Start from one point and go to others)
+                ReturnEvent = CurrentEvent;
+              } 
+              break;
+              
+              default:
+              {;
+              }
+            }
+          }
+              
+     }
+     break;
+     
        case Orienting2Recycle :      
 			 {
          ReturnEvent = CurrentEvent = DuringOrienting2Recycle(CurrentEvent);
@@ -170,81 +251,67 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-              case EV_TAPE_DETECTED:
-              {
-                //Turn around to align with beacon
-                StopDrive();
-         
-                // Execute action function for state one : event one
-                NextState = ApproachingRecycle;//Decide what the next state will be
-                // for internal transitions, skip changing MakeTransition
-                MakeTransition = true; //mark that we are taking a transition
-                // if transitioning to a state with history change kind of entry
-                EntryEventKind.EventType = ES_ENTRY;
-                
-                //GamePlaySM does not need to be aware of this change
-                ReturnEvent.EventType = ES_NO_EVENT;
-              }
-              break; 
-              
-              case EV_COMPASS_RECYCLE_CHANGE:
-              {
-                StopDrive();
-                // Execute action function for state one : event one
-                NextState = Orienting2Recycle;//Decide what the next state will be
-                // for internal transitions, skip changing MakeTransition
-                MakeTransition = true; //mark that we are taking a transition
-                // if transitioning to a state with history change kind of entry
-                EntryEventKind.EventType = ES_ENTRY;                              
-                //Consuming event  
-                ReturnEvent.EventType = ES_NO_EVENT;
-                
-              }
-                
-              break;
                
-							 default:
-               {;
-							 }
-                // repeat cases as required for relevant events
-            }
-
-         }
-       
-      // repeat state pattern as required for other states
-		}
-		break;
-		
-		case ApproachingRecycle:
-		{
-         ReturnEvent = CurrentEvent = DuringApproachingRecycle(CurrentEvent);
-         //process any events
-         if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
-         {
-            switch (CurrentEvent.EventType)
-            {
-              case EV_BUMPER_HIT:
+              case EV_BUMPER_HIT: //This can either be a bot or the recycling center 
               {
                 if((CurrentEvent.EventParam == 1) || (CurrentEvent.EventParam == 2))
                 {
-                  StopDrive();
+                  ES_Timer_InitTimer(COLLISION_TIMER, COLLISION_TIME);
+                  ReturnEvent.EventType = ES_NO_EVENT;
+  
                   // Execute action function for state one : event one
                   NextState = Preparing4Recycle;//Decide what the next state will be
                   // for internal transitions, skip changing MakeTransition
                   MakeTransition = true; //mark that we are taking a transition
                   // if transitioning to a state with history change kind of entry
                   EntryEventKind.EventType = ES_ENTRY;                              
-                  //Consume event 
-                  ReturnEvent.EventType = ES_NO_EVENT;
+                  //Consuming event  
+                  ReturnEvent.EventType = ES_NO_EVENT; 
                 }
-                
               }
               break;
+              
+              
+              case ES_TIMEOUT:
+              {
+                if(CurrentEvent.EventParam == COLLISION_TIMER)
+                {
+                  NumberofKisses++;
+                  
+                  //It can't have been a bot
+                  if (NumberofKisses >= KISS_THRESHOLD)
+                  {
+                    NextState = DumpingRecycle;
+                    MakeTransition = true;
+                    ES_Event_t DumpEvent;
+                    DumpEvent.EventType = EV_DUMP_RECYCLE;
+                    PostBallDumpingSM(DumpEvent);
+                    
+                    EntryEventKind.EventType = ES_ENTRY;
+                    ReturnEvent.EventType = ES_NO_EVENT;
+                  }
+                  else //Still investigating whether it was a bot
+                  {
+                  
+                    NextState = Preparing4Recycle;
+                    
+                    
+                    // for internal transitions, skip changing MakeTransition
+                    MakeTransition = true; //mark that we are taking a transition
+                    // if transitioning to a state with history change kind of entry
+                    EntryEventKind.EventType = ES_ENTRY;                              
+                    //Consuming event  
+                    ReturnEvent.EventType = ES_NO_EVENT;  
+                  }                    
+                }
+              }
+              break;
+
               case EV_COMPASS_RECYCLE_CHANGE:
               {
                 
                 StopDrive();
-                
+                NumberofKisses = 0;
                 // Execute action function for state one : event one
                 NextState = Orienting2Recycle;//Decide what the next state will be
                 // for internal transitions, skip changing MakeTransition
@@ -258,27 +325,9 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
                 
               break;	
               
-              case ES_TIMEOUT:
-              {
-                if(CurrentEvent.EventParam == TAPE_TIMER)
-                {
-                  StopDrive();
-                  // Execute action function for state one : event one
-                  NextState = Orienting2Recycle;//Decide what the next state will be
-                  // for internal transitions, skip changing MakeTransition
-                  MakeTransition = true; //mark that we are taking a transition
-                  // if transitioning to a state with history change kind of entry
-                  EntryEventKind.EventType = ES_ENTRY;                              
-                  //Consuming event  
-                  ReturnEvent.EventType = ES_NO_EVENT;
-                  
-                }
-              }
-              break;
               
-                  
-							 default:
-							{;
+							default:
+              {;
 							}
                 // repeat cases as required for relevant events
             }
@@ -288,7 +337,7 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
       // repeat state pattern as required for other states
 		}
 		break;
-    
+		
 		case Preparing4Recycle:
 		{
          ReturnEvent = CurrentEvent = DuringPreparing4Recycle(CurrentEvent);
@@ -300,8 +349,9 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
               case EV_MOVE_COMPLETED:
               {
                 StopDrive();
+
                 // Execute action function for state one : event one
-                NextState = DumpingRecycle;//Decide what the next state will be
+                NextState = Driving2Recycle;//Decide what the next state will be
                 // for internal transitions, skip changing MakeTransition
                 MakeTransition = true; //mark that we are taking a transition
                 // if transitioning to a state with history change kind of entry
@@ -313,6 +363,7 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
               break;							 
               case EV_COMPASS_RECYCLE_CHANGE:
               {
+                NumberofKisses = 0;
                 StopDrive();
                 // Execute action function for state one : event one
                 NextState = Orienting2Recycle;//Decide what the next state will be
@@ -388,7 +439,6 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
               case EV_MOVE_COMPLETED:
               {
                 StopDrive();
-                //Close the Recycling Door: TO BE DONE
                 
                 //Process event at a higher level
                 ReturnEvent.EventType = EV_RECYCLING_DONE;
@@ -483,6 +533,116 @@ RecyclingState_t QueryRecyclingSM(void)
 /***************************************************************************
  private functions
  ***************************************************************************/
+static ES_Event_t DuringOrienting2Landfill (ES_Event_t Event)
+{
+    ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
+    
+    // process ES_ENTRY, ES_ENTRY_HISTORY & ES_EXIT events
+    if ( (Event.EventType == ES_ENTRY) ||
+         (Event.EventType == ES_ENTRY_HISTORY) )
+    {
+      // implement any entry actions required for this state machine
+      // Set frequency to detect for IR
+      // Set Posting possibility of IR to true
+      // Enable IR interrupts
+      // implement any entry actions required for this state machine
+      // Set frequency to detect for IR
+      // Set Posting possibility of IR to true
+      // Enable IR interrupts      
+      if(Align2North == true)
+      {
+        ActivateBeaconFinder(NORTH_LANDFILL_PERIOD);
+        
+      }
+      else //Align2North = false
+      {
+        ActivateBeaconFinder(SOUTH_LANDFILL_PERIOD);
+      }
+      //Next time we will align with the other beacon
+      Align2North != Align2North;
+      
+      IREnableInterrupt();
+
+      // Start rotating (360 degrees but can be interferred)
+      DriveRotate(LOCALIZATION_SPEED, 3600);			
+				
+      // after that start any lower level machines that run in this state
+      //StartLowerLevelSM( Event );
+      // repeat the StartxxxSM() functions for concurrent state machines
+      // on the lower level
+    }
+    else if ( Event.EventType == ES_EXIT )
+    {
+      IRDisableInterrupt();
+      //Stop Motors (should already be the case but to be sure)
+      StopDrive();
+        // on exit, give the lower levels a chance to clean up first
+        //RunLowerLevelSM(Event);
+        // repeat for any concurrently running state machines
+        // now do any local exit functionality
+			
+			// Stop turning DC Motors connected to pin PB6 & PB7
+			
+      
+    }else
+    // do the 'during' function for this state
+    {
+        // run any lower level state machine
+        // ReturnEvent = RunLowerLevelSM(Event);
+      
+        // repeat for any concurrent lower level machines
+      
+        // do any activity that is repeated as long as we are in this state
+		}
+    // return either Event, if you don't want to allow the lower level machine
+    // to remap the current event, or ReturnEvent if you do want to allow it.
+    return(ReturnEvent);
+}
+  
+
+static ES_Event_t DuringDriving2Landfill ( ES_Event_t Event)
+{
+    ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
+
+    // process ES_ENTRY, ES_ENTRY_HISTORY & ES_EXIT events
+    if ( (Event.EventType == ES_ENTRY) ||
+         (Event.EventType == ES_ENTRY_HISTORY) )
+    {
+      enableTapeFollow();
+        // implement any entry actions required for this state machine
+        //Basically drive and never stop until we hit a beacon
+        DriveStraight(STRAIGHT_SPEED, 14400);
+				
+        // after that start any lower level machines that run in this state
+        //StartLowerLevelSM( Event );
+        // repeat the StartxxxSM() functions for concurrent state machines
+        // on the lower level
+    }
+    else if ( Event.EventType == ES_EXIT )
+    {
+      StopDrive();
+      //Stop Motors
+      disableTapeFollow(); 
+        // on exit, give the lower levels a chance to clean up first
+        //RunLowerLevelSM(Event);
+        // repeat for any concurrently running state machines
+        // now do any local exit functionality
+			
+      
+    }else
+    // do the 'during' function for this state
+    {
+        // run any lower level state machine
+        // ReturnEvent = RunLowerLevelSM(Event);
+      
+        // repeat for any concurrent lower level machines
+      
+        // do any activity that is repeated as long as we are in this state
+    }
+    // return either Event, if you don't want to allow the lower level machine
+    // to remap the current event, or ReturnEvent if you do want to allow it.
+    return(ReturnEvent);  
+}
 
 static ES_Event_t DuringOrienting2Recycle( ES_Event_t Event)
 {
@@ -557,8 +717,9 @@ static ES_Event_t DuringDriving2Recycle( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
         // implement any entry actions required for this state machine
-        DriveStraight(STRAIGHT_SPEED, 10000);
-        enableTapeFollow();
+        DriveStraight(STRAIGHT_SPEED, 9600);
+        UpdateEmitterPeriod(GetAssignedPeriod());
+        EnableEmitterPWM();
       
 
 				
@@ -571,7 +732,6 @@ static ES_Event_t DuringDriving2Recycle( ES_Event_t Event)
     {
       StopDrive();
       //Stop Motors
-      disableTapeFollow(); 
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
@@ -581,55 +741,6 @@ static ES_Event_t DuringDriving2Recycle( ES_Event_t Event)
     }else
     // do the 'during' function for this state
     {
-        // run any lower level state machine
-        // ReturnEvent = RunLowerLevelSM(Event);
-      
-        // repeat for any concurrent lower level machines
-      
-        // do any activity that is repeated as long as we are in this state
-    }
-    // return either Event, if you don't want to allow the lower level machine
-    // to remap the current event, or ReturnEvent if you do want to allow it.
-    return(ReturnEvent);
-}
-
-static ES_Event_t DuringApproachingRecycle( ES_Event_t Event)
-{
-   ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
-
-    // process ES_ENTRY, ES_ENTRY_HISTORY & ES_EXIT events
-    if ( (Event.EventType == ES_ENTRY) ||
-         (Event.EventType == ES_ENTRY_HISTORY) )
-    {
-      // implement any entry actions required for this state machine
-      enableTapeFollow();
-      //Turn left if the right tape sensor is active: TO BE DONE
-			UpdateEmitterPeriod(GetAssignedPeriod());
-      EnableEmitterPWM();
-      Event.EventType = ES_ENTRY;
-      StartTapeFollowingSM(Event);        
-        // after that start any lower level machines that run in this state
-        //StartLowerLevelSM( Event );
-        // repeat the StartxxxSM() functions for concurrent state machines
-        // on the lower level
-    }
-    else if ( Event.EventType == ES_EXIT )
-    {
-      disableTapeFollow();
-      StopDrive();
-      RunTapeFollowingSM(Event);
-      //TO BE DONE: Stop TapeFollowingSM
-      
-        // on exit, give the lower levels a chance to clean up first
-        //RunLowerLevelSM(Event);
-        // repeat for any concurrently running state machines
-        // now do any local exit functionality
-			
-      
-    }else
-    // do the 'during' function for this state
-    {
-      ReturnEvent = RunTapeFollowingSM(Event);
         // run any lower level state machine
         // ReturnEvent = RunLowerLevelSM(Event);
       

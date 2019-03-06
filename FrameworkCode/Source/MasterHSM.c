@@ -59,7 +59,7 @@
 #include "driverlib/pin_map.h"
 #include "driverlib/gpio.h"
 /*----------------------------- Module Defines ----------------------------*/
-#define COLLISION_TIME 300 //300 ms before it reacts
+
 /*---------------------------- Module Functions ---------------------------*/
 static ES_Event_t DuringWaitingForStart( ES_Event_t Event);
 static ES_Event_t DuringGamePlay (ES_Event_t Event);
