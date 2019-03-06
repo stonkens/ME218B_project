@@ -367,10 +367,10 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
         
         if (CurrentRecyclingCenter != LastRecyclingCenter)
         {
-          printf("New recycling center: %d \n\r", CurrentRecyclingCenter); //PRINTF REMOVED
+          printf("New recycling center, not posting event: %d \n\r", CurrentRecyclingCenter); //PRINTF REMOVED
           //Set recycling center we orient to in the RecyclingSM
           CommunicationEvent.EventType = EV_COMPASS_RECYCLE_CHANGE;
-          PostMasterSM(CommunicationEvent);
+          //PostMasterSM(CommunicationEvent);
         }
         
         LastGameState = CurrentGameState;

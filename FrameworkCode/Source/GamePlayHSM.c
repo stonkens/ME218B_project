@@ -454,7 +454,6 @@ static ES_Event_t DuringRecycling( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
-      Event.EventType = ES_ENTRY;
       StartRecyclingSM(Event);
       SetBotDirection(FORWARDS);
         // implement any entry actions required for this state machine

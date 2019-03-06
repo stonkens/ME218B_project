@@ -112,8 +112,8 @@ bool Check4TapeFollow(void)
     {
       ThisEvent.EventType = EV_EQUATOR_DETECTED;
       //UNCOMMENTED FOR TESTING
-      //PostMasterSM(ThisEvent);
-      //printf("Hit the equator from the left side \r\n");
+      PostMasterSM(ThisEvent);
+      printf("Hit the equator from the left side \r\n");
     }
   }
   else
@@ -128,8 +128,8 @@ bool Check4TapeFollow(void)
       
       ThisEvent.EventType = EV_EQUATOR_DETECTED;
       //UNCOMMENTED FOR TESTING
-      //PostMasterSM(ThisEvent);
-      //printf("Hit the equator from the right side \r\n");
+      PostMasterSM(ThisEvent);
+      printf("Hit the equator from the right side \r\n");
     }
   }
   else
@@ -143,8 +143,8 @@ bool Check4TapeFollow(void)
     {
       ThisEvent.EventType = EV_EQUATOR_DETECTED;
       //UNCOMMENTED FOR TESTING
-      //PostMasterSM(ThisEvent);
-      //printf("Hit the equator from the middle side \r\n");
+      PostMasterSM(ThisEvent);
+      printf("Hit the equator from the middle side \r\n");
     }
   }
   else

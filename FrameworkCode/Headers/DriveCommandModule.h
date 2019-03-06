@@ -13,11 +13,11 @@
 #include "ES_Types.h"
 #include "ES_Configure.h"
 
-#define STRAIGHT_SPEED	        200/8 //Max drive speed
-#define TURNING_SPEED					  200/8 //Max rotation speed
-#define LOCALIZATION_SPEED		  100/4 //Rotation speed when detecting IR
-#define COLLISIONAVOID_SPEED    50/2
-#define APPROACH_SPEED          50/2  //Approaching dumping station speed
+#define STRAIGHT_SPEED	        5 //Max drive speed
+#define TURNING_SPEED					  10 //Max rotation speed
+#define LOCALIZATION_SPEED		  10 //Rotation speed when detecting IR
+#define COLLISIONAVOID_SPEED    10
+#define APPROACH_SPEED          10  //Approaching dumping station speed
 #define PREPARE4DUMP_SPEED      10
 
 #define COLLISIONAVOID_DISTANCE 1200

@@ -73,6 +73,7 @@
 
 #define ENTRY_STATE Orienting2LandfillR
 #define KISS_THRESHOLD 3
+#define COLLECTSTOP_TIME 2000
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
    functions, entry & exit functions.They should be functions relevant to the
@@ -127,6 +128,17 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
             {
               case EV_ALIGNED2BEACON:
               {
+                StopDrive();
+                IRDisableInterrupt();
+                ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIMER);
+                ReturnEvent.EventType = ES_NO_EVENT;
+              }
+              break;
+              
+              case ES_TIMEOUT:
+              {
+                if(CurrentEvent.EventParam == COLLECTSTOP_TIMER)
+                {
                 //Stop driving motors
                 StopDrive();
                 // Execute action function for state one : event one
@@ -137,6 +149,7 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
                 EntryEventKind.EventType = ES_ENTRY;                              
                 //Select new move to start up (Idea: Start from one point and go to others)
                 ReturnEvent.EventType = ES_NO_EVENT;
+                }
               }
               break;
               
@@ -158,18 +171,14 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
             {
               case EV_EQUATOR_DETECTED:
               {
-                //Stop driving motors
                 StopDrive();
-                // Execute action function for state one : event one
-                NextState = Driving2Recycle;//Decide what the next state will be
-                // for internal transitions, skip changing MakeTransition
-                MakeTransition = true; //mark that we are taking a transition
-                // if transitioning to a state with history change kind of entry
-                EntryEventKind.EventType = ES_ENTRY;                              
-                //Select new move to start up (Idea: Start from one point and go to others)
-                ReturnEvent.EventType = ES_NO_EVENT;
+                disableTapeFollow();
+                ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIME);
+                ReturnEvent.EventType = ES_NO_EVENT; 
               }
-              break;
+              break;              
+
+
               
               case EV_BUMPER_HIT:
               {
@@ -189,6 +198,22 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
               } 
               break;
               
+              case ES_TIMEOUT:
+              {
+                if(CurrentEvent.EventParam == COLLECTSTOP_TIMER)
+                {                  //Stop driving motors
+                  StopDrive();
+                  // Execute action function for state one : event one
+                  NextState = Driving2Recycle;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;                              
+                  //Select new move to start up (Idea: Start from one point and go to others)
+                  ReturnEvent.EventType = ES_NO_EVENT;
+                }
+              }
+              break;
               default:
               {;
               }
@@ -208,16 +233,26 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
             {
               case EV_ALIGNED2BEACON:
               {
-                //Stop driving motors
-                StopDrive();
-                // Execute action function for state one : event one
-                NextState = Driving2Recycle;//Decide what the next state will be
-                // for internal transitions, skip changing MakeTransition
-                MakeTransition = true; //mark that we are taking a transition
-                // if transitioning to a state with history change kind of entry
-                EntryEventKind.EventType = ES_ENTRY;                              
-                //Select new move to start up (Idea: Start from one point and go to others)
-                ReturnEvent.EventType = ES_NO_EVENT;
+                ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIME);
+                ReturnEvent.EventType = ES_NO_EVENT; 
+                IRDisableInterrupt();
+              }
+              break;
+              case ES_TIMEOUT:
+              {
+                if(CurrentEvent.EventParam == COLLECTSTOP_TIMER)
+                {
+                  //Stop driving motors
+                  StopDrive();
+                  // Execute action function for state one : event one
+                  NextState = Driving2Recycle;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;                              
+                  //Select new move to start up (Idea: Start from one point and go to others)
+                  ReturnEvent.EventType = ES_NO_EVENT;
+                }
               }
               break;
               
@@ -343,15 +378,26 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
               case EV_MOVE_COMPLETED:
               {
                 StopDrive();
+                ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIME);
+                ReturnEvent.EventType = ES_NO_EVENT; 
+              }
+              break;
+              
+              case ES_TIMEOUT:
+              {
+                if(CurrentEvent.EventParam == COLLECTSTOP_TIMER)
+                {
+                  StopDrive();
 
-                // Execute action function for state one : event one
-                NextState = Driving2Recycle;//Decide what the next state will be
-                // for internal transitions, skip changing MakeTransition
-                MakeTransition = true; //mark that we are taking a transition
-                // if transitioning to a state with history change kind of entry
-                EntryEventKind.EventType = ES_ENTRY;                              
-                //Consume event 
-                ReturnEvent.EventType = ES_NO_EVENT;
+                  // Execute action function for state one : event one
+                  NextState = Driving2Recycle;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;                              
+                  //Consume event 
+                  ReturnEvent.EventType = ES_NO_EVENT;
+                }
                 
               }
               break;							 
@@ -651,16 +697,20 @@ static ES_Event_t DuringOrienting2Recycle( ES_Event_t Event)
       // Set Posting possibility of IR to true
       // Enable IR interrupts
       
+      
       if(QueryWhichRecycle() == EAST_RECYCLE)
       {
-        ActivateBeaconFinder(EAST_RECYCLING_PERIOD);
+        //ActivateBeaconFinder(EAST_RECYCLING_PERIOD);
       }
       else
       {
-        ActivateBeaconFinder(WEST_RECYCLING_PERIOD);
+        //ActivateBeaconFinder(WEST_RECYCLING_PERIOD);
       }
+      ActivateBeaconFinder(EAST_RECYCLING_PERIOD);
       IREnableInterrupt();
-        
+      
+      //HARDCODING RECYCLING
+      
         
         
 
@@ -712,7 +762,9 @@ static ES_Event_t DuringDriving2Recycle( ES_Event_t Event)
     {
         // implement any entry actions required for this state machine
         DriveStraight(STRAIGHT_SPEED, 9600);
-        UpdateEmitterPeriod(GetAssignedPeriod());
+        //HARDCODING RECYCLING
+        //UpdateEmitterPeriod(GetAssignedPeriod());
+        UpdateEmitterPeriod(500);
         EnableEmitterPWM();
       
 
