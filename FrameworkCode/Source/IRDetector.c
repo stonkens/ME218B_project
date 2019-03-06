@@ -250,7 +250,7 @@ void IR_ISR(void){
           printf("1");
           SpecificBeaconCount++;
           
-          if(SpecificBeaconCount >= 15)
+          if(SpecificBeaconCount >= 40)
           {
             ES_Event_t BeaconEvent;
             BeaconEvent.EventType = EV_ALIGNED2BEACON;

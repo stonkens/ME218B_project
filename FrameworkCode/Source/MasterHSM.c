@@ -284,8 +284,15 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
                     // if transitioning to a state with history change kind of entry
                     EntryEventKind.EventType = ES_ENTRY;
                    */
-                   ES_Timer_InitTimer(COLLISION_TIMER, COLLISION_TIME);
-                   ReturnEvent.EventType = ES_NO_EVENT;
+                  StopDrive();
+                  //Currently testing a new strategy
+                  // Execute action function for state one : event one
+                  NextState = CollisionAvoidance;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;
+                  printf("Going to collision avoidance direct command\r\n");
                    //printf("Ready2Crash\r\n");
                  }
                  
@@ -294,23 +301,7 @@ ES_Event_t RunMasterSM( ES_Event_t CurrentEvent )
 						}
             break;
 
-            case ES_TIMEOUT:
-            {
-              if (CurrentEvent.EventParam == COLLISION_TIMER)
-              {
-                StopDrive();
-                //Currently testing a new strategy
-                // Execute action function for state one : event one
-                NextState = CollisionAvoidance;//Decide what the next state will be
-                // for internal transitions, skip changing MakeTransition
-                MakeTransition = true; //mark that we are taking a transition
-                // if transitioning to a state with history change kind of entry
-                EntryEventKind.EventType = ES_ENTRY;
-                printf("Going to collision avoidance direct command\r\n");
-              }
-              
-            }  
-            break;
+             
             
 						case EV_COMPASS_GAME_OVER:
 						{

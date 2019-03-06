@@ -13,7 +13,7 @@
 #include "ES_Types.h"
 #include "ES_Configure.h"
 
-#define STRAIGHT_SPEED	        5 //Max drive speed
+#define STRAIGHT_SPEED	        10 //Max drive speed
 #define TURNING_SPEED					  10 //Max rotation speed
 #define LOCALIZATION_SPEED		  10 //Rotation speed when detecting IR
 #define COLLISIONAVOID_SPEED    10

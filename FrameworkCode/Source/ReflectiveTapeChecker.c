@@ -41,8 +41,8 @@
 #include "ReflectiveTapeChecker.h"
 
 /*----------------------------- Module Defines ----------------------------*/
-#define EQUATOR_HIGH_THRESHOLD 200 
-#define EQUATOR_REPETITION_THRESHOLD 20 
+#define EQUATOR_HIGH_THRESHOLD 1000
+#define EQUATOR_REPETITION_THRESHOLD 15 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine.
 */
@@ -96,7 +96,7 @@ bool Check4Equator(void)
 		{
 			
 			EquatorCounter++;
-			//printf("%d \r\n", EnemyCounter);
+			//printf("%d \r\n", EquatorCounter);
 			if(EquatorCounter >= EQUATOR_REPETITION_THRESHOLD)
 			{
 				//Change EV_Bot_Detected to ES_Tape_detected
@@ -106,6 +106,7 @@ bool Check4Equator(void)
 				ThisEvent.EventParam = CurrentInputState;
 				PostMasterSM(ThisEvent);
 				ReturnVal = true;
+        
 			}
 		}
 		else

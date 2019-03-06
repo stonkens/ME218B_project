@@ -62,6 +62,7 @@
 #include "DriveCommandModule.h"
 #include "GamePlayHSM.h"
 #include "MasterHSM.h"
+#include "DriveMotorPWM.h"
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
 // and any other local defines
@@ -298,8 +299,11 @@ static ES_Event_t DuringMovingBackwards( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
+      StopDrive();
       //Determine which side of the bot got hit by querying the BumperService.c function
         // implement any entry actions required for this state machine
+      //PWMSetDutyCycle_1(20);
+      //PWMSetDutyCycle_2(20);
       if(QueryBotDirection()==FORWARDS)
       {
         DriveStraight(COLLISIONAVOID_SPEED, -COLLISIONAVOID_DISTANCE); 
@@ -313,6 +317,7 @@ static ES_Event_t DuringMovingBackwards( ES_Event_t Event)
 				// Based on which of the limit switches have been activated: Set distance to move and which direction
 			  // Likely a combination of moving and reorienting afterwards
 				
+     
     }
     else if ( Event.EventType == ES_EXIT )
     {
@@ -344,7 +349,14 @@ static ES_Event_t DuringQuarterTurn( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
-      DriveRotate(COLLISIONAVOID_SPEED, QUARTER_TURN); 
+      if (QueryBotDirection() == FORWARDS)
+      {
+        DriveRotate(COLLISIONAVOID_SPEED, QUARTER_TURN); 
+      }
+      else
+      {
+        DriveRotate(COLLISIONAVOID_SPEED, -QUARTER_TURN); //CHANGED FOR TEST
+      }
       //Determine which side of the bot got hit by querying the BumperService.c function
         // implement any entry actions required for this state machine
         
@@ -389,12 +401,12 @@ static ES_Event_t DuringMovingForward( ES_Event_t Event)
     {
       if(QueryBotDirection()==FORWARDS)
       {
-        DriveStraight(COLLISIONAVOID_SPEED, COLLISIONAVOID_DISTANCE); 
+        DriveStraight(COLLISIONAVOID_SPEED, 200 ); 
       }
       
       else //(QueryBotDirection()==BACKWARDS)
 			{
-        DriveStraight(COLLISIONAVOID_SPEED, -COLLISIONAVOID_DISTANCE);
+        DriveStraight(COLLISIONAVOID_SPEED, -200);
       }
       //Determine which side of the bot got hit by querying the BumperService.c function
         // implement any entry actions required for this state machine

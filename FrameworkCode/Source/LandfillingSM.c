@@ -344,6 +344,18 @@ ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent )
               }
               break;
               
+              case EV_BUMPER_HIT:
+              {
+                if((CurrentEvent.EventParam ==1) || (CurrentEvent.EventParam == 2))
+                {
+                  NextState = DumpingLandfill;
+                  MakeTransition = true;
+                  EntryEventKind.EventType = ES_ENTRY;
+                  ReturnEvent.EventType = ES_NO_EVENT;
+                }}
+                break;
+                
+              
               case ES_TIMEOUT:
               {
                 
@@ -606,12 +618,12 @@ static ES_Event_t DuringOrienting2Recycling( ES_Event_t Event)
         // Set frequency to detect for IR 
         // Set Posting possibility of IR to true
         // Enable IR interrupts
-        ActivateBeaconFinder(WEST_RECYCLING_PERIOD);
+        ActivateBeaconFinder(EAST_RECYCLING_PERIOD);
               
       }        
       else
       {
-        ActivateBeaconFinder(EAST_RECYCLING_PERIOD);
+        ActivateBeaconFinder(WEST_RECYCLING_PERIOD);
       }
 
       IREnableInterrupt();

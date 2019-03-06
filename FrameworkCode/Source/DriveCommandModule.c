@@ -55,7 +55,7 @@
 #define ROTATION_RADIUS 5.12 //In inches (IF RECALIBRATED UPDATED BELOW)
 
 #define TICKS_PER_INCHx10	606.38/4 //TO BE RECALIBRATED
-#define TICKS_PER_DEGREEx100	680/4//720/4//Somewhere between 700 and 740 (approx)
+#define TICKS_PER_DEGREEx100	566/4//720/4//Somewhere between 700 and 740 (approx)
 //541.87/4 //TO BE RECALIBRATED
 
 /*---------------------------- Module Functions ---------------------------*/

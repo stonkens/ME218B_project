@@ -13,7 +13,7 @@
 
 // typedefs for the states
 // State definitions for use with the query function
-typedef enum { Orienting2LandfillR, Driving2LandfillR, Orienting2Recycle, Driving2Recycle, ApproachingRecycle, Preparing4Recycle, DumpingRecycle, RecoveringFromRecycle } RecyclingState_t ;
+typedef enum { Orienting2LandfillR, Driving2LandfillR, MovingBodyRotation, Orienting2Recycle, Driving2Recycle, ApproachingRecycle, Preparing4Recycle, DumpingRecycle, RecoveringFromRecycle } RecyclingState_t ;
 
 
 // Public Function Prototypes
@@ -21,6 +21,7 @@ typedef enum { Orienting2LandfillR, Driving2LandfillR, Orienting2Recycle, Drivin
 ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent );
 void StartRecyclingSM ( ES_Event_t CurrentEvent );
 RecyclingState_t QueryRecyclingSM ( void );
+void SetRecycleCenter(uint8_t RecycleCenter);
 
 #endif /*RecyclingSM_H */
 

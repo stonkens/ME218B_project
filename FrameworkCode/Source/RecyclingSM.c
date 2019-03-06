@@ -73,7 +73,7 @@
 
 #define ENTRY_STATE Orienting2LandfillR
 #define KISS_THRESHOLD 3
-#define COLLECTSTOP_TIME 2000
+#define COLLECTSTOP_TIME 1000
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
    functions, entry & exit functions.They should be functions relevant to the
@@ -86,12 +86,16 @@ static ES_Event_t DuringDumpingRecycle (ES_Event_t Event);
 static ES_Event_t DuringRecoveringFromRecycle (ES_Event_t Event);
 static ES_Event_t DuringOrienting2Landfill (ES_Event_t Event); 
 static ES_Event_t DuringDriving2Landfill (ES_Event_t Event);
+static ES_Event_t DuringMovingBodyRotation ( ES_Event_t Event);
 
 /*---------------------------- Module Variables ---------------------------*/
 // everybody needs a state variable, you may need others as well
 static RecyclingState_t CurrentState;
 static uint8_t NumberofKisses;
 static bool Align2North;
+static uint16_t OurRecyclePeriod;
+static uint16_t OppRecyclePeriod;
+
 /*------------------------------ Module Code ------------------------------*/
 /****************************************************************************
  Function
@@ -153,6 +157,19 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
               }
               break;
               
+              case EV_MOVE_COMPLETED: //Couldn't find the beacon
+              {
+                NextState = CurrentState;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Select new move to start up (Idea: Start from one point and go to others)
+                ReturnEvent.EventType = ES_NO_EVENT;
+              }
+              break;
+                
+              
               default:
               {;
               }
@@ -174,8 +191,14 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
                 StopDrive();
                 //disableTapeFollow();
                 disableEquatorDetection();
-                ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIME);
-                ReturnEvent.EventType = ES_NO_EVENT; 
+                // Execute action function for state one : event one
+                NextState = MovingBodyRotation;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Select new move to start up (Idea: Start from one point and go to others)
+                ReturnEvent.EventType = ES_NO_EVENT;
               }
               break;              
 
@@ -199,22 +222,6 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
               } 
               break;
               
-              case ES_TIMEOUT:
-              {
-                if(CurrentEvent.EventParam == COLLECTSTOP_TIMER)
-                {                  //Stop driving motors
-                  StopDrive();
-                  // Execute action function for state one : event one
-                  NextState = Driving2Recycle;//Decide what the next state will be
-                  // for internal transitions, skip changing MakeTransition
-                  MakeTransition = true; //mark that we are taking a transition
-                  // if transitioning to a state with history change kind of entry
-                  EntryEventKind.EventType = ES_ENTRY;                              
-                  //Select new move to start up (Idea: Start from one point and go to others)
-                  ReturnEvent.EventType = ES_NO_EVENT;
-                }
-              }
-              break;
               default:
               {;
               }
@@ -223,6 +230,34 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
               
      }
      break;
+     
+     
+      case MovingBodyRotation:
+      {
+          ReturnEvent = CurrentEvent = DuringOrienting2Recycle(CurrentEvent);
+         //process any events
+         if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
+         {
+            switch (CurrentEvent.EventType)
+            { 
+              case EV_MOVE_COMPLETED: //Couldn't find the beacon
+              {
+                NextState = Orienting2Recycle;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Select new move to start up (Idea: Start from one point and go to others)
+                ReturnEvent.EventType = ES_NO_EVENT; 
+              }
+              break;
+              default
+              {;}
+            }
+          }
+      }
+      break;
+              
      
        case Orienting2Recycle :      
 			 {
@@ -234,15 +269,8 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
             {
               case EV_ALIGNED2BEACON:
               {
-                ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIME);
-                ReturnEvent.EventType = ES_NO_EVENT; 
+
                 IRDisableInterrupt();
-              }
-              break;
-              case ES_TIMEOUT:
-              {
-                if(CurrentEvent.EventParam == COLLECTSTOP_TIMER)
-                {
                   //Stop driving motors
                   StopDrive();
                   // Execute action function for state one : event one
@@ -253,7 +281,7 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
                   EntryEventKind.EventType = ES_ENTRY;                              
                   //Select new move to start up (Idea: Start from one point and go to others)
                   ReturnEvent.EventType = ES_NO_EVENT;
-                }
+                
               }
               break;
               
@@ -270,7 +298,19 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
                 ReturnEvent.EventType = ES_NO_EVENT;
                 
               }
-             	break; 
+             	break;
+              
+              case EV_MOVE_COMPLETED: //Couldn't find the beacon
+              {
+                NextState = CurrentState;//Decide what the next state will be
+                // for internal transitions, skip changing MakeTransition
+                MakeTransition = true; //mark that we are taking a transition
+                // if transitioning to a state with history change kind of entry
+                EntryEventKind.EventType = ES_ENTRY;                              
+                //Select new move to start up (Idea: Start from one point and go to others)
+                ReturnEvent.EventType = ES_NO_EVENT;
+              }
+              break;
 							 default:
 							 {;
 							 }
@@ -291,6 +331,20 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
+              
+              case EV_MOVE_COMPLETED:
+              {
+                    NextState = Orienting2Recycle;
+                    
+                    
+                    // for internal transitions, skip changing MakeTransition
+                    MakeTransition = true; //mark that we are taking a transition
+                    // if transitioning to a state with history change kind of entry
+                    EntryEventKind.EventType = ES_ENTRY;                              
+                    //Consuming event  
+                    ReturnEvent.EventType = ES_NO_EVENT;                 
+              }
+              break;
                
               case EV_BUMPER_HIT: //This can either be a bot or the recycling center 
               {
@@ -592,20 +646,22 @@ static ES_Event_t DuringOrienting2Landfill (ES_Event_t Event)
       // Enable IR interrupts      
       if(Align2North == true)
       {
+        printf("Trying to find North beacon \r\n");
         ActivateBeaconFinder(NORTH_LANDFILL_PERIOD);
         
       }
       else //Align2North = false
       {
+        printf("Trying to find South beacon \r\n");
         ActivateBeaconFinder(SOUTH_LANDFILL_PERIOD);
       }
       //Next time we will align with the other beacon
       Align2North = ! Align2North;
       
       IREnableInterrupt();
-
+      
       // Start rotating (360 degrees but can be interferred)
-      DriveRotate(LOCALIZATION_SPEED, 3600);			
+      DriveRotate(LOCALIZATION_SPEED, -3600);			
 				
       // after that start any lower level machines that run in this state
       //StartLowerLevelSM( Event );
@@ -684,6 +740,49 @@ static ES_Event_t DuringDriving2Landfill ( ES_Event_t Event)
     // to remap the current event, or ReturnEvent if you do want to allow it.
     return(ReturnEvent);  
 }
+static ES_Event_t DuringMovingBodyRotation ( ES_Event_t Event)
+{
+    ES_Event_t ReturnEvent = Event; // assume no re-mapping or consumption
+
+    // process ES_ENTRY, ES_ENTRY_HISTORY & ES_EXIT events
+    if ( (Event.EventType == ES_ENTRY) ||
+         (Event.EventType == ES_ENTRY_HISTORY) )
+    {
+        
+      // Start rotating (360 degrees but can be interferred)
+      DriveStraight(STRAIGHT_SPEED, 800); //8 inches: KRISTINE TO MODIFY	
+				
+      // after that start any lower level machines that run in this state
+      //StartLowerLevelSM( Event );
+      // repeat the StartxxxSM() functions for concurrent state machines
+      // on the lower level
+    }
+    else if ( Event.EventType == ES_EXIT )
+    {
+      //Stop Motors (should already be the case but to be sure)
+      StopDrive();
+        // on exit, give the lower levels a chance to clean up first
+        //RunLowerLevelSM(Event);
+        // repeat for any concurrently running state machines
+        // now do any local exit functionality
+			
+			// Stop turning DC Motors connected to pin PB6 & PB7
+			
+      
+    }else
+    // do the 'during' function for this state
+    {
+        // run any lower level state machine
+        // ReturnEvent = RunLowerLevelSM(Event);
+      
+        // repeat for any concurrent lower level machines
+      
+        // do any activity that is repeated as long as we are in this state
+		}
+    // return either Event, if you don't want to allow the lower level machine
+    // to remap the current event, or ReturnEvent if you do want to allow it.
+    return(ReturnEvent);
+}  
 
 static ES_Event_t DuringOrienting2Recycle( ES_Event_t Event)
 {
@@ -699,7 +798,7 @@ static ES_Event_t DuringOrienting2Recycle( ES_Event_t Event)
       // Enable IR interrupts
       
       
-      if(QueryWhichRecycle() == EAST_RECYCLE)
+      /*if(OurRecyclePeriod == EAST_RECYCLE)
       {
         ActivateBeaconFinder(EAST_RECYCLING_PERIOD);
       }
@@ -709,9 +808,17 @@ static ES_Event_t DuringOrienting2Recycle( ES_Event_t Event)
       }
       //ActivateBeaconFinder(EAST_RECYCLING_PERIOD);
       IREnableInterrupt();
-      
+      */
       //HARDCODING RECYCLING
-      
+      if(QueryTeam() == TEAM_NORTH)
+      {
+        ActivateBeaconFinder(EAST_RECYCLING_PERIOD);
+      }
+      else
+      {
+        ActivateBeaconFinder(WEST_RECYCLING_PERIOD);
+      }
+      IREnableInterrupt();
         
         
 
@@ -762,18 +869,10 @@ static ES_Event_t DuringDriving2Recycle( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
         // implement any entry actions required for this state machine
-        DriveStraight(STRAIGHT_SPEED, 9600);
+        DriveStraight(STRAIGHT_SPEED, 1200);
         //HARDCODING RECYCLING
         //UpdateEmitterPeriod(GetAssignedPeriod());
-        if (QueryTeam() == TEAM_NORTH)
-        { 
-          UpdateEmitterPeriod(600);
-        }
-        else
-        {
-          UpdateEmitterPeriod(500);
-        }
-        EnableEmitterPWM();
+
       
 
 				
@@ -932,4 +1031,18 @@ static ES_Event_t DuringRecoveringFromRecycle( ES_Event_t Event)
     // return either Event, if you don't want to allow the lower level machine
     // to remap the current event, or ReturnEvent if you do want to allow it.
     return(ReturnEvent);
+}
+
+void SetRecycleCenter(uint8_t RecycleCenter)
+{
+  if (RecycleCenter == EAST_RECYCLE)
+  {
+    OurRecyclePeriod = EAST_RECYCLE_FREQUENCY;
+    OppRecyclePeriod = WEST_RECYCLE_FREQUENCY;
+  }
+  else
+  {
+    OurRecyclePeriod = WEST_RECYCLE_FREQUENCY;
+    OppRecyclePeriod = EAST_RECYCLE_FREQUENCY;
+  }
 }

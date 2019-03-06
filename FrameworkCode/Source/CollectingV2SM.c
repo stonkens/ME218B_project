@@ -61,6 +61,7 @@
 #include "DriveCommandModule.h"
 
 #include "IRDetector.h"
+#include "IREmitter.h"
 #include "GamePlayHSM.h"
 #include "MasterHSM.h"
 #include "TapeFollowingChecker.h"
@@ -73,7 +74,7 @@
 #define ENTRY_STATE StraightDrive
 #define IR_FIRST_DELAY 100
 
-#define COLLECTSTOP_TIME 3000
+#define COLLECTSTOP_TIME 1500
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine, things like during
    functions, entry & exit functions.They should be functions relevant to the
@@ -581,7 +582,7 @@ static ES_Event_t DuringStraightDrive( ES_Event_t Event)
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
 
-      DriveStraight(STRAIGHT_SPEED,-8000); 
+      DriveStraight(STRAIGHT_SPEED,-6000); 
       //Start any lower level machines that run in this state
 
         
@@ -619,7 +620,7 @@ static ES_Event_t DuringTurnDrive(ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
-      DriveRotate(TURNING_SPEED, 900); 
+      DriveRotate(TURNING_SPEED, -900); 
           
         
 			

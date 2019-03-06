@@ -352,7 +352,7 @@ typedef enum
 #define TIMER8_RESP_FUNC PostBallDumpingSM
 #define TIMER9_RESP_FUNC PostLEDService 
 #define TIMER10_RESP_FUNC PostColorService
-#define TIMER11_RESP_FUNC TIMER_UNUSED
+#define TIMER11_RESP_FUNC PostMasterSM
 #define TIMER12_RESP_FUNC PostMasterSM
 #define TIMER13_RESP_FUNC PostMasterSM
 #define TIMER14_RESP_FUNC PostMasterSM
@@ -376,6 +376,7 @@ typedef enum
 #define DUMP_TIMER 8 
 #define LED_TIMER 9 
 #define NO_COLOR_TIMER 10
+#define RECYCLE_LOCALIZER 11
 #define TAPE_TIMER 12
 #define LOCALIZE_TIMER 13
 #define BALL_COLLECTION_TIMER 14

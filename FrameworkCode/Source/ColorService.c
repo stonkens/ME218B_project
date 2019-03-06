@@ -50,7 +50,7 @@
 // This module
 #include "ColorService.h"
 #include "BallProcessingSM.h"
-
+#include "SPISM.h"
 /*----------------------------- Module Defines ----------------------------*/
 // these times assume a 1.000mS/tick timing
 #define FIVE_MS 5
@@ -64,13 +64,7 @@
 #define TOLERANCE 4
 #define RED_ORANGE_TOLERANCE 1
 /*------------------------------ Event params for different colors ---------------------------------*/
-#define ANY_BALL 0
-#define RED 1 
-#define ORANGE 2
-#define YELLOW 3 
-#define GREEN 4
-#define BLUE 5
-#define PINK 6 
+
 /*------------------------------ Red ---------------------------------*/
 //R = 60 -- 47
 //B = 17 -- 21
@@ -322,7 +316,6 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
       if((ThisEvent.EventType == ES_TIMEOUT) && 
         (ThisEvent.EventParam == COLOR_SENSE_TIMER))
       {
-        ES_Timer_InitTimer(NO_COLOR_TIMER, 400);
       //query RBG values 
       uint16_t CurrentClearValue;
       uint16_t CurrentRedValue;
@@ -352,9 +345,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           printf("RED\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
-      }
-      //Orange
-      if ((ORANGE_R_LOWER_THRES <= CurrentRedPercentage && CurrentRedPercentage <= ORANGE_R_UPPER_THRES) 
+      }else if ((ORANGE_R_LOWER_THRES <= CurrentRedPercentage && CurrentRedPercentage <= ORANGE_R_UPPER_THRES) //orange 
         && (ORANGE_G_LOWER_THRES <=  CurrentGreenPercentage && CurrentGreenPercentage <= ORANGE_G_UPPER_THRES)
       && (ORANGE_B_LOWER_THRES <=  CurrentBluePercentage && CurrentBluePercentage <= ORANGE_B_UPPER_THRES))
       {
@@ -364,9 +355,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           printf("ORANGE\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing;
-      } 
-      //Yellow
-       if (YELLOW_R_LOWER_THRES <= CurrentRedPercentage && CurrentRedPercentage <= YELLOW_R_UPPER_THRES 
+      } else if (YELLOW_R_LOWER_THRES <= CurrentRedPercentage && CurrentRedPercentage <= YELLOW_R_UPPER_THRES //yellow 
         && YELLOW_G_LOWER_THRES <=  CurrentGreenPercentage && CurrentGreenPercentage <= YELLOW_G_UPPER_THRES
       && YELLOW_B_LOWER_THRES <=  CurrentBluePercentage && CurrentBluePercentage <= YELLOW_B_UPPER_THRES)
       {
@@ -376,10 +365,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           printf("YELLOW\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
-      }
-      
-      //Green 
-       if (GREEN_R_LOWER_THRES <= CurrentRedPercentage && CurrentRedPercentage <= GREEN_R_UPPER_THRES 
+      }else if (GREEN_R_LOWER_THRES <= CurrentRedPercentage && CurrentRedPercentage <= GREEN_R_UPPER_THRES //green 
         && GREEN_G_LOWER_THRES <=  CurrentGreenPercentage && CurrentGreenPercentage <= GREEN_G_UPPER_THRES
       && GREEN_B_LOWER_THRES <=  CurrentBluePercentage && CurrentBluePercentage <= GREEN_B_UPPER_THRES)
       {
@@ -389,10 +375,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           printf("GREEN\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
-      }
-      
-      //Blue 
-        if (BLUE_R_LOWER_THRES <= CurrentRedPercentage && CurrentRedPercentage <= BLUE_R_UPPER_THRES 
+      }else if (BLUE_R_LOWER_THRES <= CurrentRedPercentage && CurrentRedPercentage <= BLUE_R_UPPER_THRES //blue
         && BLUE_G_LOWER_THRES <=  CurrentGreenPercentage && CurrentGreenPercentage <= BLUE_G_UPPER_THRES
       && BLUE_B_LOWER_THRES <=  CurrentBluePercentage && CurrentBluePercentage <= BLUE_B_UPPER_THRES)
       {
@@ -402,9 +385,7 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           printf("BLUE\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
-      }
-      //Pink 
-        if (PINK_R_LOWER_THRES <= CurrentRedPercentage && CurrentRedPercentage <= PINK_R_UPPER_THRES 
+      }else if (PINK_R_LOWER_THRES <= CurrentRedPercentage && CurrentRedPercentage <= PINK_R_UPPER_THRES //pink
         && PINK_G_LOWER_THRES <=  CurrentGreenPercentage && CurrentGreenPercentage <= PINK_G_UPPER_THRES
       && PINK_B_LOWER_THRES <=  CurrentBluePercentage && CurrentBluePercentage <= PINK_B_UPPER_THRES)
       {
@@ -414,19 +395,25 @@ ES_Event_t RunColorService(ES_Event_t ThisEvent)
           printf("PINK\r\n");
           ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
           CurrentState = Depositing; 
-      }
-      
-    }
-      if ((ThisEvent.EventType == ES_TIMEOUT) && (ThisEvent.EventParam == NO_COLOR_TIMER))
-      {
-        ThisEvent.EventType = EV_BALL_DETECTED;
+      }else{
+        //        ThisEvent.EventType = EV_BALL_DETECTED;
         printf("Couldnt figure out the color\r\n");
         ThisEvent.EventParam = ANY_BALL;
         PostBallProcessingSM(ThisEvent);
         ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
         CurrentState = Depositing;
-      }        
+      }
+//      if ((ThisEvent.EventType == ES_TIMEOUT) && (ThisEvent.EventParam == NO_COLOR_TIMER))
+//      {
+//        ThisEvent.EventType = EV_BALL_DETECTED;
+//        printf("Couldnt figure out the color\r\n");
+//        ThisEvent.EventParam = ANY_BALL;
+//        PostBallProcessingSM(ThisEvent);
+//        ES_Timer_InitTimer(COLOR_SENSE_TIMER,(FIVE_MS));
+//        CurrentState = Depositing;
+//      }        
   }
+}
       break; 
       
     case Depositing:

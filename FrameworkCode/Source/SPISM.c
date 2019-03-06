@@ -41,7 +41,7 @@
 
 #include "MotorService.h"
 #include "MasterHSM.h"
-
+#include "RecyclingSM.h"
 /*----------------------------- Module Defines ----------------------------*/
 #define SSI_PRESCALE 0x00000014
 #define SCR_VALUE    0x0000C800
@@ -345,10 +345,14 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
 				if (EastRecycleColor == AssignedColor)
         {
           CurrentRecyclingCenter = EAST_RECYCLE;
+          //printf("Our recycling center is EAST\r\n");
+          SetRecycleCenter(EAST_RECYCLE);
         }
         else
         {
           CurrentRecyclingCenter = WEST_RECYCLE;
+          //printf("Our recycling center is WEST\r\n");
+          SetRecycleCenter(WEST_RECYCLE);
         }
 				if ((CurrentGameState == RECYCLING) && 
           (LastGameState == WAITING_FOR_START))

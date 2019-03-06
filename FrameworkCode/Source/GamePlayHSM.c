@@ -68,8 +68,10 @@
 #include "DriveCommandModule.h"
 
 #include "HarvesterService.h"
+#include "MasterHSM.h"
 
 #include "IREmitter.h"
+#include "IRDetector.h"
 /*----------------------------- Module Defines ----------------------------*/
 // define constants for the states for this machine
 // and any other local defines
@@ -420,7 +422,7 @@ static ES_Event_t DuringCollectingGarbage( ES_Event_t Event)
       //RunCollectingSM(Event); For triangulation
       RunCollectingV2SM(Event);
       StopDrive();
-      SetBotDirection(FORWARDS);
+      //SetBotDirection(FORWARDS);
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
@@ -456,6 +458,15 @@ static ES_Event_t DuringRecycling( ES_Event_t Event)
     {
       StartRecyclingSM(Event);
       SetBotDirection(FORWARDS);
+      if(QueryTeam() == TEAM_NORTH)
+      {
+        UpdateEmitterPeriod(EAST_RECYCLING_PERIOD_EMITTER);
+      }
+      else
+      {
+        UpdateEmitterPeriod(WEST_RECYCLING_PERIOD_EMITTER);
+      }
+        EnableEmitterPWM();
         // implement any entry actions required for this state machine
         
 			

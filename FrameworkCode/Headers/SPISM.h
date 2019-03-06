@@ -24,6 +24,7 @@
 #define GREEN             0x03
 #define BLUE              0x04
 #define PINK              0x05
+#define ANY_BALL          0x06
 
 #define EAST_RECYCLE 2
 #define WEST_RECYCLE 3

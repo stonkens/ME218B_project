@@ -453,6 +453,11 @@
               <FilePath>.\Source\CollisionAvoidanceHSM.c</FilePath>
             </File>
             <File>
+              <FileName>BallDumpingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\BallDumpingSM.c</FilePath>
+            </File>
+            <File>
               <FileName>GamePlayHSM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\GamePlayHSM.c</FilePath>
@@ -481,11 +486,6 @@
               <FileName>GP_Display.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\GP_Display.c</FilePath>
-            </File>
-            <File>
-              <FileName>BallDumpingSM.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\BallDumpingSM.c</FilePath>
             </File>
             <File>
               <FileName>BallProcessingSM.c</FileName>
@@ -1435,6 +1435,11 @@
               <FilePath>.\Source\CollisionAvoidanceHSM.c</FilePath>
             </File>
             <File>
+              <FileName>BallDumpingSM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\BallDumpingSM.c</FilePath>
+            </File>
+            <File>
               <FileName>GamePlayHSM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\GamePlayHSM.c</FilePath>
@@ -1463,11 +1468,6 @@
               <FileName>GP_Display.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\GP_Display.c</FilePath>
-            </File>
-            <File>
-              <FileName>BallDumpingSM.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\BallDumpingSM.c</FilePath>
             </File>
             <File>
               <FileName>BallProcessingSM.c</FileName>

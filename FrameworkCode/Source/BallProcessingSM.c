@@ -46,19 +46,13 @@
 #include "BallProcessingSM.h"
 #include "ColorService.h"
 #include "hw_pwm.h"
-
+#include "SPISM.h"
 #include "MasterHSM.h"
 
 
 /*----------------------------- Module Defines ----------------------------*/
 //#define TEST
-#define ANY_BALL 0
-#define RED 1 
-#define ORANGE 2
-#define YELLOW 3 
-#define GREEN 4
-#define BLUE 5
-#define PINK 6 
+
 #define DUMP_TIME 5000 //5s
 #define SORT_TIME 3000 //3s 
 #define PROCESSING_TIME 400 //200ms //UPDATE UPON KRISTINE REQUEST
@@ -115,7 +109,7 @@ bool InitBallProcessingSM(uint8_t Priority)
   
 
   // FOR TESTING PURPOSES 
-  RecycleColor = 1; //RED
+  //RecycleColor = 1; //RED
   
   
   if (ES_PostToService(MyPriority, ThisEvent) == true)
