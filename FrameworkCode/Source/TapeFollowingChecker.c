@@ -54,6 +54,7 @@
 #define MidTapeLO  BIT7LO
 #define MidTapePort HWREG(GPIO_PORTB_BASE + (GPIO_O_DATA + ALL_BITS)) //also change intialization 
 
+#define TAPE_THRESHOLD 20 //20 times before it detects it
 
 /*----------------------------- Module Defines ----------------------------*/
 
@@ -62,12 +63,13 @@
 */
 
 /*---------------------------- Module Variables ---------------------------*/
-static uint8_t LastTapeFollowLeft;
-static uint8_t LastTapeFollowRight; 
-static uint8_t LastTapeFollowMid;
+
 
 //For test
 static bool enableFlag = true;
+static uint8_t LeftCounter;
+static uint8_t RightCounter;
+static uint8_t MiddleCounter;
 //Test end 
 /*------------------------------ Module Code ------------------------------*/
 
@@ -103,8 +105,50 @@ bool Check4TapeFollow(void)
   CurrentTapeFollowLeft = (HWREG(GPIO_PORTE_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT1HI); //PE1
   CurrentTapeFollowRight = (HWREG(GPIO_PORTE_BASE + (GPIO_O_DATA + ALL_BITS)) & BIT2HI); //PE2
   CurrentTapeFollowMid = (MidTapePort & MidTapeHI);
-    
-  if (CurrentTapeFollowLeft != LastTapeFollowLeft)
+  if ((CurrentTapeFollowLeft | BIT1LO) == BIT1LO)
+  {
+    LeftCounter++;
+    if (LeftCounter>= TAPE_THRESHOLD)
+    {
+      ThisEvent.EventType = EV_EQUATOR_DETECTED;
+      PostMasterSM(ThisEvent);
+      printf("Hit the equator from the left side \r\n");
+    }
+  }
+  else
+  {
+    LeftCounter = 0;
+  }
+  if ((CurrentTapeFollowRight | BIT2LO) == BIT2LO)
+  {
+    RightCounter++;
+    if (RightCounter>= TAPE_THRESHOLD)
+    {
+      ThisEvent.EventType = EV_EQUATOR_DETECTED;
+      PostMasterSM(ThisEvent);
+      printf("Hit the equator from the right side \r\n");
+    }
+  }
+  else
+  {
+    RightCounter = 0;
+  }
+  if ((CurrentTapeFollowMid | MidTapeLO) == MidTapeLO)
+  {
+    MiddleCounter++;
+    if (MiddleCounter>= TAPE_THRESHOLD)
+    {
+      ThisEvent.EventType = EV_EQUATOR_DETECTED;
+      PostMasterSM(ThisEvent);
+      printf("Hit the equator from the middle side \r\n");
+    }
+  }
+  else
+  { 
+    MiddleCounter = 0;
+  }
+  
+ /* if (CurrentTapeFollowLeft != LastTapeFollowLeft)
   {
     ReturnVal = true;
     if ((CurrentTapeFollowLeft | BIT1LO) == BIT1LO) //signal is low when on the tape 
@@ -166,8 +210,11 @@ bool Check4TapeFollow(void)
   LastTapeFollowRight = CurrentTapeFollowRight; 
   LastTapeFollowMid = CurrentTapeFollowMid;
   }
+  */
+}
   return ReturnVal; 
 }
+
 
 void enableTapeFollow(void){
   enableFlag = true; 

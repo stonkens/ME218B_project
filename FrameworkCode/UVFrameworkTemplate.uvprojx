@@ -553,11 +553,6 @@
               <FilePath>.\Source\ADMulti.c</FilePath>
             </File>
             <File>
-              <FileName>TapeFollowingService.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\TapeFollowingService.c</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\SPISM.c</FilePath>
@@ -811,11 +806,6 @@
               <FileName>ColorService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\ColorService.h</FilePath>
-            </File>
-            <File>
-              <FileName>TapeFollowingService.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TapeFollowingService.h</FilePath>
             </File>
             <File>
               <FileName>SPISM.h</FileName>
@@ -1566,11 +1556,6 @@
               <FilePath>.\Source\ADMulti.c</FilePath>
             </File>
             <File>
-              <FileName>TapeFollowingService.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\TapeFollowingService.c</FilePath>
-            </File>
-            <File>
               <FileName>SPISM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\SPISM.c</FilePath>
@@ -1824,11 +1809,6 @@
               <FileName>ColorService.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\ColorService.h</FilePath>
-            </File>
-            <File>
-              <FileName>TapeFollowingService.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TapeFollowingService.h</FilePath>
             </File>
             <File>
               <FileName>SPISM.h</FileName>

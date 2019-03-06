@@ -193,12 +193,6 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
               ThisEvent.EventType = EV_MOVE_COMPLETED;
             }
             break;
-            case 'T' :
-            {
-              ThisEvent.EventType = EV_TAPE_DETECTED;
-              ThisEvent.EventParam = 1;
-            }
-            break;
             case 'Z':
             {
               ThisEvent.EventType = EV_ALIGNED2BEACON;
@@ -229,72 +223,12 @@ ES_Event_t RunKeyMapperService( ES_Event_t ThisEvent )
               SetPositionAwareness(true);
             }
             break;
-            
-            case '2' :
+            case 'T' :
             {
-              ThisEvent.EventType = EV_TAPE_DETECTED;
-              ThisEvent.EventParam = 101;
-              //PostMasterSM(ThisEvent);
-              //ThisEvent.EventType = ES_NO_EVENT;
-              printf("\r\n ********101 expect 2 *********");
-            }
-            break;
-            case '3' :
-            {
-              ThisEvent.EventType = EV_TAPE_DETECTED;
-              ThisEvent.EventParam = 100;
-              //PostMasterSM(ThisEvent);
-              //ThisEvent.EventType = ES_NO_EVENT;
-              printf("\r\n ***********101 expect 3 \r\n*********");
-            }
-            break;
-            case '4' :
-            {
-              ThisEvent.EventType = EV_TAPE_DETECTED;
-              ThisEvent.EventParam = 011;
-              //PostMasterSM(ThisEvent);
-              //ThisEvent.EventType = ES_NO_EVENT;
-              printf("\r\n ***********011 expect 4\r\n*********");
-            }
-            break;
-            case '5' :
-            {
-              ThisEvent.EventType = EV_TAPE_DETECTED;
-              ThisEvent.EventParam = 010;
-              //PostMasterSM(ThisEvent);
-              //ThisEvent.EventType = ES_NO_EVENT;
-              printf("\r\n ***********010 expect 2 (forward noise)\r\n*********");
-            }
-            break;
-            case '6' :
-            {
-              ThisEvent.EventType = EV_TAPE_DETECTED;
-              ThisEvent.EventParam = 001;
-              //PostMasterSM(ThisEvent);
-              //ThisEvent.EventType = ES_NO_EVENT;
-              printf("\r\n ***********001 expect 6 \r\n*********");
+              ThisEvent.EventType = EV_EQUATOR_DETECTED;
             }
             break;
             
-             case '7' :
-            {
-              ThisEvent.EventType = EV_TAPE_DETECTED;
-              ThisEvent.EventParam = 000;
-              //PostMasterSM(ThisEvent);
-              //ThisEvent.EventType = ES_NO_EVENT;
-              printf("\r\n ***********000 expect 2 \r\n*********");
-            }
-            break;
-            
-             case '8' :
-            {
-              ThisEvent.EventType = EV_TAPE_DETECTED;
-              ThisEvent.EventParam = 111;
-              //PostMasterSM(ThisEvent);
-              //ThisEvent.EventType = ES_NO_EVENT;
-              printf("\r\n *********** 111 expect 1 \r\n*********");
-            }
-            break;
             
              case 'H' :
              {

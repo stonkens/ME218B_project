@@ -13,7 +13,7 @@
 
 // typedefs for the states
 // State definitions for use with the query function
-typedef enum { Orienting2Landfill, Driving2Landfill, Orienting2Recycle, Driving2Recycle, ApproachingRecycle, Preparing4Recycle, DumpingRecycle, RecoveringFromRecycle } RecyclingState_t ;
+typedef enum { Orienting2LandfillR, Driving2LandfillR, Orienting2Recycle, Driving2Recycle, ApproachingRecycle, Preparing4Recycle, DumpingRecycle, RecoveringFromRecycle } RecyclingState_t ;
 
 
 // Public Function Prototypes

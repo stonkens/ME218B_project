@@ -227,7 +227,7 @@ ES_Event_t RunCollectingV2SM( ES_Event_t CurrentEvent )
          {
             switch (CurrentEvent.EventType)
             {
-              case EV_TAPE_DETECTED:
+              case EV_EQUATOR_DETECTED:
               {
                 if((CurrentEvent.EventParam == 1) || (CurrentEvent.EventParam == 3) || (CurrentEvent.EventParam == 5))
                 {
