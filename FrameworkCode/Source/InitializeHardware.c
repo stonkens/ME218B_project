@@ -87,11 +87,8 @@ void InitializeHardware(void)
   InitEmitterPWM();
 	InitHarvesterMotor();
   InitDriveMotor();
-  InitTapeHardware();
-  //InitDrvieMotorPWM();
   Enc_Init();
   Drive_Control_Init();
-  //InitSPI(); //This uses bits xxx and xxx
   IRInitInputCapture();
   InitTapeReflectorHardware();
   __enable_irq();

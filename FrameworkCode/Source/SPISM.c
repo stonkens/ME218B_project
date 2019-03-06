@@ -247,6 +247,7 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
           if (QueryTeam() == TEAM_NORTH)
           {
             TeamSwitchValue = TEAM_NORTH;
+            CurrentRecyclingCenter = EAST_RECYCLE;
             //Set REG byte and expected ACK byte accordingly
             RegistrationByte = REG_NORTH;
             //RegCmd = REG_NORTH;
@@ -263,7 +264,8 @@ ES_Event_t RunSPISM(ES_Event_t ThisEvent)
             RegistrationByte = REG_SOUTH;
             //RegCmd = REG_SOUTH;
             ExpectedAckByte = ACK_SOUTH; 
-
+            CurrentRecyclingCenter = WEST_RECYCLE;
+            
             LeftRecycleFrequency = WEST_RECYCLE_FREQUENCY;
             RightRecycleFrequency = EAST_RECYCLE_FREQUENCY;
           }         

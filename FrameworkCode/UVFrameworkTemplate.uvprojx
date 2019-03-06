@@ -413,11 +413,6 @@
               <FilePath>.\Source\TestHarnessI2C.c</FilePath>
             </File>
             <File>
-              <FileName>BumperChecker.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\BumperChecker.c</FilePath>
-            </File>
-            <File>
               <FileName>InitializeHardware.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\InitializeHardware.c</FilePath>
@@ -488,11 +483,6 @@
               <FilePath>.\Source\GP_Display.c</FilePath>
             </File>
             <File>
-              <FileName>TapeFollowingChecker.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\TapeFollowingChecker.c</FilePath>
-            </File>
-            <File>
               <FileName>BallDumpingSM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\BallDumpingSM.c</FilePath>
@@ -531,6 +521,11 @@
               <FileName>SPISM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\SPISM.c</FilePath>
+            </File>
+            <File>
+              <FileName>BumperChecker.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\BumperChecker.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -673,11 +668,6 @@
               <FilePath>.\Headers\ADMulti.h</FilePath>
             </File>
             <File>
-              <FileName>BumperChecker.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\BumperChecker.h</FilePath>
-            </File>
-            <File>
               <FileName>InitializeHardware.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\InitializeHardware.h</FilePath>
@@ -763,11 +753,6 @@
               <FilePath>.\Headers\GP_Display.h</FilePath>
             </File>
             <File>
-              <FileName>TapeFollowingChecker.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TapeFollowingChecker.h</FilePath>
-            </File>
-            <File>
               <FileName>BallDumpingSM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\BallDumpingSM.h</FilePath>
@@ -786,6 +771,11 @@
               <FileName>SPISM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\SPISM.h</FilePath>
+            </File>
+            <File>
+              <FileName>ReflectiveTapeChecker.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\ReflectiveTapeChecker.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1405,11 +1395,6 @@
               <FilePath>.\Source\TestHarnessI2C.c</FilePath>
             </File>
             <File>
-              <FileName>BumperChecker.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\BumperChecker.c</FilePath>
-            </File>
-            <File>
               <FileName>InitializeHardware.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\InitializeHardware.c</FilePath>
@@ -1480,11 +1465,6 @@
               <FilePath>.\Source\GP_Display.c</FilePath>
             </File>
             <File>
-              <FileName>TapeFollowingChecker.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\TapeFollowingChecker.c</FilePath>
-            </File>
-            <File>
               <FileName>BallDumpingSM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\BallDumpingSM.c</FilePath>
@@ -1523,6 +1503,11 @@
               <FileName>SPISM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\SPISM.c</FilePath>
+            </File>
+            <File>
+              <FileName>BumperChecker.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\BumperChecker.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1665,11 +1650,6 @@
               <FilePath>.\Headers\ADMulti.h</FilePath>
             </File>
             <File>
-              <FileName>BumperChecker.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\BumperChecker.h</FilePath>
-            </File>
-            <File>
               <FileName>InitializeHardware.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\InitializeHardware.h</FilePath>
@@ -1755,11 +1735,6 @@
               <FilePath>.\Headers\GP_Display.h</FilePath>
             </File>
             <File>
-              <FileName>TapeFollowingChecker.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Headers\TapeFollowingChecker.h</FilePath>
-            </File>
-            <File>
               <FileName>BallDumpingSM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\BallDumpingSM.h</FilePath>
@@ -1778,6 +1753,11 @@
               <FileName>SPISM.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Headers\SPISM.h</FilePath>
+            </File>
+            <File>
+              <FileName>ReflectiveTapeChecker.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Headers\ReflectiveTapeChecker.h</FilePath>
             </File>
           </Files>
         </Group>

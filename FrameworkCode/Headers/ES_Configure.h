@@ -331,7 +331,7 @@ typedef enum
 
 /****************************************************************************/
 // This is the list of event checking functions
-#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished, Check4TapeFollow, Check4Bump, Check4Enemy 
+#define EVENT_CHECK_LIST Check4Keystroke, IsI2C1Finished, Check4Equator, Check4Bump 
 
 
 /****************************************************************************/

@@ -41,8 +41,8 @@
 #include "ReflectiveTapeChecker.h"
 
 /*----------------------------- Module Defines ----------------------------*/
-#define ENEMY_THRESHOLD 1000 
-#define ENEMY_REPETITION_THRESHOLD 20 
+#define EQUATOR_HIGH_THRESHOLD 200 
+#define EQUATOR_REPETITION_THRESHOLD 20 
 /*---------------------------- Module Functions ---------------------------*/
 /* prototypes for private functions for this machine.
 */
@@ -50,7 +50,8 @@
 /*---------------------------- Module Variables ---------------------------*/
 static uint8_t LastInputState; 
 static uint32_t AnalogValues[1];
-static uint8_t EnemyCounter;
+static uint8_t EquatorCounter;
+static bool enableFlag; 
 /*------------------------------ Module Code ------------------------------*/
 
 /****************************************************************************
@@ -71,7 +72,7 @@ static uint8_t EnemyCounter;
     Kristine Chen, 02/05/2018, 18:11
 ****************************************************************************/
 
-bool Check4Enemy(void)
+bool Check4Equator(void)
 {
   ES_Event_t ThisEvent;
   ThisEvent.EventType = ES_NO_EVENT;
@@ -79,33 +80,43 @@ bool Check4Enemy(void)
   // Default return value is false
   bool ReturnVal = false;
   
-  // Sample analog port lines
-  ADC_MultiRead(AnalogValues);
-  
-  // Get current state of range finder
-  uint32_t CurrentInputState = AnalogValues[0];
-  
-  if ((CurrentInputState != LastInputState) && (CurrentInputState > 
-  ENEMY_THRESHOLD))
-  {
-    
-    EnemyCounter++;
-    //printf("%d \r\n", EnemyCounter);
-    if(EnemyCounter >= ENEMY_REPETITION_THRESHOLD)
-    {
-      ThisEvent.EventType = EV_BOT_DETECTED;
-      ThisEvent.EventParam = CurrentInputState;
+  if(enableFlag==true){
+		// Sample analog port lines
+		ADC_MultiRead(AnalogValues);
 
-      PostMasterSM(ThisEvent);
-      ReturnVal = true;
-    }
-  }
-  else
-  {
-    EnemyCounter = 0;
-  }
-  // Update LastInputState
-  LastInputState = CurrentInputState;
+		// Get current state of range finder
+		uint32_t CurrentInputState = AnalogValues[0];
+
+		//print analog input all the time
+		//printf("%d CheckforEquator analog value\r\n", CurrentInputState);  
+		
+		//if smaller than higher threshold, increase counter
+		if ((CurrentInputState != LastInputState) && (CurrentInputState < 
+		EQUATOR_HIGH_THRESHOLD))
+		{
+			
+			EquatorCounter++;
+			//printf("%d \r\n", EnemyCounter);
+			if(EquatorCounter >= EQUATOR_REPETITION_THRESHOLD)
+			{
+				//Change EV_Bot_Detected to ES_Tape_detected
+				//ThisEvent.EventType = EV_BOT_DETECTED;
+				//printf("EV_EQUATOR_DETECTED:");
+				ThisEvent.EventType=EV_EQUATOR_DETECTED;
+				ThisEvent.EventParam = CurrentInputState;
+				PostMasterSM(ThisEvent);
+				ReturnVal = true;
+			}
+		}
+		else
+		{
+			EquatorCounter = 0;
+		}
+		// Update LastInputState
+		LastInputState = CurrentInputState;
+	
+	}
+	
   
   return ReturnVal;  
 }
@@ -116,7 +127,12 @@ void InitTapeReflectorHardware(void){
     
 } 
 
+void enableEquatorDetection(void){
+  enableFlag = true; 
+}
 
-
+void disableEquatorDetection(void){
+	enableFlag= false;
+}
 /*------------------------------- Footnotes -------------------------------*/
 /*------------------------------ End of file ------------------------------*/

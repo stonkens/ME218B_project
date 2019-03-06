@@ -64,7 +64,7 @@
 #include "SPISM.h"
 #include "IRDetector.h"
 #include "IREmitter.h"
-#include "TapeFollowingService.h"
+#include "ReflectiveTapeChecker.h"
 #include "MasterHSM.h"
 #include "BallDumpingSM.h"
 /*----------------------------- Module Defines ----------------------------*/
@@ -172,7 +172,8 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
               case EV_EQUATOR_DETECTED:
               {
                 StopDrive();
-                disableTapeFollow();
+                //disableTapeFollow();
+                disableEquatorDetection();
                 ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIME);
                 ReturnEvent.EventType = ES_NO_EVENT; 
               }
@@ -648,7 +649,7 @@ static ES_Event_t DuringDriving2Landfill ( ES_Event_t Event)
     if ( (Event.EventType == ES_ENTRY) ||
          (Event.EventType == ES_ENTRY_HISTORY) )
     {
-      enableTapeFollow();
+      enableEquatorDetection();
         // implement any entry actions required for this state machine
         //Basically drive and never stop until we hit a beacon
         DriveStraight(STRAIGHT_SPEED, 14400);
@@ -662,7 +663,7 @@ static ES_Event_t DuringDriving2Landfill ( ES_Event_t Event)
     {
       StopDrive();
       //Stop Motors
-      disableTapeFollow(); 
+      disableEquatorDetection();
         // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines
@@ -700,13 +701,13 @@ static ES_Event_t DuringOrienting2Recycle( ES_Event_t Event)
       
       if(QueryWhichRecycle() == EAST_RECYCLE)
       {
-        //ActivateBeaconFinder(EAST_RECYCLING_PERIOD);
+        ActivateBeaconFinder(EAST_RECYCLING_PERIOD);
       }
       else
       {
-        //ActivateBeaconFinder(WEST_RECYCLING_PERIOD);
+        ActivateBeaconFinder(WEST_RECYCLING_PERIOD);
       }
-      ActivateBeaconFinder(EAST_RECYCLING_PERIOD);
+      //ActivateBeaconFinder(EAST_RECYCLING_PERIOD);
       IREnableInterrupt();
       
       //HARDCODING RECYCLING
@@ -764,7 +765,14 @@ static ES_Event_t DuringDriving2Recycle( ES_Event_t Event)
         DriveStraight(STRAIGHT_SPEED, 9600);
         //HARDCODING RECYCLING
         //UpdateEmitterPeriod(GetAssignedPeriod());
-        UpdateEmitterPeriod(500);
+        if (QueryTeam() == TEAM_NORTH)
+        { 
+          UpdateEmitterPeriod(600);
+        }
+        else
+        {
+          UpdateEmitterPeriod(500);
+        }
         EnableEmitterPWM();
       
 
@@ -819,7 +827,6 @@ static ES_Event_t DuringPreparing4Recycle( ES_Event_t Event)
     {
       //Stop Motors
       StopDrive();
-      disableTapeFollow();  
       // on exit, give the lower levels a chance to clean up first
         //RunLowerLevelSM(Event);
         // repeat for any concurrently running state machines

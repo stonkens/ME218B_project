@@ -5,7 +5,10 @@
 #include <stdbool.h>
 
 // Public Function Prototypes 
-bool Check4Enemy(void);
+bool Check4Equator(void);
 void InitTapeReflectorHardware(void); 
+void enableEquatorDetection(void); 
+void disableEquatorDetection(void);
+
 #endif /* ReflectiveTapeChecker_H */
 
