@@ -126,18 +126,39 @@ ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent )
             {
               case EV_ALIGNED2BEACON:
               {
-                //Stop driving motors
                 StopDrive();
-                // Execute action function for state one : event one
-                NextState = Driving2RecycleL;//Decide what the next state will be
-                // for internal transitions, skip changing MakeTransition
-                MakeTransition = true; //mark that we are taking a transition
-                // if transitioning to a state with history change kind of entry
-                EntryEventKind.EventType = ES_ENTRY;                              
-                //Select new move to start up (Idea: Start from one point and go to others)
+                IRDisableInterrupt();
+                ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIMER);
                 ReturnEvent.EventType = ES_NO_EVENT;
               }
-							break; 				 
+              break;
+              case ES_TIMEOUT:
+              {
+                if(CurrentEvent.EventParam == COLLECTSTOP_TIMER)
+                {
+                  //Stop driving motors
+                  StopDrive();
+                  // Execute action function for state one : event one
+                  NextState = Driving2RecycleL;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;                              
+                  //Select new move to start up (Idea: Start from one point and go to others)
+                  ReturnEvent.EventType = ES_NO_EVENT;
+                }
+              }
+							break; 
+
+              case EV_MOVE_COMPLETED:
+              {                
+                //Didn't figure out how to align with beacon
+                StopDrive();
+                NextState = CurrentState;
+                MakeTransition = true;
+                EntryEventKind.EventType = ES_ENTRY;
+                ReturnEvent.EventType = ES_NO_EVENT;
+              }
 							
               default:
 							{;
@@ -217,16 +238,27 @@ ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent )
             {
               case EV_MOVE_COMPLETED:
               {
-                //Stop driving motors
                 StopDrive();
-                // Execute action function for state one : event one
-                NextState = Orienting2Landfill;//Decide what the next state will be
-                // for internal transitions, skip changing MakeTransition
-                MakeTransition = true; //mark that we are taking a transition
-                // if transitioning to a state with history change kind of entry
-                EntryEventKind.EventType = ES_ENTRY;                              
-                //Select new move to start up (Idea: Start from one point and go to others)
-                ReturnEvent.EventType = ES_NO_EVENT;            
+                ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIMER);
+                ReturnEvent.EventType = ES_NO_EVENT;
+              }
+              break;
+              
+              case ES_TIMEOUT:
+              {
+                if(CurrentEvent.EventParam == COLLECTSTOP_TIMER)
+                {
+                  //Stop driving motors
+                  StopDrive();
+                  // Execute action function for state one : event one
+                  NextState = Orienting2Landfill;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;                              
+                  //Select new move to start up (Idea: Start from one point and go to others)
+                  ReturnEvent.EventType = ES_NO_EVENT;
+                }                  
               }
 							break; 				 
 							
@@ -248,18 +280,41 @@ ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent )
             {
               case EV_ALIGNED2BEACON:
               {
-                //Stop driving motors
                 StopDrive();
-                // Execute action function for state one : event one
-                NextState = Driving2Landfill;//Decide what the next state will be
-                // for internal transitions, skip changing MakeTransition
-                MakeTransition = true; //mark that we are taking a transition
-                // if transitioning to a state with history change kind of entry
-                EntryEventKind.EventType = ES_ENTRY;                              
-                //Select new move to start up (Idea: Start from one point and go to others)
+                IRDisableInterrupt();
+                ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIMER);
                 ReturnEvent.EventType = ES_NO_EVENT;
               }
-							break; 				 
+              break;
+              
+              case ES_TIMEOUT:
+              {
+                if(CurrentEvent.EventParam == COLLECTSTOP_TIMER)
+                {
+                
+                  //Stop driving motors
+                  StopDrive();
+                  // Execute action function for state one : event one
+                  NextState = Driving2Landfill;//Decide what the next state will be
+                  // for internal transitions, skip changing MakeTransition
+                  MakeTransition = true; //mark that we are taking a transition
+                  // if transitioning to a state with history change kind of entry
+                  EntryEventKind.EventType = ES_ENTRY;                              
+                  //Select new move to start up (Idea: Start from one point and go to others)
+                  ReturnEvent.EventType = ES_NO_EVENT;
+                }
+              }
+							break; 
+              
+              case EV_MOVE_COMPLETED:
+              {                
+                //Didn't figure out how to align with beacon
+                StopDrive();
+                NextState = CurrentState;
+                MakeTransition = true;
+                EntryEventKind.EventType = ES_ENTRY;
+                ReturnEvent.EventType = ES_NO_EVENT;
+              }              
 							
               default:
 							{;
@@ -283,9 +338,18 @@ ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent )
             {
               case EV_MOVE_COMPLETED:
               {
+                StopDrive();
+                ES_Timer_InitTimer(COLLECTSTOP_TIMER, COLLECTSTOP_TIMER);
+                ReturnEvent.EventType = ES_NO_EVENT;  
+              }
+              break;
+              
+              case ES_TIMEOUT:
+              {
+                
                 //Turn around to align with beacon
                 StopDrive();
-         
+          
                 // Execute action function for state one : event one
                 NextState = ApproachingLandfill;//Decide what the next state will be
                 // for internal transitions, skip changing MakeTransition
@@ -299,10 +363,7 @@ ES_Event_t RunLandfillingSM( ES_Event_t CurrentEvent )
               break; 
               
               
-              
-              
-              //Improvement: Add in case for EV_BUMPER_HIT
-              //This would then depend on the position we are on the field              
+                          
 							default:
               {;
 							}
