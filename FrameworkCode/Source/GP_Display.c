@@ -46,7 +46,7 @@ void UpdateDisplay(void)
   RecyclingState_t            RecyclingState          = QueryRecyclingSM();
   LandfillingState_t          LandfillingState        = QueryLandfillingSM();
   CollisionAvoidanceState_t   CollisionAvoidanceState = QueryCollisionAvoidanceHSM();
-  
+  /*
   // now update the display
   printf("\r");
   switch (MasterState)
@@ -129,7 +129,11 @@ void UpdateDisplay(void)
       printf(" Driving2LanfillIR  ");
     }
     break;
-    
+    case MovingBodyRotation:
+    {
+      printf(" MovingBodyRotation ");
+    }
+    break;
     case Orienting2LandfillR:
     {
       printf(" Orienting2LanfillIR");
@@ -239,7 +243,7 @@ void UpdateDisplay(void)
   printf(" %d ", QueryRecycleBalls());
   printf(" %d ", QueryLandFillBalls());
   printf(" %d ", QueryTeam());
-
+*/
 
 }
 

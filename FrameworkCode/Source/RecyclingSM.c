@@ -234,13 +234,13 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
      
       case MovingBodyRotation:
       {
-          ReturnEvent = CurrentEvent = DuringOrienting2Recycle(CurrentEvent);
+          ReturnEvent = CurrentEvent = DuringMovingBodyRotation(CurrentEvent);
          //process any events
          if ( CurrentEvent.EventType != ES_NO_EVENT ) //If an event is active
          {
             switch (CurrentEvent.EventType)
             { 
-              case EV_MOVE_COMPLETED: //Couldn't find the beacon
+              case EV_MOVE_COMPLETED: 
               {
                 NextState = Orienting2Recycle;//Decide what the next state will be
                 // for internal transitions, skip changing MakeTransition
@@ -248,14 +248,16 @@ ES_Event_t RunRecyclingSM( ES_Event_t CurrentEvent )
                 // if transitioning to a state with history change kind of entry
                 EntryEventKind.EventType = ES_ENTRY;                              
                 //Select new move to start up (Idea: Start from one point and go to others)
-                ReturnEvent.EventType = ES_NO_EVENT; 
-              }
+                ReturnEvent.EventType = ES_NO_EVENT;
+              }                
               break;
-              default
-              {;}
+              default:
+              {
+                ;
+              }
             }
           }
-      }
+        }
       break;
               
      
@@ -750,7 +752,7 @@ static ES_Event_t DuringMovingBodyRotation ( ES_Event_t Event)
     {
         
       // Start rotating (360 degrees but can be interferred)
-      DriveStraight(STRAIGHT_SPEED, 800); //8 inches: KRISTINE TO MODIFY	
+      DriveStraight(STRAIGHT_SPEED, 1000); //8 inches: KRISTINE TO MODIFY	
 				
       // after that start any lower level machines that run in this state
       //StartLowerLevelSM( Event );

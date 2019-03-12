@@ -42,7 +42,7 @@
 #define GenA_Normal (PWM_2_GENA_ACTCMPAU_ONE | PWM_2_GENA_ACTCMPAD_ZERO)
 #define BitsPerNibble 4
 #define PWMTicksPerUS 1250  // 40*10^3/32 //40MHz clock divided by 32, converted to us
-#define PeriodInUS 600       //What is currently accepted by recycling centre
+#define PeriodInUS 200       //What is currently accepted by recycling centre
 
 
 /*---------------------------- Module Variables ---------------------------*/

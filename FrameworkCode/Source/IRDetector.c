@@ -247,7 +247,7 @@ void IR_ISR(void){
       {
         if((Period_In_us >= BeaconPeriod - DETECTION_TOLERANCE) && (Period_In_us <= BeaconPeriod + DETECTION_TOLERANCE))
         {
-          printf("1");
+          //printf("1");
           SpecificBeaconCount++;
           
           if(SpecificBeaconCount >= 40)
